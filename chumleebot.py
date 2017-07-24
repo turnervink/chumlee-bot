@@ -61,7 +61,10 @@ async def on_message(msg):
         commandinfo = ("*Commands:*\n"
         "**.register:** register in the <:chumcoin:337841443907305473> database\n"
         "**.balance:** check your <:chumcoin:337841443907305473> balance\n"
-        "**.pay <user> <amount>:** pay someone <:chumcoin:337841443907305473>s\n"
+        "**.appraise <text/attachment>:** get an appraisal for an item\n"
+        "**.pay <@user> <amount>:** pay someone <:chumcoin:337841443907305473>s\n"\
+        "**.give <@user> <amount>:** (admin command) give a user <:chumcoin:337841443907305473>s\n"
+        "**.kevincostner:** dances with swolves"
         )
         await client.send_message(msg.channel, commandinfo)
 
