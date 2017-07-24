@@ -39,6 +39,13 @@ def withdraw(id, amt):
     newbalance = currentbalance.val() - amt
     db.child("users").child(id).child("balance").set(newbalance)
 
+def set_deal_status(id, bool):
+    db.child("users").child(id).child("isInDeal").set(bool)
+
+def is_in_deal(id):
+    print("Deal: " + str(db.child("users").child(id).child("isInDeal").get().val()))
+    return db.child("users").child(id).child("isInDeal").get().val()
+
 @client.event
 async def on_ready():
     print("Logged in as")
@@ -77,7 +84,10 @@ async def on_message(msg):
         if not is_registered(msg.author.id):
             await client.send_message(msg.channel, "Okay, let's get you set up <@" + msg.author.id + ">!")
 
-            newuserdata = {"balance": 20}
+            newuserdata = {
+                "balance": 20,
+                "isInDeal": False
+            }
 
             db.child("users").child(msg.author.id).set(newuserdata)
             await client.send_message(msg.channel, "Alright, you're all set. See you in the pawn shop!")
@@ -161,8 +171,11 @@ async def on_message(msg):
     elif msg.content.startswith(".appraise"):
         if not is_registered(msg.author.id):
             await client.send_message(msg.channel, "You need to use **.register** first!")
+        elif is_in_deal(msg.author.id):
+            await client.send_message(msg.channel, "Looks like you've already got a deal on the table!")
         else:
             seller = msg.author.id
+            set_deal_status(seller, True)
 
             args = str.split(msg.content)
             files = msg.attachments
@@ -208,13 +221,17 @@ async def on_message(msg):
             response = await client.wait_for_message(timeout = 30.0, author = msg.author, check = check)
             if response is None:
                 await client.send_message(msg.channel, "Alright, no deal then.")
+                set_deal_status(seller, False)
             elif response.content == ".deal":
                 await client.send_message(msg.channel, "Cha-ching! <:chumcoin:337841443907305473><:chumcoin:337841443907305473><:chumcoin:337841443907305473>")
                 deposit(msg.author.id, value)
+                set_deal_status(seller, False)
             elif response.content == ".nodeal":
                 await client.send_message(msg.channel, "Alright, no deal then.")
+                set_deal_status(seller, False)
             else:
                 await client.send_message(msg.channel, "Something went wrong!")
+                set_deal_status(seller, False)
 
     elif msg.content.startswith(".kevincostner"):
         await client.send_message(msg.channel, random.choice(ytpquotes))
