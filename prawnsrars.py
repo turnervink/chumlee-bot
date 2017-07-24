@@ -8,7 +8,7 @@ ytpquotes = [
     "Everything in here has a story. And a price. And a pawn. And an old man.",
     "I work here with my old mom, and my son Big Sus.",
     "The people at the auction house assured me that this was an auction.",
-    "What I love about Western Alalia is the vulture."
+    "What I love about Western Alalia is the vulture.",
     "Well it's definitely a saddle.",
     "Well I'm sure it's still a saddle, even though we couldn't get that verified.",
     "My father-in-law used to threaten me when I was dating his daughter, and I told him the first thing I was gonna do was sell her.",
