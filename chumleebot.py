@@ -3,7 +3,9 @@ import asyncio
 import pyrebase
 import re
 import random
+import json
 from prawnsrars import ytpquotes
+from pprint import pprint
 
 config = {
   "apiKey": "AIzaSyAF0_Z_eSA0ICIvML2PouaCuizk3ADUWVg",
@@ -47,6 +49,8 @@ async def on_ready():
 
 @client.event
 async def on_message(msg):
+    if msg.content.startswith("."):
+        await client.send_typing(msg.channel)
 
     if msg.content.startswith(".ping"):
         await client.send_message(msg.channel, "Hey " + msg.author.id)
@@ -58,12 +62,13 @@ async def on_message(msg):
         await client.send_message(msg.channel, welcomemsg)
 
     elif msg.content.startswith(".commands"):
-        commandinfo = ("*Commands:*\n"
-        "**.register:** register in the <:chumcoin:337841443907305473> database\n"
-        "**.balance:** check your <:chumcoin:337841443907305473> balance\n"
-        "**.appraise <text/attachment>:** get an appraisal for an item\n"
-        "**.pay <@user> <amount>:** pay someone <:chumcoin:337841443907305473>s\n"\
-        "**.give <@user> <amount>:** (admin command) give a user <:chumcoin:337841443907305473>s\n"
+        commandinfo = ("*:keyboard: Commands:*\n\n"
+        "**.register:** register in the <:chumcoin:337841443907305473> database\n\n"
+        "**.balance:** check your <:chumcoin:337841443907305473> balance\n\n"
+        "**.appraise <text/attachment>:** get an appraisal for an item\n\n"
+        "**.pay <@user> <amount>:** pay someone <:chumcoin:337841443907305473>s\n\n"
+        "**.give <@user> <amount>:** (admin command) give a user <:chumcoin:337841443907305473>s\n\n"
+        "**.item:** gets a random item from the _Pawn Stars: The Game_ Wiki\n\n"
         "**.kevincostner:** dances with swolves"
         )
         await client.send_message(msg.channel, commandinfo)
@@ -214,6 +219,14 @@ async def on_message(msg):
     elif msg.content.startswith(".kevincostner"):
         await client.send_message(msg.channel, random.choice(ytpquotes))
         await client.send_message(msg.channel, "https://www.youtube.com/watch?v=5mEJbX5pio8")
+
+    elif msg.content.startswith(".item"):
+        baseurl = "http://pawnstarsthegame.wikia.com"
+
+        with open('items.json') as data_file:
+            data = json.load(data_file)
+
+        await client.send_message(msg.channel, baseurl + data[random.randint(0, len(data) - 1)]["value"])
 
 
 # Run
