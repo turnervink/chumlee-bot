@@ -20,6 +20,10 @@ def withdraw(id, amt):
     newbalance = currentbalance.val() - amt
     db.child("users").child(id).child("balance").set(newbalance)
 
+def check_for_funds(id, amt):
+    currentbalance = db.child("users").child(id).child("balance").get().val();
+    return currentbalance >= amt
+
 def set_deal_status(id, bool):
     db.child("users").child(id).child("isInDeal").set(bool)
 
@@ -32,3 +36,9 @@ def update_last_deal_time(id):
 
 def last_deal_time(id):
     return db.child("users").child(id).child("lastDealTime").get().val()
+
+def award_medal(id, medal):
+    db.child("users").child(id).child("medals").child(medal).set(True)
+
+def take_medal(id, medal):
+    db.child("users").child(id).child("medals").child(medal).set(False)
