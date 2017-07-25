@@ -89,9 +89,9 @@ async def on_message(msg):
 
             if len(args) != 3:
                 await client.send_message(msg.channel, "Usage: .pay <user> <amount>")
-            elif re.match("<@[0-9]*>", args[1]) is None:
+            elif re.match("<@!?[0-9]*>", args[1]) is None:
                 await client.send_message(msg.channel, "That doesn't look like a username.")
-            elif not is_registered(re.sub("[^0-9]", "", args[1])):
+            elif not databasefunctions.is_registered(re.sub("[^0-9]", "", args[1])):
                 await client.send_message(msg.channel, "That user isn't registered!")
             else:
                 print(args)
@@ -135,7 +135,7 @@ async def on_message(msg):
 
             if len(args) != 3:
                 await client.send_message(msg.channel, "Usage: .give <user> <amount>")
-            elif re.match("<@[0-9]*>", args[1]) is None:
+            elif re.match("<@!?[0-9]*>", args[1]) is None:
                 await client.send_message(msg.channel, "That doesn't look like a username.")
             elif not databasefunctions.is_registered(re.sub("[^0-9]", "", args[1])):
                 await client.send_message(msg.channel, "That user isn't registered!")
