@@ -5,7 +5,7 @@ import re
 import random
 import json
 import time
-from prawnsrars import ytpquotes
+import prawnsrars
 from pprint import pprint
 
 config = {
@@ -59,7 +59,7 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print("-----")
-    await client.change_presence(game=discord.Game(name='Collecting shoes'))
+    await client.change_presence(game=discord.Game(name=random.choice(prawnsrars.statuses)))
 
 @client.event
 async def on_message(msg):
@@ -268,7 +268,7 @@ async def on_message(msg):
                     set_deal_status(seller, False)
 
     elif msg.content.startswith(".kevincostner"):
-        await client.send_message(msg.channel, random.choice(ytpquotes))
+        await client.send_message(msg.channel, random.choice(prawnsrars.ytpquotes))
         await client.send_message(msg.channel, "https://www.youtube.com/watch?v=5mEJbX5pio8")
 
     elif msg.content.startswith(".item"):

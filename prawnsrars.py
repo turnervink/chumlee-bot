@@ -16,3 +16,11 @@ ytpquotes = [
     "Basically this wasn't a muzzle loader where you had to put your powder in your ball in put your powder in your ball in put your powder in your ball put your powder in your ball put your powder in your ball...",
     "This gun is the real deal. Now all I have to do is test it :boom:"
 ]
+
+statuses = [
+    "Collecting shoes",
+    "Drinking a smoothie",
+    "Preparing the circle of beauty",
+    "Dancing with swolves",
+    "Enjoying some Western Alalia"
+]
