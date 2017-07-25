@@ -38,13 +38,14 @@ async def on_message(msg):
 
     # Displays available commands and their uses.
     elif msg.content.startswith(".commands"):
-        commandinfo = ("*:keyboard: Commands:*\n\n"
+        commandinfo = ("*Commands* :keyboard::\n\n"
         "**.register:** register in the <:chumcoin:337841443907305473> database\n\n"
         "**.balance:** check your <:chumcoin:337841443907305473> balance\n\n"
         "**.appraise <text/attachment>:** get an appraisal for an item\n\n"
         "**.pay <@user> <amount>:** pay someone <:chumcoin:337841443907305473>s\n\n"
         "**.give <@user> <amount>:** (admin command) give a user <:chumcoin:337841443907305473>s\n\n"
         "**.item:** gets a random item from the _Pawn Stars: The Game_ Wiki\n\n"
+        "**.purge:** delete chumlee-bot's messages from the last 100 messages\n\n"
         "**.kevincostner:** dances with swolves"
         )
         await client.send_message(msg.channel, commandinfo)
@@ -220,10 +221,10 @@ async def on_message(msg):
 
                 # await client.send_message(msg.channel, "Use .deal/.nodeal to accept/decline the offer in the next 30 seconds")
 
-                def check(msg):
-                    return msg.content == ".deal" or msg.content == ".nodeal"
+                def check(i):
+                    return i.content == ".deal" or i.content == ".nodeal"
 
-                response = await client.wait_for_message(timeout = 30.0, author = msg.author, check = check)
+                response = await client.wait_for_message(timeout=30.0, author=msg.author, check=check)
                 if response is None:
                     await client.send_message(msg.channel, "Alright, no deal then.")
                     databasefunctions.set_deal_status(seller, False)
@@ -255,6 +256,17 @@ async def on_message(msg):
             data = json.load(data_file)
 
         await client.send_message(msg.channel, baseurl + data[random.randint(0, len(data) - 1)]["value"])
+
+
+    elif msg.content.startswith(".purge"):
+        def check(i):
+            return i.author.id == client.user.id
+
+        try:
+            await client.purge_from(channel=msg.channel, limit=100, check=check)
+            await client.send_message(msg.channel, "Purged from last 100 messages :put_litter_in_its_place:")
+        except discord.errors.Forbidden:
+            await client.send_message(msg.channel, "I need permission to manage messages in order to use .purge!")
 
 
 # Run the bot
