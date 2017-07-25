@@ -1,4 +1,5 @@
 from resources.firebaseinfo import db
+import time
 
 def is_registered(id):
     dbusername = db.child("users").child(id).get()
