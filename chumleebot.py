@@ -4,7 +4,8 @@ import pyrebase
 import re
 import random
 import json
-from prawnsrars import ytpquotes
+import time
+import prawnsrars
 from pprint import pprint
 
 config = {
@@ -46,13 +47,19 @@ def is_in_deal(id):
     print("Deal: " + str(db.child("users").child(id).child("isInDeal").get().val()))
     return db.child("users").child(id).child("isInDeal").get().val()
 
+def update_last_deal_time(id):
+    db.child("users").child(id).child("lastDealTime").set(int(time.time()))
+
+def last_deal_time(id):
+    return db.child("users").child(id).child("lastDealTime").get().val()
+
 @client.event
 async def on_ready():
     print("Logged in as")
     print(client.user.name)
     print(client.user.id)
     print("-----")
-    await client.change_presence(game=discord.Game(name='Collecting shoes'))
+    await client.change_presence(game=discord.Game(name=random.choice(prawnsrars.statuses)))
 
 @client.event
 async def on_message(msg):
@@ -178,10 +185,26 @@ async def on_message(msg):
                     deposit(payee, amt)
 
     elif msg.content.startswith(".appraise"):
+        dealstarttime = int(time.time())
+        # print(dealstarttime)
+        # print(last_deal_time(msg.author.id))
+        # print(dealstarttime - last_deal_time(msg.author.id))
+
         if not is_registered(msg.author.id):
             await client.send_message(msg.channel, "You need to use **.register** first!")
         elif is_in_deal(msg.author.id):
             await client.send_message(msg.channel, "Looks like you've already got a deal on the table!")
+        elif last_deal_time(msg.author.id) is not None and not (dealstarttime - last_deal_time(msg.author.id)) >= 900:
+            # await client.send_message(msg.channel, "You've gotta wait a quarter of an hour between making deals!")
+
+            secondstonextdeal = 900 - (dealstarttime - last_deal_time(msg.author.id))
+            if secondstonextdeal <= 60:
+                timetodealstring = "" + str(int(round(secondstonextdeal, 0))) + " more seconds"
+            else:
+                timetodealstring = "" + str(int(round(secondstonextdeal / 60, 0))) + " more minutes"
+
+            # await client.send_message(msg.channel, "You have " + str( int(round(15 - (dealstarttime - last_deal_time(msg.author.id)) / 60, 0)) ) + " minutes left.")
+            await client.send_message(msg.channel, "You've gotta wait " + timetodealstring + " until your next deal.")
         else:
             seller = msg.author.id
             set_deal_status(seller, True)
@@ -236,6 +259,7 @@ async def on_message(msg):
                     await client.send_message(msg.channel, "Cha-ching! <:chumcoin:337841443907305473><:chumcoin:337841443907305473><:chumcoin:337841443907305473>")
                     deposit(msg.author.id, value)
                     set_deal_status(seller, False)
+                    update_last_deal_time(seller)
                 elif response.content == ".nodeal":
                     await client.send_message(msg.channel, "Alright, no deal then.")
                     set_deal_status(seller, False)
@@ -244,7 +268,7 @@ async def on_message(msg):
                     set_deal_status(seller, False)
 
     elif msg.content.startswith(".kevincostner"):
-        await client.send_message(msg.channel, random.choice(ytpquotes))
+        await client.send_message(msg.channel, random.choice(prawnsrars.ytpquotes))
         await client.send_message(msg.channel, "https://www.youtube.com/watch?v=5mEJbX5pio8")
 
     elif msg.content.startswith(".item"):
