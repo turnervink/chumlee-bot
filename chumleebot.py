@@ -117,7 +117,8 @@ async def on_message(msg):
                 elif amt <= 0:
                     await client.send_message(msg.channel, "You can only pay amounts above 0")
                 else:
-                    await client.send_message(msg.channel, "Okay! Paying " + args[1] + " " + args[2] + " <:chumcoin:337841443907305473>")
+                    # await client.send_message(msg.channel, "Okay! Paying " + args[1] + " " + args[2] + " <:chumcoin:337841443907305473>")
+                    await client.send_message(msg.channel, "" + msg.author.mention + "  :arrow_right:  <:chumcoin:337841443907305473> x" + args[2] + "  :arrow_right:  " + args[1])
 
                     databasefunctions.withdraw(msg.author.id, amt)
                     databasefunctions.deposit(payee, amt)
@@ -155,7 +156,8 @@ async def on_message(msg):
                     # amt wasn't an int, do nothing
                     print()
                 else:
-                    await client.send_message(msg.channel, "Giving " + args[1] + " " + args[2] + " <:chumcoin:337841443907305473>")
+                    # await client.send_message(msg.channel, "Giving " + args[1] + " " + args[2] + " <:chumcoin:337841443907305473>")
+                    await client.send_message(msg.channel, "<:chumcoin:337841443907305473> x" + args[2] + "  :arrow_right:  " + args[1])
                     databasefunctions.deposit(payee, amt)
 
     # Starts an appraisal of a string or an attachment.
@@ -214,9 +216,9 @@ async def on_message(msg):
             else:
                 print("appraising text")
                 await client.send_message(msg.channel, itemclass)
-                await client.send_message(msg.channel, "Offer: " + str(value) + " <:chumcoin:337841443907305473>")
+                await client.send_message(msg.channel, msg.author.mention + " Offer: " + str(value) + " <:chumcoin:337841443907305473> (.deal/.nodeal)")
 
-                await client.send_message(msg.channel, "Use .deal/.nodeal to accept/decline the offer in the next 30 seconds")
+                # await client.send_message(msg.channel, "Use .deal/.nodeal to accept/decline the offer in the next 30 seconds")
 
                 def check(msg):
                     return msg.content == ".deal" or msg.content == ".nodeal"
@@ -226,7 +228,8 @@ async def on_message(msg):
                     await client.send_message(msg.channel, "Alright, no deal then.")
                     databasefunctions.set_deal_status(seller, False)
                 elif response.content == ".deal":
-                    await client.send_message(msg.channel, "Cha-ching! <:chumcoin:337841443907305473><:chumcoin:337841443907305473><:chumcoin:337841443907305473>")
+                    await client.send_message(msg.channel, "Cha-ching!")
+                    await client.send_message(msg.channel, "<:chumlee:337842115931537408>  :arrow_right:  <:chumcoin:337841443907305473> x" + str(value) + "  :arrow_right:  " + msg.author.mention)
                     databasefunctions.deposit(msg.author.id, value)
                     databasefunctions.set_deal_status(seller, False)
                     databasefunctions.update_last_deal_time(seller)
