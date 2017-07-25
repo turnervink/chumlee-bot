@@ -39,6 +39,13 @@ def withdraw(id, amt):
     newbalance = currentbalance.val() - amt
     db.child("users").child(id).child("balance").set(newbalance)
 
+def set_deal_status(id, bool):
+    db.child("users").child(id).child("isInDeal").set(bool)
+
+def is_in_deal(id):
+    print("Deal: " + str(db.child("users").child(id).child("isInDeal").get().val()))
+    return db.child("users").child(id).child("isInDeal").get().val()
+
 @client.event
 async def on_ready():
     print("Logged in as")
@@ -77,7 +84,10 @@ async def on_message(msg):
         if not is_registered(msg.author.id):
             await client.send_message(msg.channel, "Okay, let's get you set up <@" + msg.author.id + ">!")
 
-            newuserdata = {"balance": 20}
+            newuserdata = {
+                "balance": 20,
+                "isInDeal": False
+            }
 
             db.child("users").child(msg.author.id).set(newuserdata)
             await client.send_message(msg.channel, "Alright, you're all set. See you in the pawn shop!")
@@ -97,9 +107,14 @@ async def on_message(msg):
             await client.send_message(msg.channel, "You need to use **.register** first!")
         else:
             args = str.split(msg.content)
+            print(args[1])
 
             if len(args) != 3:
                 await client.send_message(msg.channel, "Usage: .pay <user> <amount>")
+            elif re.match("<@[0-9]*>", args[1]) is None:
+                await client.send_message(msg.channel, "That doesn't look like a username.")
+            elif not is_registered(re.sub("[^0-9]", "", args[1])):
+                await client.send_message(msg.channel, "That user isn't registered!")
             else:
                 print(args)
                 payee = re.sub("[^0-9]", "", args[1])
@@ -139,6 +154,10 @@ async def on_message(msg):
 
             if len(args) != 3:
                 await client.send_message(msg.channel, "Usage: .give <user> <amount>")
+            elif re.match("<@[0-9]*>", args[1]) is None:
+                await client.send_message(msg.channel, "That doesn't look like a username.")
+            elif not is_registered(re.sub("[^0-9]", "", args[1])):
+                await client.send_message(msg.channel, "That user isn't registered!")
             else:
                 print(args)
                 payee = re.sub("[^0-9]", "", args[1])
@@ -161,8 +180,11 @@ async def on_message(msg):
     elif msg.content.startswith(".appraise"):
         if not is_registered(msg.author.id):
             await client.send_message(msg.channel, "You need to use **.register** first!")
+        elif is_in_deal(msg.author.id):
+            await client.send_message(msg.channel, "Looks like you've already got a deal on the table!")
         else:
             seller = msg.author.id
+            set_deal_status(seller, True)
 
             args = str.split(msg.content)
             files = msg.attachments
@@ -191,30 +213,35 @@ async def on_message(msg):
 
             if len(args) == 1 and len(files) == 0:
                 await client.send_message(msg.channel, "You must include something to appraise")
-            elif len(files) != 0:
-                print("appraising file")
-                await client.send_message(msg.channel, itemclass)
-                await client.send_message(msg.channel, "Offer: " + str(value) + " <:chumcoin:337841443907305473>")
+                set_deal_status(seller, False)
+            # elif len(files) != 0:
+            #     print("appraising file")
+            #     await client.send_message(msg.channel, itemclass)
+            #     await client.send_message(msg.channel, "Offer: " + str(value) + " <:chumcoin:337841443907305473>")
             else:
                 print("appraising text")
                 await client.send_message(msg.channel, itemclass)
                 await client.send_message(msg.channel, "Offer: " + str(value) + " <:chumcoin:337841443907305473>")
 
-            await client.send_message(msg.channel, "Use .deal/.nodeal to accept/decline the offer in the next 30 seconds")
+                await client.send_message(msg.channel, "Use .deal/.nodeal to accept/decline the offer in the next 30 seconds")
 
-            def check(msg):
-                return msg.content == ".deal" or msg.content == ".nodeal"
+                def check(msg):
+                    return msg.content == ".deal" or msg.content == ".nodeal"
 
-            response = await client.wait_for_message(timeout = 30.0, author = msg.author, check = check)
-            if response is None:
-                await client.send_message(msg.channel, "Alright, no deal then.")
-            elif response.content == ".deal":
-                await client.send_message(msg.channel, "Cha-ching! <:chumcoin:337841443907305473><:chumcoin:337841443907305473><:chumcoin:337841443907305473>")
-                deposit(msg.author.id, value)
-            elif response.content == ".nodeal":
-                await client.send_message(msg.channel, "Alright, no deal then.")
-            else:
-                await client.send_message(msg.channel, "Something went wrong!")
+                response = await client.wait_for_message(timeout = 30.0, author = msg.author, check = check)
+                if response is None:
+                    await client.send_message(msg.channel, "Alright, no deal then.")
+                    set_deal_status(seller, False)
+                elif response.content == ".deal":
+                    await client.send_message(msg.channel, "Cha-ching! <:chumcoin:337841443907305473><:chumcoin:337841443907305473><:chumcoin:337841443907305473>")
+                    deposit(msg.author.id, value)
+                    set_deal_status(seller, False)
+                elif response.content == ".nodeal":
+                    await client.send_message(msg.channel, "Alright, no deal then.")
+                    set_deal_status(seller, False)
+                else:
+                    await client.send_message(msg.channel, "Something went wrong!")
+                    set_deal_status(seller, False)
 
     elif msg.content.startswith(".kevincostner"):
         await client.send_message(msg.channel, random.choice(ytpquotes))
