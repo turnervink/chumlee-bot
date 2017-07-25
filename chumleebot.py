@@ -55,7 +55,7 @@ async def on_message(msg):
     # value for "isInDeal".
     elif msg.content.startswith(".register"):
         if not databasefunctions.is_registered(msg.author.id):
-            await client.send_message(msg.channel, "Okay, let's get you set up <@" + msg.author.id + ">!")
+            await client.send_message(msg.channel, "Okay, let's get you set up " + msg.author.mention + "!")
 
             newuserdata = {
                 "balance": 20,
@@ -66,14 +66,14 @@ async def on_message(msg):
             await client.send_message(msg.channel, "Alright, you're all set. See you in the pawn shop!")
         else:
             print("ID " + msg.author.id + " already registered!")
-            await client.send_message(msg.channel, "Looks like you're already registered <@" + msg.author.id + ">")
+            await client.send_message(msg.channel, "Looks like you're already registered " + msg.author.mention + ".")
 
 
     # Gets a user's balance from the database and
     # prints it in the chat.
     elif msg.content.startswith(".balance"):
         if not databasefunctions.is_registered(msg.author.id):
-            await client.send_message(msg.channel, "You need to use **.register** first!")
+            await client.send_message(msg.channel, "You need to use **.register** first " + msg.author.mention + "!")
         else:
             balance = db.child("users").child(msg.author.id).child("balance").get()
             await client.send_message(msg.channel, "Your balance is " + str(balance.val()) + " <:chumcoin:337841443907305473>")
@@ -83,7 +83,7 @@ async def on_message(msg):
     # the first command argument.
     elif msg.content.startswith(".pay"):
         if not databasefunctions.is_registered(msg.author.id):
-            await client.send_message(msg.channel, "You need to use **.register** first!")
+            await client.send_message(msg.channel, "You need to use **.register** first " + msg.author.mention + "!")
         else:
             args = str.split(msg.content)
             print(args[1])
@@ -129,7 +129,7 @@ async def on_message(msg):
     # with admin rank.
     elif msg.content.startswith(".give"):
         if not databasefunctions.is_registered(msg.author.id):
-            await client.send_message(msg.channel, "You need to use **.register** first!")
+            await client.send_message(msg.channel, "You need to use **.register** first " + msg.author.mention + "!")
         elif not str(msg.author.top_role) == "admin":
             await client.send_message(msg.channel, "You must be an admin to use .give")
         else:
@@ -170,9 +170,9 @@ async def on_message(msg):
         dealstarttime = int(time.time())
 
         if not databasefunctions.is_registered(msg.author.id):
-            await client.send_message(msg.channel, "You need to use **.register** first!")
+            await client.send_message(msg.channel, "You need to use **.register** first " + msg.author.mention + "!")
         elif databasefunctions.is_in_deal(msg.author.id):
-            await client.send_message(msg.channel, "Looks like you've already got a deal on the table!")
+            await client.send_message(msg.channel, "Looks like you've already got a deal on the table " + msg.author.mention + "!")
         elif databasefunctions.last_deal_time(msg.author.id) is not None and not (dealstarttime - databasefunctions.last_deal_time(msg.author.id)) >= 900:
 
             secondstonextdeal = 900 - (dealstarttime - databasefunctions.last_deal_time(msg.author.id))
@@ -181,7 +181,7 @@ async def on_message(msg):
             else:
                 timetodealstring = "" + str(int(round(secondstonextdeal / 60, 0))) + " more minutes"
 
-            await client.send_message(msg.channel, "You've gotta wait " + timetodealstring + " until your next deal.")
+            await client.send_message(msg.channel, "You've gotta wait " + timetodealstring + " until your next deal " + msg.author.mention + ".")
         else:
             seller = msg.author.id
             databasefunctions.set_deal_status(seller, True)
