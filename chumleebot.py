@@ -268,6 +268,19 @@ async def on_message(msg):
         except discord.errors.Forbidden:
             await client.send_message(msg.channel, "I need permission to manage messages in order to use .purge!")
 
+    elif msg.content.startswith(".listmedals"):
+        # await client.send_file(msg.channel, "resources/img/medals/tinchum64.png")
+        # await client.send_message(msg.channel, "Tin Chummedal")
+        # await client.send_file(msg.channel, "resources/img/medals/bronzechum64.png")
+        # await client.send_message(msg.channel, "Bronze Chummedal")
+        # await client.send_file(msg.channel, "resources/img/medals/silverchum64.png")
+        # await client.send_message(msg.channel, "Silver Chummedal")
+        # await client.send_file(msg.channel, "resources/img/medals/goldchum64.png")
+        # await client.send_message(msg.channel, "Gold Chummedal")
+        # await client.send_file(msg.channel, "resources/img/medals/platinumchum64.png")
+        # await client.send_message(msg.channel, "Platinum Chummedal")
+        await client.send_file(msg.channel, "resources/img/medals/chummedal-row.png")
+
 
 # Run the bot
 client.run("MzM4NDIxOTMyNDI2OTE5OTM2.DFVLkA.oH1RXMJFxlFqi2BPgTwcUGKRiFs")
