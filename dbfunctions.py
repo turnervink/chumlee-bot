@@ -93,4 +93,9 @@ def get_medals(user):
     if hasattr(user, "id"):
         user = user.id
 
-    return db.child("users").child(user).child("medals").order_by_value().equal_to(True).get().val()
+    try:
+        medals = db.child("users").child(user).child("medals").order_by_value().equal_to(True).get().val()
+    except IndexError:
+        return None
+
+    return medals
