@@ -237,6 +237,9 @@ async def on_message(msg):
             if len(args) == 1 and len(files) == 0:
                 await client.send_message(msg.channel, "You must include something to appraise")
                 dbfunctions.set_deal_status(seller, False)
+            elif args[1] == "<@338421932426919936>":
+                await client.send_message(msg.channel, "I'll all about self love " + msg.author.mention
+                                          + ", so I'll give myself a 10/10.")
             else:
                 if not value == 0:
                     await client.send_message(msg.channel, quote + "\n\n" + msg.author.mention + " Offer: "
