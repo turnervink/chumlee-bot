@@ -10,6 +10,9 @@ def is_registered(id):
         print("returning true")
         return True
 
+def get_balance(id):
+    return db.child("users").child(id).child("balance").get().val()
+
 def deposit(id, amt):
     currentbalance = db.child("users").child(id).child("balance").get()
     newbalance = currentbalance.val() + amt
@@ -19,6 +22,10 @@ def withdraw(id, amt):
     currentbalance = db.child("users").child(id).child("balance").get()
     newbalance = currentbalance.val() - amt
     db.child("users").child(id).child("balance").set(newbalance)
+
+def check_for_funds(id, amt):
+    currentbalance = db.child("users").child(id).child("balance").get().val();
+    return currentbalance >= amt
 
 def set_deal_status(id, bool):
     db.child("users").child(id).child("isInDeal").set(bool)
@@ -32,3 +39,12 @@ def update_last_deal_time(id):
 
 def last_deal_time(id):
     return db.child("users").child(id).child("lastDealTime").get().val()
+
+def award_medal(id, medal):
+    db.child("users").child(id).child("medals").child(medal).set(True)
+
+def take_medal(id, medal):
+    db.child("users").child(id).child("medals").child(medal).set(False)
+
+def get_medals(id):
+    return db.child("users").child(id).child("medals").order_by_value().equal_to(True).get().val()
