@@ -4,6 +4,7 @@ silver = 10000
 gold = 100000
 platinum = 500000
 
+
 def get_medal_price(medal):
     if medal == "tin":
         return tin
