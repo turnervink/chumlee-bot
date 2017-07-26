@@ -17,7 +17,8 @@ client = discord.Client()
 
 @client.event
 async def on_ready():
-    print("Logged in as")
+    print("-----")
+    print("Logged in as:")
     print(client.user.name)
     print(client.user.id)
     print("-----")
@@ -80,8 +81,21 @@ async def on_message(msg):
     # Gets a user's balance from the database and
     # prints it in the chat.
     elif msg.content.startswith(".balance"):
+        args = str.split(msg.content)
+        print(args)
+
         if not dbfunctions.is_registered(msg.author):
             await client.send_message(msg.channel, "You need to use **.register** first " + msg.author.mention + "!")
+        elif len(args) == 2:
+            if not functions.user_is_admin(msg.author):
+                await client.send_message(msg.channel, "You must be an admin to get the balance of another user.")
+            elif not functions.is_valid_userid(args[1]):
+                await client.send_message(msg.channel, "That doesn't look like a username.")
+            elif not dbfunctions.is_registered(re.sub("[^0-9]", "", args[1])):
+                await client.send_message(msg.channel, "That user isn't registered!")
+            else:
+                await client.send_message(msg.channel, "Their balance is " + str(
+                    dbfunctions.get_balance(re.sub("[^0-9]", "", args[1]))) + " <:chumcoin:337841443907305473>")
         else:
             # balance = db.child("users").child(msg.author).child("balance").get()
             await client.send_message(msg.channel, "Your balance is " + str(
@@ -347,12 +361,16 @@ async def on_message(msg):
         medalslist = ""
         medals = dbfunctions.get_medals(msg.author)
 
-        for medal in medals:
-            print(medal)
-            medalslist += " " + medal + ","
-        medalslist = medalslist[:-1]
+        if medals is not None:
+            for medal in medals:
+                print(medal)
+                medalslist += " " + medal + ","
+            medalslist = medalslist[:-1]
 
-        await client.send_message(msg.channel, msg.author.mention + "'s medals: " + medalslist)
+        if not medalslist == "":
+            await client.send_message(msg.channel, msg.author.mention + "'s medals: " + medalslist)
+        else:
+            await client.send_message(msg.channel, msg.author.mention + " doesn't have any medals yet!")
 
     # Lets a user buy a Chummedal and sets
     # it to True in the "medals" node of their database
