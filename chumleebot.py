@@ -45,6 +45,7 @@ async def on_message(msg):
                        "**.appraise <text/attachment>:** get an appraisal for an item\n\n"
                        "**.pay <@user> <amount>:** pay someone <:chumcoin:337841443907305473>s\n\n"
                        "**.give <@user> <amount>:** (admin command) give a user <:chumcoin:337841443907305473>s\n\n"
+                       "**.take <@user> <amount>:** (admin command) take a user's <:chumcoin:337841443907305473>s\n\n"
                        "**.listmedals:** see available Chummedals\n\n"
                        "**.mymedals:** see your Chummedals\n\n"
                        "**.buymedal <medal>:** buy a Chummedal\n\n"
@@ -163,6 +164,40 @@ async def on_message(msg):
                                                   1])
                     dbfunctions.deposit(payee, amt)
 
+    # Takes money from the balance of the user specified
+    # in the first command argument. Only usable by users
+    # with admin rank.
+    elif msg.content.startswith(".take"):
+        if not dbfunctions.is_registered(msg.author):
+            await client.send_message(msg.channel, "You need to use **.register** first " + msg.author.mention + "!")
+        elif not str(msg.author.top_role) == "admin":
+            await client.send_message(msg.channel, "You must be an admin to use .take")
+        else:
+            args = str.split(msg.content)
+
+            if len(args) != 3:
+                await client.send_message(msg.channel, "Usage: .take <user> <amount>")
+            elif functions.is_valid_userid(args[1]) is None:
+                await client.send_message(msg.channel, "That doesn't look like a username.")
+            elif not dbfunctions.is_registered(re.sub("[^0-9]", "", args[1])):  # TODO This too!
+                await client.send_message(msg.channel, "That user isn't registered!")
+            else:
+                payee = re.sub("[^0-9]", "", args[1])
+                try:
+                    amt = int(args[2])
+                except:
+                    # TODO Move this up
+                    await client.send_message(msg.channel, "You can take give amounts that are whole numbers")
+                    amt = -1
+
+                if amt == -1:
+                    # amt wasn't an int, do nothing
+                    print()
+                else:
+                    await client.send_message(msg.channel, "" + args[1]
+                                              + "  :arrow_right:  <:chumcoin:337841443907305473> x" + args[2])
+                    dbfunctions.withdraw(payee, amt)
+
     # Starts an appraisal of a string or an attachment.
     # Based on random.random() a value is assigned and offered
     # to the author of the message. Also checks to make sure the
@@ -216,7 +251,8 @@ async def on_message(msg):
                         await client.send_message(msg.channel, "Alright, no deal then.")
                         dbfunctions.set_deal_status(seller, False)
                     elif response.content == ".deal":
-                        await client.send_message(msg.channel, "Alright! I'll meet you over there and do some paperwork.")
+                        await client.send_message(msg.channel,
+                                                  "Alright! I'll meet you over there and do some paperwork.")
                         await client.send_message(msg.channel,
                                                   "<:chumlee:337842115931537408>  :arrow_right:  "
                                                   "<:chumcoin:337841443907305473> x" + str(
