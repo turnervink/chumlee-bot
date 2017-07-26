@@ -91,13 +91,12 @@ async def on_message(msg):
                 await client.send_message(msg.channel, "You must be an admin to get the balance of another user.")
             elif not functions.is_valid_userid(args[1]):
                 await client.send_message(msg.channel, "That doesn't look like a username.")
-            elif not dbfunctions.is_registered(re.sub("[^0-9]", "", args[1])):
+            elif not dbfunctions.is_registered(re.sub('[^0-9]', "", args[1])):
                 await client.send_message(msg.channel, "That user isn't registered!")
             else:
                 await client.send_message(msg.channel, "Their balance is " + str(
-                    dbfunctions.get_balance(re.sub("[^0-9]", "", args[1]))) + " <:chumcoin:337841443907305473>")
+                    dbfunctions.get_balance(re.sub('[^0-9]', "", args[1]))) + " <:chumcoin:337841443907305473>")
         else:
-            # balance = db.child("users").child(msg.author).child("balance").get()
             await client.send_message(msg.channel, "Your balance is " + str(
                 dbfunctions.get_balance(msg.author)) + " <:chumcoin:337841443907305473>")
 
@@ -108,40 +107,17 @@ async def on_message(msg):
         if not dbfunctions.is_registered(msg.author):
             await client.send_message(msg.channel, "You need to use **.register** first " + msg.author.mention + "!")
         else:
+
             args = str.split(msg.content)
 
             if len(args) != 3:
                 await client.send_message(msg.channel, "Usage: .pay <user> <amount>")
             elif functions.is_valid_userid(args[1]) is None:
                 await client.send_message(msg.channel, "That doesn't look like a username.")
-            elif not dbfunctions.is_registered(re.sub("[^0-9]", "", args[1])):  # TODO Fix this!
+            elif not dbfunctions.is_registered(re.sub('[^0-9]', "", args[1])):
                 await client.send_message(msg.channel, "That user isn't registered!")
             else:
-                payee = re.sub("[^0-9]", "", args[1])
-                try:
-                    amt = int(args[2])
-                except:
-                    # TODO Move this up to the first if/else of this command
-                    await client.send_message(msg.channel, "You can only pay amounts that are whole numbers")
-                    amt = -1
-
-                if amt == -1:
-                    # amt wasn't an int, do nothing
-                    print()
-                elif payee == msg.author:
-                    await client.send_message(msg.channel, "You can't pay yourself!")
-                elif not dbfunctions.check_for_funds(msg.author, amt):
-                    await client.send_message(msg.channel, "Sorry, you don't have enough chumcoins for that!")
-                elif amt <= 0:
-                    await client.send_message(msg.channel, "You can only pay amounts above 0")
-                else:
-                    await client.send_message(msg.channel,
-                                              "" + msg.author.mention + "  :arrow_right:  "
-                                              + "<:chumcoin:337841443907305473> x"
-                                              + args[2] + "  :arrow_right:  " + args[1])
-
-                    dbfunctions.withdraw(msg.author, amt)
-                    dbfunctions.deposit(payee, amt)
+                await client.send_message(msg.channel, dbfunctions.transfer(msg.author, re.sub('[^0-9]', "", args[1]), args[2]))
 
     # Adds money to the balance of the user specified
     # in the first command argument. Only usable by users
@@ -156,25 +132,10 @@ async def on_message(msg):
                 await client.send_message(msg.channel, "Usage: .give <user> <amount>")
             elif functions.is_valid_userid(args[1]) is None:
                 await client.send_message(msg.channel, "That doesn't look like a username.")
-            elif not dbfunctions.is_registered(re.sub("[^0-9]", "", args[1])):  # TODO This too!
+            elif not dbfunctions.is_registered(re.sub('[^0-9]', "", args[1])):
                 await client.send_message(msg.channel, "That user isn't registered!")
             else:
-                payee = re.sub("[^0-9]", "", args[1])
-                try:
-                    amt = int(args[2])
-                except:
-                    # TODO Move this up
-                    await client.send_message(msg.channel, "You can only give amounts that are whole numbers")
-                    amt = -1
-
-                if amt == -1:
-                    # amt wasn't an int, do nothing
-                    print()
-                else:
-                    await client.send_message(msg.channel,
-                                              "<:chumcoin:337841443907305473> x" + args[2] + "  :arrow_right:  " + args[
-                                                  1])
-                    dbfunctions.deposit(payee, amt)
+                await client.send_message(msg.channel, dbfunctions.deposit(re.sub('[^0-9]', "", args[1]), args[2]))
 
     # Takes money from the balance of the user specified
     # in the first command argument. Only usable by users
@@ -189,26 +150,12 @@ async def on_message(msg):
                 await client.send_message(msg.channel, "Usage: .take <user> <amount>")
             elif functions.is_valid_userid(args[1]) is None:
                 await client.send_message(msg.channel, "That doesn't look like a username.")
-            elif not dbfunctions.is_registered(re.sub("[^0-9]", "", args[1])):  # TODO This too!
+            elif not dbfunctions.is_registered(re.sub('[^0-9]', "", args[1])):  # TODO This too!
                 await client.send_message(msg.channel, "That user isn't registered!")
-            elif not dbfunctions.check_for_funds(re.sub("[^0-9]", "", args[1]), int(args[2])):
+            elif not dbfunctions.check_for_funds(re.sub('[^0-9]', "", args[1]), int(args[2])):
                 await client.send_message(msg.channel, "That's more Chumcoins than that user has!")
             else:
-                payee = re.sub("[^0-9]", "", args[1])
-                try:
-                    amt = int(args[2])
-                except:
-                    # TODO Move this up
-                    await client.send_message(msg.channel, "You can take give amounts that are whole numbers")
-                    amt = -1
-
-                if amt == -1:
-                    # amt wasn't an int, do nothing
-                    print()
-                else:
-                    await client.send_message(msg.channel, "" + args[1]
-                                              + "  :arrow_right:  <:chumcoin:337841443907305473> x" + args[2])
-                    dbfunctions.withdraw(payee, amt)
+                await client.send_message(msg.channel, dbfunctions.withdraw(re.sub('[^0-9]', "", args[1]), args[2]))
 
     # Force-sets a user's "isInDeal" status to false.
     # Intended to be used if this status gets stuck
@@ -227,7 +174,7 @@ async def on_message(msg):
             if len(args) > 2:
                 await client.send_message(msg.channel, "Usage: .forceenddeal [user]")
             elif len(args) == 2:
-                dbfunctions.set_deal_status(re.sub("[^0-9]", "", args[1]), False)
+                dbfunctions.set_deal_status(re.sub('[^0-9]', "", args[1]), False)
                 await client.send_message(msg.channel, "Ended deal for " + args[1])
             else:
                 dbfunctions.set_deal_status(msg.author.id, False)
@@ -245,7 +192,7 @@ async def on_message(msg):
             if len(args) > 2:
                 await client.send_message(msg.channel, "Usage: .forceendcooldown [user]")
             elif len(args) == 2:
-                db.child("users").child(re.sub("[^0-9]", "", args[1])).child("lastDealTime").remove()
+                db.child("users").child(re.sub('[^0-9]', "", args[1])).child("lastDealTime").remove()
                 await client.send_message(msg.channel, "Ended cooldown for " + args[1])
             else:
                 db.child("users").child(msg.author.id).child("lastDealTime").remove()
@@ -343,11 +290,11 @@ async def on_message(msg):
     # 100 messages.
     elif msg.content.startswith(".purge"):
         def check(i):
-            return i.author.id == client.user.id
+            return i.author.id == client.user.id or i.content[:1] == "."
 
         try:
             await client.purge_from(channel=msg.channel, limit=100, check=check)
-            await client.send_message(msg.channel, "Purged from last 100 messages :put_litter_in_its_place:")
+            await client.send_message(msg.channel, "Deleted last 100 commands and responses :put_litter_in_its_place:")
         except discord.errors.Forbidden:
             await client.send_message(msg.channel, "I need permission to manage messages in order to use .purge!")
 

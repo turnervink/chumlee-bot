@@ -25,7 +25,7 @@ def is_valid_userid(user):
     if hasattr(user, "id"):
         user = user.id
 
-    return re.match("<@!?[0-9]*>", user)
+    return re.match('<@!?[0-9]*>', user)
 
 
 def in_cooldown_period(user):
