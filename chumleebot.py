@@ -42,7 +42,7 @@ async def on_message(msg):
     elif msg.content.startswith(".commands"):
         commandinfo = ("*Commands* :keyboard::\n\n"
                        "**.register:** register in the <:chumcoin:337841443907305473> database\n\n"
-                       "**.balance:** check your <:chumcoin:337841443907305473> balance\n\n"
+                       "**.balance [user]:** check your or another user's <:chumcoin:337841443907305473> balance\n\n"
                        "**.appraise <text/attachment>:** get an appraisal for an item\n\n"
                        "**.pay <@user> <amount>:** pay someone <:chumcoin:337841443907305473>s\n\n"
                        "**.give <@user> <amount>:** (admin command) give a user <:chumcoin:337841443907305473>s\n\n"
@@ -51,7 +51,7 @@ async def on_message(msg):
                        "**.mymedals:** see your Chummedals\n\n"
                        "**.buymedal <medal>:** buy a Chummedal\n\n"
                        "**.item:** gets a random item from the _Pawn Stars: The Game_ Wiki\n\n"
-                       "**.purge:** delete chumlee-bot's messages from the last 100 messages\n\n"
+                       "**.purge:** delete the last 100 commands and bot messages\n\n"
                        "**.kevincostner:** dances with swolves"
                        )
         await client.send_message(msg.channel, commandinfo)
