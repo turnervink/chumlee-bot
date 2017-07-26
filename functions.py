@@ -17,6 +17,9 @@ tier4 = 0.75
 tier5 = 0.95
 
 
+def user_is_admin(user):
+    return str(user.top_role) == "admin"
+
 def is_valid_userid(user):
     if hasattr(user, "id"):
         user = user.id

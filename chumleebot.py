@@ -133,9 +133,7 @@ async def on_message(msg):
     # in the first command argument. Only usable by users
     # with admin rank.
     elif msg.content.startswith(".give"):
-        if not dbfunctions.is_registered(msg.author):
-            await client.send_message(msg.channel, "You need to use **.register** first " + msg.author.mention + "!")
-        elif not str(msg.author.top_role) == "admin":
+        if not functions.user_is_admin(msg.author):
             await client.send_message(msg.channel, "You must be an admin to use .give")
         else:
             args = str.split(msg.content)
@@ -168,9 +166,7 @@ async def on_message(msg):
     # in the first command argument. Only usable by users
     # with admin rank.
     elif msg.content.startswith(".take"):
-        if not dbfunctions.is_registered(msg.author):
-            await client.send_message(msg.channel, "You need to use **.register** first " + msg.author.mention + "!")
-        elif not str(msg.author.top_role) == "admin":
+        if not functions.user_is_admin(msg.author):
             await client.send_message(msg.channel, "You must be an admin to use .take")
         else:
             args = str.split(msg.content)
@@ -197,6 +193,47 @@ async def on_message(msg):
                     await client.send_message(msg.channel, "" + args[1]
                                               + "  :arrow_right:  <:chumcoin:337841443907305473> x" + args[2])
                     dbfunctions.withdraw(payee, amt)
+
+    # Force-sets a user's "isInDeal" status to false.
+    # Intended to be used if this status gets stuck
+    # when the bot disconnects while a user in in a deal.
+    # Using this while a user in in a deal and the bot
+    # is still online will still allow the deal to be
+    # completeed, and will also allow a user to be
+    # in multiple deals at once. If no user is specified
+    # the command affects the user.
+    elif msg.content.startswith(".forceenddeal"):
+        if not functions.user_is_admin(msg.author):
+            await client.send_message(msg.channel, "You must be an admin to use .forceenddeal")
+        else:
+            args = str.split(msg.content)
+
+            if len(args) > 2:
+                await client.send_message(msg.channel, "Usage: .forceenddeal [user]")
+            elif len(args) == 2:
+                dbfunctions.set_deal_status(re.sub("[^0-9]", "", args[1]), False)
+                await client.send_message(msg.channel, "Ended deal for " + args[1])
+            else:
+                dbfunctions.set_deal_status(msg.author.id, False)
+                await client.send_message(msg.channel, "Ended deal for " + msg.author.mention)
+
+    # Deletes the "lastDealTime" key for a user. If
+    # no user is specified the command affects the
+    # issuer.
+    elif msg.content.startswith(".forceendcooldown"):
+        if not functions.user_is_admin(msg.author):
+            await client.send_message(msg.channel, "You must be an admin to use .forceendcooldown")
+        else:
+            args = str.split(msg.content)
+
+            if len(args) > 2:
+                await client.send_message(msg.channel, "Usage: .forceendcooldown [user]")
+            elif len(args) == 2:
+                db.child("users").child(re.sub("[^0-9]", "", args[1])).child("lastDealTime").remove()
+                await client.send_message(msg.channel, "Ended cooldown for " + args[1])
+            else:
+                db.child("users").child(msg.author.id).child("lastDealTime").remove()
+                await client.send_message(msg.channel, "Ended cooldown for " + msg.author.mention)
 
     # Starts an appraisal of a string or an attachment.
     # Based on random.random() a value is assigned and offered
