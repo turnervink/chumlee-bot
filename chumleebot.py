@@ -1,14 +1,12 @@
-import sys
 import discord
 import re
 import random
 import json
 import time
 
-from resources.firebaseinfo import db
-import resources.prawnsrars
-import dbfunctions
 import functions
+import dbfunctions
+import resources.prawnsrars
 import resources.medalprices
 medalprices = resources.medalprices
 
@@ -290,48 +288,49 @@ async def on_message(msg):
         if not len(args) == 2:
             await client.send_message(msg.channel, "Usage: .buymedal <medal>")
         else:
-            if str.lower(args[1]) == "tin":
-                if dbfunctions.check_for_funds(msg.author.id, medalprices.tin):
-                    await client.send_message(msg.channel, "Alright! Here's a tin medal for you!")
-                    dbfunctions.withdraw(msg.author.id, medalprices.tin)
-                    await client.send_message(msg.channel, msg.author.mention + "  :arrow_right:  <:chumcoin:337841443907305473> x" + str(medalprices.tin) + "  :arrow_right:  <:chumlee:337842115931537408>")
-                    dbfunctions.award_medal(msg.author.id, "tin")
-                else:
-                    await client.send_message(msg.channel, "You don't have enough Chumcoins for a tin medal!")
-            elif str.lower(args[1]) == "bronze":
-                if dbfunctions.check_for_funds(msg.author.id, medalprices.bronze):
-                    await client.send_message(msg.channel, "Alright! Here's a bronze medal for you!")
-                    dbfunctions.withdraw(msg.author.id, medalprices.bronze)
-                    await client.send_message(msg.channel, msg.author.mention + "  :arrow_right:  <:chumcoin:337841443907305473> x" + str(medalprices.bronze) + "  :arrow_right:  <:chumlee:337842115931537408>")
-                    dbfunctions.award_medal(msg.author.id, "bronze")
-                else:
-                    await client.send_message(msg.channel, "You don't have enough Chumcoins for a bronze medal!")
-            elif str.lower(args[1]) == "silver":
-                if dbfunctions.check_for_funds(msg.author.id, medalprices.silver):
-                    await client.send_message(msg.channel, "Alright! Here's a silver medal for you!")
-                    await client.send_message(msg.channel, msg.author.mention + "  :arrow_right:  <:chumcoin:337841443907305473> x" + str(medalprices.silver) + "  :arrow_right:  <:chumlee:337842115931537408>")
-                    dbfunctions.withdraw(msg.author.id, medalprices.silver)
-                    dbfunctions.award_medal(msg.author.id, "silver")
-                else:
-                    await client.send_message(msg.channel, "You don't have enough Chumcoins for a silver medal!")
-            elif str.lower(args[1]) == "gold":
-                if dbfunctions.check_for_funds(msg.author.id, medalprices.gold):
-                    await client.send_message(msg.channel, "Alright! Here's a gold medal for you!")
-                    await client.send_message(msg.channel, msg.author.mention + "  :arrow_right:  <:chumcoin:337841443907305473> x" + str(medalprices.gold) + "  :arrow_right:  <:chumlee:337842115931537408>")
-                    dbfunctions.withdraw(msg.author.id, medalprices.gold)
-                    dbfunctions.award_medal(msg.author.id, "gold")
-                else:
-                    await client.send_message(msg.channel, "You don't have enough Chumcoins for a gold medal!")
-            elif str.lower(args[1]) == "platinum":
-                if dbfunctions.check_for_funds(msg.author.id, medalprices.platinum):
-                    await client.send_message(msg.channel, "Alright! Here's a platinum medal for you!")
-                    await client.send_message(msg.channel, msg.author.mention + "  :arrow_right:  <:chumcoin:337841443907305473> x" + str(medalprices.platinum) + "  :arrow_right:  <:chumlee:337842115931537408>")
-                    dbfunctions.withdraw(msg.author.id, medalprices.platinum)
-                    dbfunctions.award_medal(msg.author.id, "platinum")
-                else:
-                    await client.send_message(msg.channel, "You don't have enough Chumcoins for a platinum medal!")
-            else:
-                await client.send_message(msg.channel, "There isn't a medal called " + args[1] + ".")
+            # if str.lower(args[1]) == "tin":
+            #     if dbfunctions.check_for_funds(msg.author.id, medalprices.tin):
+            #         await client.send_message(msg.channel, "Alright! Here's a tin medal for you!")
+            #         dbfunctions.withdraw(msg.author.id, medalprices.tin)
+            #         await client.send_message(msg.channel, msg.author.mention + "  :arrow_right:  <:chumcoin:337841443907305473> x" + str(medalprices.tin) + "  :arrow_right:  <:chumlee:337842115931537408>")
+            #         dbfunctions.award_medal(msg.author.id, "tin")
+            #     else:
+            #         await client.send_message(msg.channel, "You don't have enough Chumcoins for a tin medal!")
+            # elif str.lower(args[1]) == "bronze":
+            #     if dbfunctions.check_for_funds(msg.author.id, medalprices.bronze):
+            #         await client.send_message(msg.channel, "Alright! Here's a bronze medal for you!")
+            #         dbfunctions.withdraw(msg.author.id, medalprices.bronze)
+            #         await client.send_message(msg.channel, msg.author.mention + "  :arrow_right:  <:chumcoin:337841443907305473> x" + str(medalprices.bronze) + "  :arrow_right:  <:chumlee:337842115931537408>")
+            #         dbfunctions.award_medal(msg.author.id, "bronze")
+            #     else:
+            #         await client.send_message(msg.channel, "You don't have enough Chumcoins for a bronze medal!")
+            # elif str.lower(args[1]) == "silver":
+            #     if dbfunctions.check_for_funds(msg.author.id, medalprices.silver):
+            #         await client.send_message(msg.channel, "Alright! Here's a silver medal for you!")
+            #         await client.send_message(msg.channel, msg.author.mention + "  :arrow_right:  <:chumcoin:337841443907305473> x" + str(medalprices.silver) + "  :arrow_right:  <:chumlee:337842115931537408>")
+            #         dbfunctions.withdraw(msg.author.id, medalprices.silver)
+            #         dbfunctions.award_medal(msg.author.id, "silver")
+            #     else:
+            #         await client.send_message(msg.channel, "You don't have enough Chumcoins for a silver medal!")
+            # elif str.lower(args[1]) == "gold":
+            #     if dbfunctions.check_for_funds(msg.author.id, medalprices.gold):
+            #         await client.send_message(msg.channel, "Alright! Here's a gold medal for you!")
+            #         await client.send_message(msg.channel, msg.author.mention + "  :arrow_right:  <:chumcoin:337841443907305473> x" + str(medalprices.gold) + "  :arrow_right:  <:chumlee:337842115931537408>")
+            #         dbfunctions.withdraw(msg.author.id, medalprices.gold)
+            #         dbfunctions.award_medal(msg.author.id, "gold")
+            #     else:
+            #         await client.send_message(msg.channel, "You don't have enough Chumcoins for a gold medal!")
+            # elif str.lower(args[1]) == "platinum":
+            #     if dbfunctions.check_for_funds(msg.author.id, medalprices.platinum):
+            #         await client.send_message(msg.channel, "Alright! Here's a platinum medal for you!")
+            #         await client.send_message(msg.channel, msg.author.mention + "  :arrow_right:  <:chumcoin:337841443907305473> x" + str(medalprices.platinum) + "  :arrow_right:  <:chumlee:337842115931537408>")
+            #         dbfunctions.withdraw(msg.author.id, medalprices.platinum)
+            #         dbfunctions.award_medal(msg.author.id, "platinum")
+            #     else:
+            #         await client.send_message(msg.channel, "You don't have enough Chumcoins for a platinum medal!")
+            # else:
+            #     await client.send_message(msg.channel, "There isn't a medal called " + args[1] + ".")
+            await client.send_message(msg.channel, functions.buy_medal(msg.author, args[1]))
 
 
 # Run the bot
