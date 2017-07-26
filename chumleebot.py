@@ -177,6 +177,8 @@ async def on_message(msg):
                 await client.send_message(msg.channel, "That doesn't look like a username.")
             elif not dbfunctions.is_registered(re.sub("[^0-9]", "", args[1])):  # TODO This too!
                 await client.send_message(msg.channel, "That user isn't registered!")
+            elif not dbfunctions.check_for_funds(re.sub("[^0-9]", "", args[1]), int(args[2])):
+                await client.send_message(msg.channel, "That's more Chumcoins than that user has!")
             else:
                 payee = re.sub("[^0-9]", "", args[1])
                 try:
