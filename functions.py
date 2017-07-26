@@ -68,11 +68,17 @@ def get_appraisal_quote(val):
 
 
 def buy_medal(user, medal):
+    print("buying medal")
+    print(user)
+    print(medal)
     medal = str.lower(medal)
     price = medalprices.get_medal_price(medal)
+    print(price)
+    dbfunctions.get_medals(user)
+
     if price is None:
         return "There isn't a medal called " + medal + "."
-    elif medal in dbfunctions.get_medals(user.id):
+    elif dbfunctions.get_medals(user) is not None and medal in dbfunctions.get_medals(user):
         return "You already have the " + medal + " medal " + user.mention + "!"
     else:
         if dbfunctions.check_for_funds(user.id, price):
