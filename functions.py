@@ -21,6 +21,8 @@ def buy_medal(user, medal):
     price = medalprices.get_medal_price(medal)
     if price is None:
         return "There isn't a medal called " + medal + "."
+    elif medal in dbfunctions.get_medals(user.id):
+        return "You already have the " + medal + " medal " + user.mention + "!"
     else:
         if dbfunctions.check_for_funds(user.id, price):
             dbfunctions.withdraw(user.id, price)
