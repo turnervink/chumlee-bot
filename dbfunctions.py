@@ -10,6 +10,9 @@ def is_registered(id):
         print("returning true")
         return True
 
+def get_balance(id):
+    return db.child("users").child(id).child("balance").get().val()
+
 def deposit(id, amt):
     currentbalance = db.child("users").child(id).child("balance").get()
     newbalance = currentbalance.val() + amt
@@ -42,3 +45,6 @@ def award_medal(id, medal):
 
 def take_medal(id, medal):
     db.child("users").child(id).child("medals").child(medal).set(False)
+
+def get_medals(id):
+    return db.child("users").child(id).child("medals").order_by_value().equal_to(True).get().val()
