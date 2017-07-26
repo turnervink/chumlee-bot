@@ -347,12 +347,16 @@ async def on_message(msg):
         medalslist = ""
         medals = dbfunctions.get_medals(msg.author)
 
-        for medal in medals:
-            print(medal)
-            medalslist += " " + medal + ","
-        medalslist = medalslist[:-1]
+        if medals is not None:
+            for medal in medals:
+                print(medal)
+                medalslist += " " + medal + ","
+            medalslist = medalslist[:-1]
 
-        await client.send_message(msg.channel, msg.author.mention + "'s medals: " + medalslist)
+        if not medalslist == "":
+            await client.send_message(msg.channel, msg.author.mention + "'s medals: " + medalslist)
+        else:
+            await client.send_message(msg.channel, msg.author.mention + " doesn't have any medals yet!")
 
     # Lets a user buy a Chummedal and sets
     # it to True in the "medals" node of their database
