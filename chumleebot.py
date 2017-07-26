@@ -344,19 +344,15 @@ async def on_message(msg):
 
     # Lists a user's medals.
     elif msg.content.startswith(".mymedals"):
-        # medalslist = []
         medalslist = ""
-        # medals = db.child("users").child(msg.author).child("medals").order_by_value().equal_to(True).get()
         medals = dbfunctions.get_medals(msg.author)
+
         for medal in medals:
             print(medal)
-            # medalslist.append(i)
-            medalslist += " " + medal
+            medalslist += " " + medal + ","
+        medalslist = medalslist[:-1]
 
-        await client.send_message(msg.channel, msg.author.mention + "'s medals:")
-        # for i in medalslist:
-        # await client.send_file(msg.channel, "resources/img/medals/" + i + "chum64.png")
-        await client.send_message(msg.channel, medalslist)
+        await client.send_message(msg.channel, msg.author.mention + "'s medals: " + medalslist)
 
     # Lets a user buy a Chummedal and sets
     # it to True in the "medals" node of their database
