@@ -1,12 +1,20 @@
 import re
 import time
+import random
 
 import dbfunctions
 import resources.medalprices
+import resources.prawnsrars
+prawnsrars = resources.prawnsrars
 
 medalprices = resources.medalprices
 
 dealcooldown = 900
+tier1 = 0.1
+tier2 = 0.25
+tier3 = 0.5
+tier4 = 0.75
+tier5 = 0.95
 
 
 def is_valid_userid(user):
@@ -24,6 +32,36 @@ def in_cooldown_period(user):
     lastdeal = dbfunctions.last_deal_time(user)
 
     return (now - lastdeal) >= dealcooldown
+
+
+def calc_appraisal_value(base):
+    if base > tier5:
+        return random.randint(500, 1000)
+    elif base > tier4:
+        return random.randint(250, 500)
+    elif base > tier3:
+        return random.randint(100, 250)
+    elif base > tier2:
+        return random.randint(10, 100)
+    elif base > tier1:
+        return random.randint(1, 10)
+    else:
+        return 0
+
+
+def get_appraisal_quote(val):
+    if val > tier5:
+        return random.choice(prawnsrars.tier5)
+    elif val > tier4:
+        return random.choice(prawnsrars.tier4)
+    elif val > tier3:
+        return random.choice(prawnsrars.tier3)
+    elif val > tier2:
+        return random.choice(prawnsrars.tier2)
+    elif val > tier1:
+        return random.choice(prawnsrars.tier1)
+    else:
+        return random.choice(prawnsrars.tier0)
 
 
 def buy_medal(user, medal):

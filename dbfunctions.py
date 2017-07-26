@@ -58,7 +58,6 @@ def is_in_deal(user):
     if hasattr(user, "id"):
         user = user.id
 
-    print("Deal: " + str(db.child("users").child(user).child("isInDeal").get().val()))
     return db.child("users").child(user).child("isInDeal").get().val()
 
 

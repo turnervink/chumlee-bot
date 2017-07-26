@@ -9,6 +9,7 @@ import dbfunctions
 from resources.firebaseinfo import db
 import resources.prawnsrars
 import resources.medalprices
+
 medalprices = resources.medalprices
 
 client = discord.Client()
@@ -95,7 +96,7 @@ async def on_message(msg):
                 await client.send_message(msg.channel, "Usage: .pay <user> <amount>")
             elif functions.is_valid_userid(args[1]) is None:
                 await client.send_message(msg.channel, "That doesn't look like a username.")
-            elif not dbfunctions.is_registered(re.sub("[^0-9]", "", args[1])): # TODO Fix this!
+            elif not dbfunctions.is_registered(re.sub("[^0-9]", "", args[1])):  # TODO Fix this!
                 await client.send_message(msg.channel, "That user isn't registered!")
             else:
                 payee = re.sub("[^0-9]", "", args[1])
@@ -139,7 +140,7 @@ async def on_message(msg):
                 await client.send_message(msg.channel, "Usage: .give <user> <amount>")
             elif functions.is_valid_userid(args[1]) is None:
                 await client.send_message(msg.channel, "That doesn't look like a username.")
-            elif not dbfunctions.is_registered(re.sub("[^0-9]", "", args[1])): # TODO This too!
+            elif not dbfunctions.is_registered(re.sub("[^0-9]", "", args[1])):  # TODO This too!
                 await client.send_message(msg.channel, "That user isn't registered!")
             else:
                 payee = re.sub("[^0-9]", "", args[1])
@@ -180,8 +181,8 @@ async def on_message(msg):
             else:
                 timetodealstring = "" + str(int(round(secondstonextdeal / 60, 0))) + " more minutes"
 
-            await client.send_message(msg.channel,
-                                      "You've gotta wait " + timetodealstring + " until your next deal " + msg.author.mention + ".")
+            await client.send_message(msg.channel, "You've gotta wait " + timetodealstring
+                                      + " until your next deal " + msg.author.mention + ".")
         else:
             seller = msg.author
             dbfunctions.set_deal_status(seller, True)
@@ -192,55 +193,42 @@ async def on_message(msg):
             random.seed()
             base = random.random()
 
-            if base > 0.99:
-                value = random.randint(500, 1000)
-                itemclass = "Holy cow! That's one valuable item!"
-            elif base > 0.8:
-                value = random.randint(250, 500)
-                itemclass = "Wow! I've got to have this."
-            elif base > 0.75:
-                value = random.randint(100, 250)
-                itemclass = "That's a nice piece you've got there."
-            elif base > 0.5:
-                value = random.randint(10, 100)
-                itemclass = "Hmm... I guess I'll take it."
-            elif base > 0.15:
-                value = random.randint(1, 10)
-                itemclass = "Well, it's nothing special"
-            else:
-                itemclass = "I'm sorry, but no deal"
-                value = 0
+            value = functions.calc_appraisal_value(base)
+            quote = functions.get_appraisal_quote(base)
 
             if len(args) == 1 and len(files) == 0:
                 await client.send_message(msg.channel, "You must include something to appraise")
                 dbfunctions.set_deal_status(seller, False)
             else:
-                print("appraising text")
-                await client.send_message(msg.channel, itemclass)
-                await client.send_message(msg.channel, msg.author.mention + " Offer: " + str(
-                    value) + " <:chumcoin:337841443907305473> (.deal/.nodeal)")
+                if not value == 0:
+                    await client.send_message(msg.channel, quote + "\n\n" + msg.author.mention + " Offer: "
+                                              + str(value) + " <:chumcoin:337841443907305473> (.deal/.nodeal)")
 
-                def check(i):
-                    return i.content == ".deal" or i.content == ".nodeal"
+                    def check(i):
+                        return i.content == ".deal" or i.content == ".nodeal"
 
-                response = await client.wait_for_message(timeout=30.0, author=msg.author, check=check)
-                if response is None:
-                    await client.send_message(msg.channel, "Alright, no deal then.")
-                    dbfunctions.set_deal_status(seller, False)
-                elif response.content == ".deal":
-                    await client.send_message(msg.channel, "Cha-ching!")
-                    await client.send_message(msg.channel,
-                                              "<:chumlee:337842115931537408>  :arrow_right:  "
-                                              "<:chumcoin:337841443907305473> x" + str(
-                                                  value) + "  :arrow_right:  " + msg.author.mention)
-                    dbfunctions.deposit(msg.author, value)
-                    dbfunctions.set_deal_status(seller, False)
-                    dbfunctions.update_last_deal_time(seller)
-                elif response.content == ".nodeal":
-                    await client.send_message(msg.channel, "Alright, no deal then.")
-                    dbfunctions.set_deal_status(seller, False)
+                    response = await client.wait_for_message(timeout=30.0, author=msg.author, check=check)
+
+                    if response is None:
+                        await client.send_message(msg.channel, "Alright, no deal then.")
+                        dbfunctions.set_deal_status(seller, False)
+                    elif response.content == ".deal":
+                        await client.send_message(msg.channel, "Alright! I'll meet you over there and do some paperwork.")
+                        await client.send_message(msg.channel,
+                                                  "<:chumlee:337842115931537408>  :arrow_right:  "
+                                                  "<:chumcoin:337841443907305473> x" + str(
+                                                      value) + "  :arrow_right:  " + msg.author.mention)
+                        dbfunctions.deposit(msg.author, value)
+                        dbfunctions.set_deal_status(seller, False)
+                        dbfunctions.update_last_deal_time(seller)
+                    elif response.content == ".nodeal":
+                        await client.send_message(msg.channel, "Alright, no deal then.")
+                        dbfunctions.set_deal_status(seller, False)
+                    else:
+                        await client.send_message(msg.channel, "Something went wrong!")
+                        dbfunctions.set_deal_status(seller, False)
                 else:
-                    await client.send_message(msg.channel, "Something went wrong!")
+                    await client.send_message(msg.channel, quote + "\n\nNo deal :no_entry_sign:")
                     dbfunctions.set_deal_status(seller, False)
 
     # Posts a link to DaThings1's "Prawn Srars" along

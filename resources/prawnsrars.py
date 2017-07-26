@@ -27,3 +27,47 @@ statuses = [
     "Dancing with swolves",
     "Enjoying some Western Alalia"
 ]
+
+tier0 = [
+    "Looks like a bunch of junk in the trunk.",
+    "I don't think so man...",
+    "Uhh... no.",
+    "Not gonna happen.",
+    "Rick would kill me if I spent money on this."
+]
+
+tier1 = [
+    "It's decent, I guess.",
+    "I don't know a whole lot about it, but I guess I'll take it.",
+    "I'll give you a couple bucks for it.",
+    "How's a couple of bucks sound?",
+    "It's not worth much, honestly."
+]
+
+tier2 = [
+    "Ehh... I've seen better but sure.",
+    "Well... I guess I could make you a deal.",
+    "I've seen better, but I guess I can make a deal.",
+    "I can't give you much."
+]
+
+tier3 = [
+    "Sweet!",
+    "Awesome!",
+    "Sure!",
+    "Sounds alright. Let's make a deal."
+]
+
+tier4 = [
+    "That thing is badass!",
+    "Oh man that's sick!",
+    "Wow! This is definitely something I can make a deal on!",
+    "Heck yeah I'll make you a deal!"
+]
+
+tier5 = [
+    "Oh man, this is awesome!",
+    "Rick would kill me if I passed up on this!",
+    "This is a must buy FOR SURE!",
+    "Hell yeah I can make you a deal!"
+]
