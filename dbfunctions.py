@@ -85,7 +85,9 @@ def transfer(payer, payee, amt):
 
     payerbalance = db.child("users").child(payer).child("balance").get().val()
 
-    if amt <= 0:
+    if payer == payee:
+        return "You can't pay yourself " + payermention + "!"
+    elif amt <= 0:
         return "You can only pay amounts above 0 " + payermention + "!"
     elif amt > payerbalance:
         return "You don't have enough Chumcoins " + payermention + "!"

@@ -4,6 +4,7 @@ import random
 import json
 import time
 import io
+import os
 
 import functions
 import dbfunctions
@@ -17,6 +18,26 @@ medalprices = resources.medals
 client = discord.Client()
 
 allowedchannels = ["bot-testing", "the-pawnshop"]
+globalcommands = [".help", ".commands"]
+commands = [
+    ".help",
+    ".commands",
+    ".register",
+    ".balance",
+    ".pay",
+    ".give",
+    ".take",
+    ".forceenddeal",
+    ".forceendcooldown",
+    ".appraise",
+    ".kevincostner",
+    ".item",
+    ".purge",
+    ".listmedals",
+    ".mymedals",
+    ".buymedal"
+    # ".gif"
+]
 
 
 @client.event
@@ -31,9 +52,14 @@ async def on_ready():
 
 @client.event
 async def on_message(msg):
-    # Have the bot type whenever a command is entered.
-    if msg.content.startswith("."):
-        if not msg.content.startswith(".help") and not str(msg.channel) in allowedchannels:
+    # Check if a message starting with the command prefix
+    # has been sent and make sure it was sent in a place
+    # where bot commands are allowed.
+    if str.split(msg.content)[0] in commands:
+        if str.split(msg.content)[0] not in globalcommands \
+                and msg.server is not None \
+                and str(msg.channel) not in allowedchannels:
+
             await client.send_message(msg.channel, "Only **#the-pawnshop** can be used for chumlee-bot commands!")
         else:
             await client.send_typing(msg.channel)
@@ -71,7 +97,8 @@ async def on_message(msg):
                                "**.forceenddeal [user]:** set your or another user's deal status to false\n\n"
                                "**.forceendcooldown [user]:** end your or another user's deal cooldown"
                                )
-                await client.send_message(msg.channel, commandinfo)
+                await client.send_message(msg.author, commandinfo)
+                await client.send_message(msg.channel, "Command info sent!")
 
             # Registers a user in the database adding their UID to
             # the "users" node and setting an initial balance and
@@ -112,7 +139,7 @@ async def on_message(msg):
                     elif not dbfunctions.is_registered(re.sub('[^0-9]', "", args[1])):
                         await client.send_message(msg.channel, "That user isn't registered!")
                     else:
-                        await client.send_message(msg.channel, "Their balance is " + str(
+                        await client.send_message(msg.author, args[1] + "'s balance is " + str(
                             dbfunctions.get_balance(re.sub('[^0-9]', "", args[1]))) + " <:chumcoin:337841443907305473>")
                 else:
                     await client.send_message(msg.channel, "Your balance is " + str(
@@ -342,6 +369,12 @@ async def on_message(msg):
                     await client.send_message(msg.channel, "Usage: .buymedal <medal>")
                 else:
                     await client.send_message(msg.channel, functions.buy_medal(msg.author, args[1]))
+
+            # Sends a random gif from the resources/img/gifs
+            # directory.
+            elif msg.content.startswith(".gif"):
+                gif = random.choice(os.listdir("resources/img/gifs"))
+                await client.send_file(msg.channel, "resources/img/gifs/" + gif)
 
 
 # Run the bot
