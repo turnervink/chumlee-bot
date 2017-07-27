@@ -4,6 +4,7 @@ import random
 import json
 import time
 import io
+import os
 
 import functions
 import dbfunctions
@@ -35,6 +36,7 @@ commands = [
     ".listmedals",
     ".mymedals",
     ".buymedal"
+    # ".gif"
 ]
 
 
@@ -367,6 +369,12 @@ async def on_message(msg):
                     await client.send_message(msg.channel, "Usage: .buymedal <medal>")
                 else:
                     await client.send_message(msg.channel, functions.buy_medal(msg.author, args[1]))
+
+            # Sends a random gif from the resources/img/gifs
+            # directory.
+            elif msg.content.startswith(".gif"):
+                gif = random.choice(os.listdir("resources/img/gifs"))
+                await client.send_file(msg.channel, "resources/img/gifs/" + gif)
 
 
 # Run the bot
