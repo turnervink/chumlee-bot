@@ -18,6 +18,24 @@ client = discord.Client()
 
 allowedchannels = ["bot-testing", "the-pawnshop"]
 globalcommands = [".help", ".commands"]
+commands = [
+    ".help",
+    ".commands",
+    ".register",
+    ".balance",
+    ".pay",
+    ".give",
+    ".take",
+    ".forceenddeal",
+    ".forceendcooldown",
+    ".appraise",
+    ".kevincostner",
+    ".item",
+    ".purge",
+    ".listmedals",
+    ".mymedals",
+    ".buymedal"
+]
 
 
 @client.event
@@ -35,7 +53,7 @@ async def on_message(msg):
     # Check if a message starting with the command prefix
     # has been sent and make sure it was sent in a place
     # where bot commands are allowed.
-    if msg.content.startswith("."):
+    if str.split(msg.content)[0] in commands:
         if str.split(msg.content)[0] not in globalcommands \
                 and msg.server is not None \
                 and str(msg.channel) not in allowedchannels:
