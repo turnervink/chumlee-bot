@@ -9,10 +9,10 @@ from resources import medals
 def gen_profile(user):
     bg = Image.open("resources/img/chumprofile.png")
 
-    medals = get_medals(user)
+    medallist = get_medals(user)
 
     if medals is not None:
-        for medal in medals:
+        for medal in medallist:
             try:
                 im = Image.open("resources/img/medals/" + medal + "chum64.png")
                 box = getattr(medals, medal)
