@@ -3,14 +3,16 @@ import re
 import random
 import json
 import time
+import io
 
 import functions
 import dbfunctions
+import profile
 from resources.firebaseinfo import db
 import resources.prawnsrars
-import resources.medalprices
+import resources.medals
 
-medalprices = resources.medalprices
+medalprices = resources.medals
 
 client = discord.Client()
 
@@ -31,8 +33,8 @@ async def on_ready():
 async def on_message(msg):
     # Have the bot type whenever a command is entered.
     if msg.content.startswith("."):
-        if not str(msg.channel) in allowedchannels:
-            await client.send_message(msg.channel, "Only #the-pawnshop can be used for chumlee-bot commands!")
+        if not msg.content.startswith(".help") and not str(msg.channel) in allowedchannels:
+            await client.send_message(msg.channel, "Only **#the-pawnshop** can be used for chumlee-bot commands!")
         else:
             await client.send_typing(msg.channel)
 
@@ -40,24 +42,34 @@ async def on_message(msg):
             if msg.content.startswith(".help"):
                 welcomemsg = ("Hi! I'm Chumlee, and I run this pawn shop. To get started, "
                               "use **.register** to register yourself in the database. "
-                              "Then use **.commands** to see what I can do")
+                              "Then use **.commands** to see what I can do!  If you "
+                              "haven't already, set up a channel called **#the-pawnshop** "
+                              "so you can interact with me!")
                 await client.send_message(msg.channel, welcomemsg)
 
             # Displays available commands and their uses.
             elif msg.content.startswith(".commands"):
-                commandinfo = ("*Commands* :keyboard::\n\n"
+                commandinfo = ("*Commands*:\n"
                                "**.register:** register in the <:chumcoin:337841443907305473> database\n\n"
-                               "**.balance [user]:** check your or another user's <:chumcoin:337841443907305473> balance\n\n"
+                               "**.balance [user]:** check your or another user's "
+                               "<:chumcoin:337841443907305473> balance\n\n"
                                "**.appraise <text/attachment>:** get an appraisal for an item\n\n"
                                "**.pay <@user> <amount>:** pay someone <:chumcoin:337841443907305473>s\n\n"
-                               "**.give <@user> <amount>:** (admin command) give a user <:chumcoin:337841443907305473>s\n\n"
-                               "**.take <@user> <amount>:** (admin command) take a user's <:chumcoin:337841443907305473>s\n\n"
+                               
                                "**.listmedals:** see available Chummedals\n\n"
                                "**.mymedals:** see your Chummedals\n\n"
                                "**.buymedal <medal>:** buy a Chummedal\n\n"
                                "**.item:** gets a random item from the _Pawn Stars: The Game_ Wiki\n\n"
                                "**.purge:** delete the last 100 commands and bot messages\n\n"
-                               "**.kevincostner:** dances with swolves"
+                               "**.kevincostner:** dances with swolves\n\n"
+                
+                               "*Admin Commands:*\n"
+                               "**.give <@user> <amount>:** (admin command) give a user "
+                               "<:chumcoin:337841443907305473>s\n\n"
+                               "**.take <@user> <amount>:** (admin command) take a user's "
+                               "<:chumcoin:337841443907305473>s\n\n"
+                               "**.forceenddeal [user]:** set your or another user's deal status to false\n\n"
+                               "**.forceendcooldown [user]:** end your or another user's deal cooldown"
                                )
                 await client.send_message(msg.channel, commandinfo)
 
@@ -93,7 +105,8 @@ async def on_message(msg):
                     await client.send_message(msg.channel, "You need to use **.register** first " + msg.author.mention + "!")
                 elif len(args) == 2:
                     if not functions.user_is_admin(msg.author):
-                        await client.send_message(msg.channel, "You must be an admin to get the balance of another user.")
+                        await client.send_message(msg.channel, "You must be an admin to get the balance "
+                                                               "of another user.")
                     elif not functions.is_valid_userid(args[1]):
                         await client.send_message(msg.channel, "That doesn't look like a username.")
                     elif not dbfunctions.is_registered(re.sub('[^0-9]', "", args[1])):
@@ -155,7 +168,7 @@ async def on_message(msg):
                         await client.send_message(msg.channel, "Usage: .take <user> <amount>")
                     elif functions.is_valid_userid(args[1]) is None:
                         await client.send_message(msg.channel, "That doesn't look like a username.")
-                    elif not dbfunctions.is_registered(re.sub('[^0-9]', "", args[1])):  # TODO This too!
+                    elif not dbfunctions.is_registered(re.sub('[^0-9]', "", args[1])):
                         await client.send_message(msg.channel, "That user isn't registered!")
                     elif not dbfunctions.check_for_funds(re.sub('[^0-9]', "", args[1]), int(args[2])):
                         await client.send_message(msg.channel, "That's more Chumcoins than that user has!")
@@ -242,9 +255,10 @@ async def on_message(msg):
                     if len(args) == 1 and len(files) == 0:
                         await client.send_message(msg.channel, "You must include something to appraise")
                         dbfunctions.set_deal_status(seller, False)
-                    elif args[1] == "<@338421932426919936>":
+                    elif len(args) > 1 and re.match("<@!?338421932426919936>", args[1]):
                         await client.send_message(msg.channel, "I'll all about self love " + msg.author.mention
                                                   + ", so I'll give myself a 10/10.")
+                        dbfunctions.set_deal_status(msg.author, False)
                     else:
                         if not value == 0:
                             await client.send_message(msg.channel, quote + "\n\n" + msg.author.mention + " Offer: "
@@ -302,9 +316,11 @@ async def on_message(msg):
 
                 try:
                     await client.purge_from(channel=msg.channel, limit=100, check=check)
-                    await client.send_message(msg.channel, "Deleted last 100 commands and responses :put_litter_in_its_place:")
+                    await client.send_message(msg.channel, "Deleted last 100 commands and responses "
+                                                           ":put_litter_in_its_place:")
                 except discord.errors.Forbidden:
-                    await client.send_message(msg.channel, "I need permission to manage messages in order to use .purge!")
+                    await client.send_message(msg.channel, "I need permission to manage messages "
+                                                           "in order to use .purge!")
 
             # Sends a file displaying the available Chummedals
             # and their prices.
@@ -313,19 +329,8 @@ async def on_message(msg):
 
             # Lists a user's medals.
             elif msg.content.startswith(".mymedals"):
-                medalslist = ""
-                medals = dbfunctions.get_medals(msg.author)
-
-                if medals is not None:
-                    for medal in medals:
-                        print(medal)
-                        medalslist += " " + medal + ","
-                    medalslist = medalslist[:-1]
-
-                if not medalslist == "":
-                    await client.send_message(msg.channel, msg.author.mention + "'s medals: " + medalslist)
-                else:
-                    await client.send_message(msg.channel, msg.author.mention + " doesn't have any medals yet!")
+                await client.send_message(msg.channel, msg.author.mention + "'s Chummedals:")
+                await client.send_file(msg.channel, io.BytesIO(profile.gen_profile(msg.author)), filename="profile.png")
 
             # Lets a user buy a Chummedal and sets
             # it to True in the "medals" node of their database
