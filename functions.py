@@ -3,11 +3,11 @@ import time
 import random
 
 import dbfunctions
-import resources.medalprices
+import resources.medals
 import resources.prawnsrars
 prawnsrars = resources.prawnsrars
 
-medalprices = resources.medalprices
+medalprices = resources.medals
 
 dealcooldown = 900
 tier1 = 0.1

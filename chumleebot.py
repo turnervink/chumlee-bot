@@ -3,14 +3,16 @@ import re
 import random
 import json
 import time
+import io
 
 import functions
 import dbfunctions
+import profile
 from resources.firebaseinfo import db
 import resources.prawnsrars
-import resources.medalprices
+import resources.medals
 
-medalprices = resources.medalprices
+medalprices = resources.medals
 
 client = discord.Client()
 
@@ -327,19 +329,8 @@ async def on_message(msg):
 
             # Lists a user's medals.
             elif msg.content.startswith(".mymedals"):
-                medalslist = ""
-                medals = dbfunctions.get_medals(msg.author)
-
-                if medals is not None:
-                    for medal in medals:
-                        print(medal)
-                        medalslist += " " + medal + ","
-                    medalslist = medalslist[:-1]
-
-                if not medalslist == "":
-                    await client.send_message(msg.channel, msg.author.mention + "'s medals: " + medalslist)
-                else:
-                    await client.send_message(msg.channel, msg.author.mention + " doesn't have any medals yet!")
+                await client.send_message(msg.channel, msg.author.mention + "'s Chummedals:")
+                await client.send_file(msg.channel, io.BytesIO(profile.gen_profile(msg.author)), filename="profile.png")
 
             # Lets a user buy a Chummedal and sets
             # it to True in the "medals" node of their database
