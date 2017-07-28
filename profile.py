@@ -1,17 +1,23 @@
 from PIL import Image
+from PIL import ImageFont
+from PIL import ImageDraw
 import io
+import requests
 
 from dbfunctions import get_medals
+from dbfunctions import get_balance
 
 from resources import medals
 
 
 def gen_profile(user):
     bg = Image.open("resources/img/chumprofile.png")
+    avatar = Image.open(io.BytesIO(requests.get(user.avatar_url).content))
+    avatar = avatar.resize((64, 64))
 
     medallist = get_medals(user)
 
-    if medals is not None:
+    if medallist is not None:
         for medal in medallist:
             try:
                 im = Image.open("resources/img/medals/" + medal + "chum64.png")
@@ -20,6 +26,14 @@ def gen_profile(user):
                 im.close()
             except FileNotFoundError:
                 print("No medal file found for " + medal)
+
+    bg.paste(avatar, box=(9, 3))
+
+    draw = ImageDraw.Draw(bg)
+    font = ImageFont.truetype("resources/Roboto-Regular.ttf", 24)
+    smallfont = ImageFont.truetype("resources/Roboto-Regular.ttf", 18)
+    draw.text((83, 3), user.display_name, (255, 255, 255), font=font)
+    draw.text((108, 44), str(get_balance(user)), (255, 255, 255), font=smallfont)
 
     imgbytearr = io.BytesIO()
     bg.save(imgbytearr, format="PNG")

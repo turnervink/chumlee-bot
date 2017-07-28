@@ -55,7 +55,7 @@ async def on_message(msg):
     # Check if a message starting with the command prefix
     # has been sent and make sure it was sent in a place
     # where bot commands are allowed.
-    if str.split(msg.content)[0] in commands:
+    if len(str.split(msg.content)) > 0 and str.split(msg.content)[0] in commands:
         if str.split(msg.content)[0] not in globalcommands \
                 and msg.server is not None \
                 and str(msg.channel) not in allowedchannels:
