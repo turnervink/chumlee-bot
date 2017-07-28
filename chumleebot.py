@@ -313,6 +313,7 @@ async def on_message(msg):
                             elif response.content == ".nodeal":
                                 await client.send_message(msg.channel, "Alright, no deal then.")
                                 dbfunctions.set_deal_status(seller, False)
+                                dbfunctions.update_last_deal_time(seller)
                             else:
                                 await client.send_message(msg.channel, "Something went wrong!")
                                 dbfunctions.set_deal_status(seller, False)
