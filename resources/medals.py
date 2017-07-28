@@ -38,6 +38,18 @@ platinum = {
     "profile_xy": (231, 109)
 }
 
+medalinfo = "```" \
+            "Chummedal Prices:\n\n" \
+            "Paper Chummedal: 250cc\n" \
+            "Chocolate Chummedal: 500cc\n" \
+            "Wood Chummedal: 1,000cc\n" \
+            "Tin Chummedal: 2,000cc\n" \
+            "Bronze Chummedal: 3,500cc\n" \
+            "Silver Chummedal: 10,000cc\n" \
+            "Gold Chummedal: 100,000cc\n" \
+            "Platinum Chummedal: 500,000cc" \
+            "```"
+
 localnames = locals()
 
 

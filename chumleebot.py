@@ -34,6 +34,7 @@ commands = [
     ".item",
     ".purge",
     ".listmedals",
+    ".medals",
     ".mymedals",
     ".profile",
     ".buymedal"
@@ -82,9 +83,8 @@ async def on_message(msg):
                                "<:chumcoin:337841443907305473> balance\n\n"
                                "**.appraise <text/attachment>:** get an appraisal for an item\n\n"
                                "**.pay <@user> <amount>:** pay someone <:chumcoin:337841443907305473>s\n\n"
-                               
-                               "**.listmedals:** see available Chummedals\n\n"
                                "**.profile:** see your Chumprofile\n\n"
+                               "**.medals:** see available Chummedals\n\n"
                                "**.buymedal <medal>:** buy a Chummedal\n\n"
                                "**.item:** gets a random item from the _Pawn Stars: The Game_ Wiki\n\n"
                                "**.purge:** delete the last 100 commands and bot messages\n\n"
@@ -352,8 +352,9 @@ async def on_message(msg):
 
             # Sends a file displaying the available Chummedals
             # and their prices.
-            elif msg.content.startswith(".listmedals"):
-                await client.send_file(msg.channel, "resources/img/medals/chummedal-row.png")
+            elif msg.content.startswith(".medals") or msg.content.startswith(".listmedals"):
+                # await client.send_file(msg.channel, "resources/img/medals/chummedal-row.png")
+                await client.send_message(msg.channel, medalprices.medalinfo)
 
             # Lists a user's medals.
             elif msg.content.startswith(".mymedals") or msg.content.startswith(".profile"):
