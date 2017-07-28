@@ -32,6 +32,7 @@ commands = [
     ".forceenddeal",
     ".forceendcooldown",
     ".appraise",
+    ".cooldown",
     ".kevincostner",
     ".item",
     ".purge",
@@ -95,6 +96,7 @@ async def on_message(msg):
                                "**.profile:** see your Chumprofile\n\n"
                                "**.medals:** see available Chummedals\n\n"
                                "**.buymedal <medal>:** buy a Chummedal\n\n"
+                               "**.cooldown:** check how long you still need to wait until your next deal\n\n"
                                "**.item:** gets a random item from the _Pawn Stars: The Game_ Wiki\n\n"
                                "**.purge:** delete the last 100 commands and bot messages\n\n"
                                "**.kevincostner:** dances with swolves\n\n"
@@ -261,10 +263,9 @@ async def on_message(msg):
                     await client.send_message(msg.channel,
                                               "Looks like you've already got a deal on the table "
                                               + msg.author.mention + "!")
-                elif dbfunctions.last_deal_time(msg.author) is not None \
-                        and not functions.in_cooldown_period(msg.author):
+                elif not functions.cooldown_expired(msg.author):
 
-                    secondstonextdeal = 900 - (now - dbfunctions.last_deal_time(msg.author))
+                    secondstonextdeal = functions.get_remaining_cooldown_time(msg.author)
                     if secondstonextdeal <= 60:
                         timetodealstring = "" + str(int(round(secondstonextdeal, 0))) + " more seconds"
                     else:
@@ -325,6 +326,24 @@ async def on_message(msg):
                         else:
                             await client.send_message(msg.channel, quote + "\n\nNo deal :no_entry_sign:")
                             dbfunctions.set_deal_status(seller, False)
+
+            # Lets a user check how much longer they have to wait until making their next deal.
+            elif msg.content.startswith(".cooldown"):
+                if not dbfunctions.is_registered(msg.author):
+                    await client.send_message(msg.channel, "You need to use **.register** first "
+                                              + msg.author.mention + "!")
+                elif functions.cooldown_expired(msg.author):
+                    await client.send_message(msg.channel, "You're not in the cooldown period "
+                                              + msg.author.mention + "!")
+                else:
+                    secondstonextdeal = functions.get_remaining_cooldown_time(msg.author)
+                    if secondstonextdeal <= 60:
+                        timetodealstring = "" + str(int(round(secondstonextdeal, 0))) + " more seconds"
+                    else:
+                        timetodealstring = "" + str(int(round(secondstonextdeal / 60, 0))) + " more minutes"
+
+                    await client.send_message(msg.channel, "You've gotta wait " + timetodealstring
+                                              + " until your next deal " + msg.author.mention + ".")
 
             # Posts a link to DaThings1's "Prawn Srars" along with a random quote from the video.
             elif msg.content.startswith(".kevincostner"):
