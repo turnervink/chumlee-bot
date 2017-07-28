@@ -1,3 +1,4 @@
+# Quotes to send with the .kevincostner command
 ytpquotes = [
     "I'm an expert in Western Alalia.",
     "You don't wanna mess up this circle of beauty.",
@@ -20,6 +21,7 @@ ytpquotes = [
     "This gun is the real deal. Now all I have to do is test it :boom:"
 ]
 
+# Statuses for the bot's "Playing" status
 statuses = [
     "Collecting shoes",
     "Drinking a smoothie",
@@ -28,6 +30,7 @@ statuses = [
     "Enjoying some Western Alalia"
 ]
 
+# Quotes to be displayed with item appraisals
 tier0 = [
     "Looks like a bunch of junk in the trunk.",
     "I don't think so man...",
