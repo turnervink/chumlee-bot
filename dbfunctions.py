@@ -187,7 +187,7 @@ def update_last_deal_time(user):
     db.child("users").child(user).child("lastDealTime").set(int(time.time()))
 
 
-def last_deal_time(user):
+def get_last_deal_time(user):
     """
     Get's the time of a user's last deal.
 

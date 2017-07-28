@@ -40,20 +40,23 @@ def is_valid_userid(user):
     return re.match('<@!?[0-9]*>', user)
 
 
-def in_cooldown_period(user):
+def cooldown_expired(user):
     """
     Checks if a user is still within the deal cooldown period.
 
     :param user: the user ID string or User object to validate
-    :return: True if the user is still within the cooldown period
+    :return: True if the user is not within the cooldown period
     """
     if hasattr(user, "id"):
         user = user.id
 
     now = int(time.time())
-    lastdeal = dbfunctions.last_deal_time(user)
+    lastdeal = dbfunctions.get_last_deal_time(user)
 
-    return (now - lastdeal) >= dealcooldown
+    if lastdeal is not None:
+        return (now - lastdeal) >= dealcooldown
+    else:
+        return True
 
 
 def calc_appraisal_value(base):
@@ -124,8 +127,26 @@ def buy_medal(user, medal):
         if dbfunctions.check_for_funds(user.id, price):
             dbfunctions.withdraw(user.id, price)
             dbfunctions.award_medal(user.id, medal)
-            return "Alright! Here's a " + medal + " medal for you " + user.mention + "!\n\n" \
+            return "Alright! Here's a " + medal + " medal for you " + user.mention + "!\n\n  " \
                 + user.mention + ":arrow_right:  <:chumcoin:337841443907305473> x" \
                 + str(medalprices.get_medal_price(medal)) + "  :arrow_right:  <:chumlee:337842115931537408>"
         else:
             return "You don't have enough Chumcoins for a " + medal + " medal!"
+
+
+def get_remaining_cooldown_time(user):
+    """
+    Gets the remaining cooldown time in seconds for a user.
+
+    :param user: a User object representing the user to check the cooldown time for
+    :return: the remaining cooldown time in seconds as an int or None if there is no time remaining
+    """
+    now = int(time.time())
+    lastdealtime = dbfunctions.get_last_deal_time(user)
+
+    try:
+        timetocooldownend = dealcooldown - (now - lastdealtime)
+
+        return timetocooldownend
+    except TypeError:
+        None
