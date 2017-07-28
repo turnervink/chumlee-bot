@@ -35,6 +35,7 @@ commands = [
     ".purge",
     ".listmedals",
     ".mymedals",
+    ".profile",
     ".buymedal"
     # ".gif"
 ]
@@ -77,25 +78,25 @@ async def on_message(msg):
             elif msg.content.startswith(".commands"):
                 commandinfo = ("*Commands*:\n"
                                "**.register:** register in the <:chumcoin:337841443907305473> database\n\n"
-                               "**.balance [user]:** check your or another user's "
+                               "**.balance [@user]:** check your or another user's "
                                "<:chumcoin:337841443907305473> balance\n\n"
                                "**.appraise <text/attachment>:** get an appraisal for an item\n\n"
                                "**.pay <@user> <amount>:** pay someone <:chumcoin:337841443907305473>s\n\n"
                                
                                "**.listmedals:** see available Chummedals\n\n"
-                               "**.mymedals:** see your Chummedals\n\n"
+                               "**.profile:** see your Chumprofile\n\n"
                                "**.buymedal <medal>:** buy a Chummedal\n\n"
                                "**.item:** gets a random item from the _Pawn Stars: The Game_ Wiki\n\n"
                                "**.purge:** delete the last 100 commands and bot messages\n\n"
                                "**.kevincostner:** dances with swolves\n\n"
                 
-                               "*Admin Commands:*\n"
+                               "\n*Admin Commands:*\n"
                                "**.give <@user> <amount>:** (admin command) give a user "
                                "<:chumcoin:337841443907305473>s\n\n"
                                "**.take <@user> <amount>:** (admin command) take a user's "
                                "<:chumcoin:337841443907305473>s\n\n"
-                               "**.forceenddeal [user]:** set your or another user's deal status to false\n\n"
-                               "**.forceendcooldown [user]:** end your or another user's deal cooldown"
+                               "**.forceenddeal [@user]:** set your or another user's deal status to false\n\n"
+                               "**.forceendcooldown [@user]:** end your or another user's deal cooldown"
                                )
                 await client.send_message(msg.author, commandinfo)
                 await client.send_message(msg.channel, "Command info sent!")
@@ -142,7 +143,7 @@ async def on_message(msg):
                         await client.send_message(msg.author, args[1] + "'s balance is " + str(
                             dbfunctions.get_balance(re.sub('[^0-9]', "", args[1]))) + " <:chumcoin:337841443907305473>")
                 else:
-                    await client.send_message(msg.channel, "Your balance is " + str(
+                    await client.send_message(msg.channel, msg.author.mention + "'s balance is " + str(
                         dbfunctions.get_balance(msg.author)) + " <:chumcoin:337841443907305473>")
 
             # Takes money from the message author's balance
@@ -282,7 +283,7 @@ async def on_message(msg):
                     if len(args) == 1 and len(files) == 0:
                         await client.send_message(msg.channel, "You must include something to appraise")
                         dbfunctions.set_deal_status(seller, False)
-                    elif len(args) > 1 and re.match("<@!?338421932426919936>", args[1]):
+                    elif len(args) > 1 and re.match('<@!?338421932426919936>', args[1]):
                         await client.send_message(msg.channel, "I'll all about self love " + msg.author.mention
                                                   + ", so I'll give myself a 10/10.")
                         dbfunctions.set_deal_status(msg.author, False)
@@ -355,8 +356,7 @@ async def on_message(msg):
                 await client.send_file(msg.channel, "resources/img/medals/chummedal-row.png")
 
             # Lists a user's medals.
-            elif msg.content.startswith(".mymedals"):
-                await client.send_message(msg.channel, msg.author.mention + "'s Chummedals:")
+            elif msg.content.startswith(".mymedals") or msg.content.startswith(".profile"):
                 await client.send_file(msg.channel, io.BytesIO(profile.gen_profile(msg.author)), filename="profile.png")
 
             # Lets a user buy a Chummedal and sets
