@@ -378,4 +378,4 @@ async def on_message(msg):
 
 
 # Run the bot
-client.run("MzM4NDIxOTMyNDI2OTE5OTM2.DFVLkA.oH1RXMJFxlFqi2BPgTwcUGKRiFs")
+client.run(os.environ["bot_token"])

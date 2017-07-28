@@ -124,7 +124,7 @@ def buy_medal(user, medal):
         if dbfunctions.check_for_funds(user.id, price):
             dbfunctions.withdraw(user.id, price)
             dbfunctions.award_medal(user.id, medal)
-            return "Alright! Here's a " + medal + " medal for you " + user.mention + "!\n\n" \
+            return "Alright! Here's a " + medal + " medal for you " + user.mention + "!\n\n  " \
                 + user.mention + ":arrow_right:  <:chumcoin:337841443907305473> x" \
                 + str(medalprices.get_medal_price(medal)) + "  :arrow_right:  <:chumlee:337842115931537408>"
         else:
