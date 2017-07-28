@@ -11,12 +11,19 @@ from resources import medals
 
 
 def gen_profile(user):
+    """
+    Generates a profile display image for a user.
+
+    :param user: the User object to generate a profile for
+    :return: a byte array containing the profile image data
+    """
     bg = Image.open("resources/img/chumprofile.png")
     avatar = Image.open(io.BytesIO(requests.get(user.avatar_url).content))
     avatar = avatar.resize((64, 64))
 
     medallist = get_medals(user)
 
+    # Paste all of the user's medals on the profile
     if medallist is not None:
         for medal in medallist:
             try:
@@ -27,8 +34,10 @@ def gen_profile(user):
             except FileNotFoundError:
                 print("No medal file found for " + medal)
 
+    # Paste the user's avatar onto the profile
     bg.paste(avatar, box=(9, 3))
 
+    # Draw the user's display name and coin balance on the profile
     draw = ImageDraw.Draw(bg)
     font = ImageFont.truetype("resources/Roboto-Regular.ttf", 24)
     smallfont = ImageFont.truetype("resources/Roboto-Regular.ttf", 18)

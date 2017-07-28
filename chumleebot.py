@@ -13,12 +13,14 @@ from resources.firebaseinfo import db
 import resources.prawnsrars
 import resources.medals
 
-medalprices = resources.medals
+medals = resources.medals
 
 client = discord.Client()
 
-allowedchannels = ["bot-testing", "the-pawnshop"]
-globalcommands = [".help", ".commands"]
+allowedchannels = ["bot-testing", "the-pawnshop"]  # Names of channels where bot commands can be used
+globalcommands = [".help", ".commands"]  # Commands that can be used in any channel
+
+# List of all commands to determine when the bot should start typing
 commands = [
     ".help",
     ".commands",
@@ -44,6 +46,9 @@ commands = [
 
 @client.event
 async def on_ready():
+    """
+    Called when the bot successfully connects.
+    """
     print("-----")
     print("Logged in as:")
     print(client.user.name)
@@ -54,6 +59,11 @@ async def on_ready():
 
 @client.event
 async def on_message(msg):
+    """
+    Called whenever a message is sent to somewhere the bot is connected.
+
+    :param msg: a Message object representing the message that was sent
+    """
     # Check if a message starting with the command prefix
     # has been sent and make sure it was sent in a place
     # where bot commands are allowed.
@@ -355,7 +365,7 @@ async def on_message(msg):
             # and their prices.
             elif msg.content.startswith(".medals") or msg.content.startswith(".listmedals"):
                 # await client.send_file(msg.channel, "resources/img/medals/chummedal-row.png")
-                await client.send_message(msg.channel, medalprices.medalinfo)
+                await client.send_message(msg.channel, medals.medalinfo)
 
             # Lists a user's medals.
             elif msg.content.startswith(".mymedals") or msg.content.startswith(".profile"):

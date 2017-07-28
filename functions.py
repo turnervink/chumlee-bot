@@ -18,10 +18,22 @@ tier5 = 0.95
 
 
 def user_is_admin(user):
+    """
+    Checks if a user has the top server role of "admin".
+
+    :param user: the User object to check
+    :return: True is the User has the admin role
+    """
     return str(user.top_role) == "admin"
 
 
 def is_valid_userid(user):
+    """
+    Checks if a user ID appears to be valid. Does not perform any server-side validation, only a regex check.
+
+    :param user: the user ID string or User object to validate
+    :return: True if valid user ID
+    """
     if hasattr(user, "id"):
         user = user.id
 
@@ -29,6 +41,12 @@ def is_valid_userid(user):
 
 
 def in_cooldown_period(user):
+    """
+    Checks if a user is still within the deal cooldown period.
+
+    :param user: the user ID string or User object to validate
+    :return: True if the user is still within the cooldown period
+    """
     if hasattr(user, "id"):
         user = user.id
 
@@ -39,6 +57,13 @@ def in_cooldown_period(user):
 
 
 def calc_appraisal_value(base):
+    """
+    Calculates a random coin value for an item.
+
+    :param base: a random.random() value to use in
+    calculating the item's value
+    :return: the item's appraised value
+    """
     if base > tier5:
         return random.randint(500, 1000)
     elif base > tier4:
@@ -54,6 +79,12 @@ def calc_appraisal_value(base):
 
 
 def get_appraisal_quote(val):
+    """
+    Gets a random dialogue quote from the correct tier based on the appraised value of an item.
+
+    :param val: an item's appraised value
+    :return: a dialogue quote string
+    """
     if val > tier5:
         return random.choice(prawnsrars.tier5)
     elif val > tier4:
@@ -69,6 +100,14 @@ def get_appraisal_quote(val):
 
 
 def buy_medal(user, medal):
+    """
+    Lets a user purchase a medal. Checks that such a medal exists and that the user has sufficient funds.
+
+    :param user: a User object representing the user purchasing the medal
+    :param medal: the medal to purchase
+    :return: a string containing a success/failure message to be sent to the
+    Discord channel where the command was issued
+    """
     print("buying medal")
     print(user)
     print(medal)
