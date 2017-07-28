@@ -1,3 +1,4 @@
+# Prices and user profile xy positions for each medal
 paper = {
     "price": 250,
     "profile_xy": (9, 180)
@@ -38,6 +39,7 @@ platinum = {
     "profile_xy": (231, 109)
 }
 
+# Medal pricelist
 medalinfo = "```" \
             "Chummedal Prices:\n\n" \
             "Paper Chummedal: 250cc\n" \
@@ -50,10 +52,16 @@ medalinfo = "```" \
             "Platinum Chummedal: 500,000cc" \
             "```"
 
-localnames = locals()
+localnames = locals()  # Get all local names to simplify selecting the corrent medal price in get_medal_price
 
 
 def get_medal_price(medal):
+    """
+    Get the price for a specified medal.
+
+    :param medal: the medal to get the price for
+    :return: the medal's price
+    """
     try:
         return localnames[medal]["price"]
     except KeyError:

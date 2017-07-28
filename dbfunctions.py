@@ -3,6 +3,12 @@ import time
 
 
 def is_registered(user):
+    """
+    Checks if a user is registered in the database.
+
+    :param user: the user ID string or User object to check
+    :return: True if the user is registered
+    """
     if hasattr(user, "id"):
         user = user.id
 
@@ -15,6 +21,12 @@ def is_registered(user):
 
 
 def get_balance(user):
+    """
+    Gets a user's coin balance.
+
+    :param user: the user ID string or User object to get the balance for
+    :return: the user's balance as an int
+    """
     if hasattr(user, "id"):
         user = user.id
 
@@ -22,6 +34,14 @@ def get_balance(user):
 
 
 def deposit(user, amt):
+    """
+    Deposits coins into a user's account.
+
+    :param user: the user ID string or User object to give funds to
+    :param amt: the amount of funds to give
+    :return: a string containing a success/failure message to be sent to the
+    Discord channel where the command was issued
+    """
     if hasattr(user, "id"):
         mention = user.mention
         user = user.id
@@ -43,6 +63,14 @@ def deposit(user, amt):
 
 
 def withdraw(user, amt):
+    """
+    Withdraws coins from a user's account. Checks to make sure the user has sufficient funds.
+
+    :param user: the user ID string or User object to withdraw funds from
+    :param amt: the amount of funds to withdraw
+    :return: a string containing a success/failure message to be sent to the
+    Discord channel where the command was issued
+    """
     if hasattr(user, "id"):
         mention = user.mention
         user = user.id
@@ -66,6 +94,14 @@ def withdraw(user, amt):
 
 
 def transfer(payer, payee, amt):
+    """
+    Transfers funds from one user's account to another.
+
+    :param payer: the user ID string or User object to withdraw funds from
+    :param payee: the user ID string or User object to give funds to
+    :param amt: the amount of funds to transer
+    :return:
+    """
     if hasattr(payer, "id"):
         payermention = payer.mention
         payer = payer.id
@@ -99,6 +135,13 @@ def transfer(payer, payee, amt):
 
 
 def check_for_funds(user, amt):
+    """
+    Checks if a user has sufficient funds for a given amount.
+
+    :param user: the user ID string or User object to check the funds of
+    :param amt: the amount of funds to check for
+    :return: True if the user has sufficient funds
+    """
     if hasattr(user, "id"):
         user = user.id
 
@@ -107,6 +150,12 @@ def check_for_funds(user, amt):
 
 
 def set_deal_status(user, status):
+    """
+    Sets the deal status of a user.
+
+    :param user: the user ID string or User object to set the status for
+    :param status: the status to set. True indicates the user is in a deal
+    """
     if hasattr(user, "id"):
         user = user.id
 
@@ -114,6 +163,12 @@ def set_deal_status(user, status):
 
 
 def is_in_deal(user):
+    """
+    Checks the deal status of a user.
+
+    :param user: the user ID string or User object to check the status of
+    :return: True if the user is in a deal
+    """
     if hasattr(user, "id"):
         user = user.id
 
@@ -121,6 +176,11 @@ def is_in_deal(user):
 
 
 def update_last_deal_time(user):
+    """
+    Updates a user's last deal time to the current time.
+
+    :param user: the user ID string or User object to update the time for
+    """
     if hasattr(user, "id"):
         user = user.id
 
@@ -128,6 +188,12 @@ def update_last_deal_time(user):
 
 
 def last_deal_time(user):
+    """
+    Get's the time of a user's last deal.
+
+    :param user: the user ID string or User object to get the last deal time of
+    :return: unix timestamp as an int
+    """
     if hasattr(user, "id"):
         user = user.id
 
@@ -135,6 +201,12 @@ def last_deal_time(user):
 
 
 def award_medal(user, medal):
+    """
+    Awards a medal to a user.
+
+    :param user: the user ID string or User object to award the medal to
+    :param medal: the medal to award
+    """
     if hasattr(user, "id"):
         user = user.id
 
@@ -142,6 +214,12 @@ def award_medal(user, medal):
 
 
 def take_medal(user, medal):
+    """
+    Takes a medal from a user.
+
+    :param user: the user ID string or User object to take the medal from
+    :param medal: the medal to take
+    """
     if hasattr(user, "id"):
         user = user.id
 
@@ -149,6 +227,12 @@ def take_medal(user, medal):
 
 
 def get_medals(user):
+    """
+    Gets all of the medals a user has aquired.
+
+    :param user: the user ID string or User object to get the medals of
+    :return: the user's medals as a dict
+    """
     if hasattr(user, "id"):
         user = user.id
 

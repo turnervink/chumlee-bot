@@ -13,12 +13,14 @@ from resources.firebaseinfo import db
 import resources.prawnsrars
 import resources.medals
 
-medalprices = resources.medals
+medals = resources.medals
 
 client = discord.Client()
 
-allowedchannels = ["bot-testing", "the-pawnshop"]
-globalcommands = [".help", ".commands"]
+allowedchannels = ["bot-testing", "the-pawnshop"]  # Names of channels where bot commands can be used
+globalcommands = [".help", ".commands"]  # Commands that can be used in any channel
+
+# List of all commands to determine when the bot should start typing
 commands = [
     ".help",
     ".commands",
@@ -44,6 +46,9 @@ commands = [
 
 @client.event
 async def on_ready():
+    """
+    Called when the bot successfully connects.
+    """
     print("-----")
     print("Logged in as:")
     print(client.user.name)
@@ -54,9 +59,13 @@ async def on_ready():
 
 @client.event
 async def on_message(msg):
-    # Check if a message starting with the command prefix
-    # has been sent and make sure it was sent in a place
-    # where bot commands are allowed.
+    """
+    Called whenever a message is sent to somewhere the bot is connected.
+
+    :param msg: a Message object representing the message that was sent
+    """
+    # Check if a message starts with a valid command. If so, show a typing indicator and ensure the command was issued
+    # in an allowed place.
     if len(str.split(msg.content)) > 0 and str.split(msg.content)[0] in commands:
         if str.split(msg.content)[0] not in globalcommands \
                 and msg.server is not None \
@@ -101,9 +110,8 @@ async def on_message(msg):
                 await client.send_message(msg.author, commandinfo)
                 await client.send_message(msg.channel, "Command info sent!")
 
-            # Registers a user in the database adding their UID to
-            # the "users" node and setting an initial balance and
-            # value for "isInDeal".
+            # Registers a user in the database by adding their user ID to the "users" node and setting an initial
+            # balance and value for "isInDeal".
             elif msg.content.startswith(".register"):
                 if not dbfunctions.is_registered(msg.author):
                     newuserdata = {
@@ -121,16 +129,17 @@ async def on_message(msg):
                     db.child("users").child(msg.author.id).set(newuserdata)
                     await client.send_message(msg.channel, "Okay, you're all set up " + msg.author.mention + "!")
                 else:
-                    await client.send_message(msg.channel, "Looks like you're already registered " + msg.author.mention + ".")
+                    await client.send_message(msg.channel, "Looks like you're already registered "
+                                              + msg.author.mention + ".")
 
-            # Gets a user's balance from the database and
-            # prints it in the chat.
+            # Gets a user's balance from the database and prints it in the chat.
             elif msg.content.startswith(".balance"):
                 args = str.split(msg.content)
                 print(args)
 
                 if not dbfunctions.is_registered(msg.author):
-                    await client.send_message(msg.channel, "You need to use **.register** first " + msg.author.mention + "!")
+                    await client.send_message(msg.channel, "You need to use **.register** first "
+                                              + msg.author.mention + "!")
                 elif len(args) == 2:
                     if not functions.user_is_admin(msg.author):
                         await client.send_message(msg.channel, "You must be an admin to get the balance "
@@ -146,12 +155,11 @@ async def on_message(msg):
                     await client.send_message(msg.channel, msg.author.mention + "'s balance is " + str(
                         dbfunctions.get_balance(msg.author)) + " <:chumcoin:337841443907305473>")
 
-            # Takes money from the message author's balance
-            # and places it in the balance of the user specified in
-            # the first command argument.
+            # Transfers money between users.
             elif msg.content.startswith(".pay"):
                 if not dbfunctions.is_registered(msg.author):
-                    await client.send_message(msg.channel, "You need to use **.register** first " + msg.author.mention + "!")
+                    await client.send_message(msg.channel, "You need to use **.register** first "
+                                              + msg.author.mention + "!")
                 else:
 
                     args = str.split(msg.content)
@@ -163,10 +171,11 @@ async def on_message(msg):
                     elif not dbfunctions.is_registered(re.sub('[^0-9]', "", args[1])):
                         await client.send_message(msg.channel, "That user isn't registered!")
                     else:
-                        await client.send_message(msg.channel, dbfunctions.transfer(msg.author, re.sub('[^0-9]', "", args[1]), args[2]))
+                        await client.send_message(msg.channel, dbfunctions.transfer(msg.author,
+                                                                                    re.sub('[^0-9]', "",
+                                                                                           args[1]), args[2]))
 
-            # Adds money to the balance of the user specified
-            # in the first command argument. Only usable by users
+            # Adds money to the balance of the user specified in the first command argument. Only usable by users
             # with admin rank.
             elif msg.content.startswith(".give"):
                 if not functions.user_is_admin(msg.author):
@@ -181,10 +190,10 @@ async def on_message(msg):
                     elif not dbfunctions.is_registered(re.sub('[^0-9]', "", args[1])):
                         await client.send_message(msg.channel, "That user isn't registered!")
                     else:
-                        await client.send_message(msg.channel, dbfunctions.deposit(re.sub('[^0-9]', "", args[1]), args[2]))
+                        await client.send_message(msg.channel, dbfunctions.deposit(re.sub('[^0-9]', "",
+                                                                                          args[1]), args[2]))
 
-            # Takes money from the balance of the user specified
-            # in the first command argument. Only usable by users
+            # Takes money from the balance of the user specified in the first command argument. Only usable by users
             # with admin rank.
             elif msg.content.startswith(".take"):
                 if not functions.user_is_admin(msg.author):
@@ -201,16 +210,14 @@ async def on_message(msg):
                     elif not dbfunctions.check_for_funds(re.sub('[^0-9]', "", args[1]), int(args[2])):
                         await client.send_message(msg.channel, "That's more Chumcoins than that user has!")
                     else:
-                        await client.send_message(msg.channel, dbfunctions.withdraw(re.sub('[^0-9]', "", args[1]), args[2]))
+                        await client.send_message(msg.channel, dbfunctions.withdraw(re.sub('[^0-9]', "",
+                                                                                           args[1]), args[2]))
 
-            # Force-sets a user's "isInDeal" status to false.
-            # Intended to be used if this status gets stuck
-            # when the bot disconnects while a user in in a deal.
-            # Using this while a user in in a deal and the bot
-            # is still online will still allow the deal to be
-            # completeed, and will also allow a user to be
-            # in multiple deals at once. If no user is specified
-            # the command affects the user.
+            # Force-sets a user's "isInDeal" status to false. Intended to be used if this status gets stuck
+            # when the bot disconnects while a user in in a deal. Using this while a user in in a deal and the bot
+            # is still online will still allow the deal to be completeed, and will also allow a user to be
+            # in multiple deals at once. If no user is specified the command affects the issuer. Only usable by users
+            # with admin rank.
             elif msg.content.startswith(".forceenddeal"):
                 if not functions.user_is_admin(msg.author):
                     await client.send_message(msg.channel, "You must be an admin to use .forceenddeal")
@@ -226,9 +233,8 @@ async def on_message(msg):
                         dbfunctions.set_deal_status(msg.author.id, False)
                         await client.send_message(msg.channel, "Ended deal for " + msg.author.mention)
 
-            # Deletes the "lastDealTime" key for a user. If
-            # no user is specified the command affects the
-            # issuer.
+            # Deletes the "lastDealTime" key for a user. If no user is specified the command affects the issuer.
+            # Only usable by users with admin rank.
             elif msg.content.startswith(".forceendcooldown"):
                 if not functions.user_is_admin(msg.author):
                     await client.send_message(msg.channel, "You must be an admin to use .forceendcooldown")
@@ -245,19 +251,18 @@ async def on_message(msg):
                         await client.send_message(msg.channel, "Ended cooldown for " + msg.author.mention)
 
             # Starts an appraisal of a string or an attachment.
-            # Based on random.random() a value is assigned and offered
-            # to the author of the message. Also checks to make sure the
-            # author does not already have and active appraisal, and that
-            # they have not made a deal within the appraisal cooldown time.
             elif msg.content.startswith(".appraise"):
                 now = int(time.time())
 
                 if not dbfunctions.is_registered(msg.author):
-                    await client.send_message(msg.channel, "You need to use **.register** first " + msg.author.mention + "!")
+                    await client.send_message(msg.channel, "You need to use **.register** first "
+                                              + msg.author.mention + "!")
                 elif dbfunctions.is_in_deal(msg.author):
                     await client.send_message(msg.channel,
-                                              "Looks like you've already got a deal on the table " + msg.author.mention + "!")
-                elif dbfunctions.last_deal_time(msg.author) is not None and not functions.in_cooldown_period(msg.author):
+                                              "Looks like you've already got a deal on the table "
+                                              + msg.author.mention + "!")
+                elif dbfunctions.last_deal_time(msg.author) is not None \
+                        and not functions.in_cooldown_period(msg.author):
 
                     secondstonextdeal = 900 - (now - dbfunctions.last_deal_time(msg.author))
                     if secondstonextdeal <= 60:
@@ -321,14 +326,12 @@ async def on_message(msg):
                             await client.send_message(msg.channel, quote + "\n\nNo deal :no_entry_sign:")
                             dbfunctions.set_deal_status(seller, False)
 
-            # Posts a link to DaThings1's "Prawn Srars" along
-            # with a random quote from the video.
+            # Posts a link to DaThings1's "Prawn Srars" along with a random quote from the video.
             elif msg.content.startswith(".kevincostner"):
                 await client.send_message(msg.channel, random.choice(resources.prawnsrars.ytpquotes))
                 await client.send_message(msg.channel, "https://www.youtube.com/watch?v=5mEJbX5pio8")
 
-            # Posts a random item from the Pawn Stars: The Game
-            # wiki.
+            # Posts a random item from the Pawn Stars: The Game wiki.
             elif msg.content.startswith(".item"):
                 baseurl = "http://pawnstarsthegame.wikia.com"
 
@@ -337,8 +340,7 @@ async def on_message(msg):
 
                 await client.send_message(msg.channel, baseurl + data[random.randint(0, len(data) - 1)]["value"])
 
-            # Deletes chumlee-bot messages sent in the last
-            # 100 messages.
+            # Deletes chumlee-bot messages and issued commands sent in the last 100 messages.
             elif msg.content.startswith(".purge"):
                 def check(i):
                     return i.author.id == client.user.id or i.content[:1] == "."
@@ -351,19 +353,16 @@ async def on_message(msg):
                     await client.send_message(msg.channel, "I need permission to manage messages "
                                                            "in order to use .purge!")
 
-            # Sends a file displaying the available Chummedals
-            # and their prices.
+            # Sends a list of the available Chummedals and their prices.
             elif msg.content.startswith(".medals") or msg.content.startswith(".listmedals"):
                 # await client.send_file(msg.channel, "resources/img/medals/chummedal-row.png")
-                await client.send_message(msg.channel, medalprices.medalinfo)
+                await client.send_message(msg.channel, medals.medalinfo)
 
             # Lists a user's medals.
             elif msg.content.startswith(".mymedals") or msg.content.startswith(".profile"):
                 await client.send_file(msg.channel, io.BytesIO(profile.gen_profile(msg.author)), filename="profile.png")
 
-            # Lets a user buy a Chummedal and sets
-            # it to True in the "medals" node of their database
-            # entry.
+            # Lets a user buy a Chummedal.
             elif msg.content.startswith(".buymedal"):
                 args = str.split(msg.content)
 
@@ -372,8 +371,7 @@ async def on_message(msg):
                 else:
                     await client.send_message(msg.channel, functions.buy_medal(msg.author, args[1]))
 
-            # Sends a random gif from the resources/img/gifs
-            # directory.
+            # Sends a random gif from the resources/img/gifs directory (currently unused).
             elif msg.content.startswith(".gif"):
                 gif = random.choice(os.listdir("resources/img/gifs"))
                 await client.send_file(msg.channel, "resources/img/gifs/" + gif)
