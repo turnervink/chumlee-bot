@@ -4,12 +4,11 @@ import random
 
 import dbfunctions
 import resources.medals
+medals = resources.medals
 import resources.prawnsrars
 prawnsrars = resources.prawnsrars
 
-medalprices = resources.medals
 
-dealcooldown = 900
 tier1 = 0.1
 tier2 = 0.25
 tier3 = 0.5
@@ -41,20 +40,13 @@ def is_valid_userid(user):
 
 
 def cooldown_expired(user):
-    """
-    Checks if a user is still within the deal cooldown period.
-
-    :param user: the user ID string or User object to validate
-    :return: True if the user is not within the cooldown period
-    """
     if hasattr(user, "id"):
         user = user.id
 
-    now = int(time.time())
-    lastdeal = dbfunctions.get_last_deal_time(user)
+    cooldownend = dbfunctions.get_cooldown_end_time(user)
 
-    if lastdeal is not None:
-        return (now - lastdeal) >= dealcooldown
+    if cooldownend is not None:
+        return int(time.time()) > cooldownend
     else:
         return True
 
@@ -111,13 +103,9 @@ def buy_medal(user, medal):
     :return: a string containing a success/failure message to be sent to the
     Discord channel where the command was issued
     """
-    print("buying medal")
-    print(user)
-    print(medal)
     medal = str.lower(medal)
-    price = medalprices.get_medal_price(medal)
-    print(price)
-    dbfunctions.get_medals(user)
+    price = medals.get_medal_price(medal)
+    # dbfunctions.get_medals(user) TODO this broke?
 
     if price is None:
         return "There isn't a medal called " + medal + "."
@@ -129,24 +117,6 @@ def buy_medal(user, medal):
             dbfunctions.award_medal(user.id, medal)
             return "Alright! Here's a " + medal + " medal for you " + user.mention + "!\n\n  " \
                 + user.mention + ":arrow_right:  <:chumcoin:337841443907305473> x" \
-                + str(medalprices.get_medal_price(medal)) + "  :arrow_right:  <:chumlee:337842115931537408>"
+                + str(medals.get_medal_price(medal)) + "  :arrow_right:  <:chumlee:337842115931537408>"
         else:
             return "You don't have enough Chumcoins for a " + medal + " medal!"
-
-
-def get_remaining_cooldown_time(user):
-    """
-    Gets the remaining cooldown time in seconds for a user.
-
-    :param user: a User object representing the user to check the cooldown time for
-    :return: the remaining cooldown time in seconds as an int or None if there is no time remaining
-    """
-    now = int(time.time())
-    lastdealtime = dbfunctions.get_last_deal_time(user)
-
-    try:
-        timetocooldownend = dealcooldown - (now - lastdealtime)
-
-        return timetocooldownend
-    except TypeError:
-        None

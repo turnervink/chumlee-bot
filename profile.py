@@ -6,7 +6,6 @@ import requests
 
 from dbfunctions import get_medals
 from dbfunctions import get_balance
-
 from resources import medals
 
 

@@ -128,7 +128,12 @@ async def on_message(msg):
                         }
                     }
 
+                    newcooldowndata = {
+                        "multiplier": 1.0
+                    }
+
                     db.child("users").child(msg.author.id).set(newuserdata)
+                    db.child("cooldowns").child(msg.author.id).set(newcooldowndata)
                     await client.send_message(msg.channel, "Okay, you're all set up " + msg.author.mention + "!")
                 else:
                     await client.send_message(msg.channel, "Looks like you're already registered "
@@ -246,15 +251,14 @@ async def on_message(msg):
                     if len(args) > 2:
                         await client.send_message(msg.channel, "Usage: .forceendcooldown [user]")
                     elif len(args) == 2:
-                        db.child("users").child(re.sub('[^0-9]', "", args[1])).child("lastDealTime").remove()
+                        db.child("cooldowns").child(re.sub('[^0-9]', "", args[1])).child("cooldownEnd").remove()
                         await client.send_message(msg.channel, "Ended cooldown for " + args[1])
                     else:
-                        db.child("users").child(msg.author.id).child("lastDealTime").remove()
+                        db.child("cooldowns").child(msg.author.id).child("cooldownEnd").remove()
                         await client.send_message(msg.channel, "Ended cooldown for " + msg.author.mention)
 
             # Starts an appraisal of a string or an attachment.
             elif msg.content.startswith(".appraise"):
-                now = int(time.time())
 
                 if not dbfunctions.is_registered(msg.author):
                     await client.send_message(msg.channel, "You need to use **.register** first "
@@ -264,18 +268,19 @@ async def on_message(msg):
                                               "Looks like you've already got a deal on the table "
                                               + msg.author.mention + "!")
                 elif not functions.cooldown_expired(msg.author):
-
-                    secondstonextdeal = functions.get_remaining_cooldown_time(msg.author)
-                    if secondstonextdeal <= 60:
-                        timetodealstring = "" + str(int(round(secondstonextdeal, 0))) + " more seconds"
-                    else:
-                        timetodealstring = "" + str(int(round(secondstonextdeal / 60, 0))) + " more minutes"
-
-                    await client.send_message(msg.channel, "You've gotta wait " + timetodealstring
-                                              + " until your next deal " + msg.author.mention + ".")
+                    await client.send_message(msg.channel, "You're in the cooldown!")
+                    # secondstonextdeal = functions.get_remaining_cooldown_time(msg.author)
+                    # if secondstonextdeal <= 60:
+                    #     timetodealstring = "" + str(int(round(secondstonextdeal, 0))) + " more seconds"
+                    # else:
+                    #     timetodealstring = "" + str(int(round(secondstonextdeal / 60, 0))) + " more minutes"
+                    #
+                    # await client.send_message(msg.channel, "You've gotta wait " + timetodealstring
+                    #                           + " until your next deal " + msg.author.mention + ".")
                 else:
                     seller = msg.author
                     dbfunctions.set_deal_status(seller, True)
+                    dbfunctions.adjust_cooldown_multiplier(seller, int(time.time()))
 
                     args = str.split(msg.content)
                     files = msg.attachments
@@ -305,7 +310,10 @@ async def on_message(msg):
 
                             if response is None:
                                 await client.send_message(msg.channel, "Alright, no deal then.")
+
                                 dbfunctions.set_deal_status(seller, False)
+                                dbfunctions.update_cooldown_end(seller)
+
                             elif response.content == ".deal":
                                 await client.send_message(msg.channel,
                                                           "Alright! I'll meet you over there and do some paperwork.")
@@ -313,19 +321,27 @@ async def on_message(msg):
                                                           "<:chumlee:337842115931537408>  :arrow_right:  "
                                                           "<:chumcoin:337841443907305473> x" + str(
                                                               value) + "  :arrow_right:  " + msg.author.mention)
+
                                 dbfunctions.deposit(msg.author, value)
                                 dbfunctions.set_deal_status(seller, False)
-                                dbfunctions.update_last_deal_time(seller)
+                                dbfunctions.update_cooldown_end(seller)
+
                             elif response.content == ".nodeal":
                                 await client.send_message(msg.channel, "Alright, no deal then.")
+
                                 dbfunctions.set_deal_status(seller, False)
-                                dbfunctions.update_last_deal_time(seller)
+                                dbfunctions.update_cooldown_end(seller)
+
                             else:
                                 await client.send_message(msg.channel, "Something went wrong!")
+
                                 dbfunctions.set_deal_status(seller, False)
+
                         else:
                             await client.send_message(msg.channel, quote + "\n\nNo deal :no_entry_sign:")
+
                             dbfunctions.set_deal_status(seller, False)
+                            dbfunctions.update_cooldown_end(seller)
 
             # Lets a user check how much longer they have to wait until making their next deal.
             elif msg.content.startswith(".cooldown"):

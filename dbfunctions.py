@@ -1,5 +1,9 @@
-from resources.firebaseinfo import db
 import time
+
+from resources.firebaseinfo import db
+
+cooldowntime = 900
+patiencerange = 300
 
 
 def is_registered(user):
@@ -175,29 +179,61 @@ def is_in_deal(user):
     return db.child("users").child(user).child("isInDeal").get().val()
 
 
-def update_last_deal_time(user):
-    """
-    Updates a user's last deal time to the current time.
-
-    :param user: the user ID string or User object to update the time for
-    """
+def get_cooldown_end_time(user):
     if hasattr(user, "id"):
         user = user.id
 
-    db.child("users").child(user).child("lastDealTime").set(int(time.time()))
+    return db.child("cooldowns").child(user).child("cooldownEnd").get().val()
 
 
-def get_last_deal_time(user):
-    """
-    Get's the time of a user's last deal.
-
-    :param user: the user ID string or User object to get the last deal time of
-    :return: unix timestamp as an int
-    """
+def update_cooldown_end(user):
     if hasattr(user, "id"):
         user = user.id
 
-    return db.child("users").child(user).child("lastDealTime").get().val()
+        now = int(time.time())
+        print("Base end time: " + (str(now + cooldowntime)))
+        multiplier = db.child("cooldowns").child(user).child("multiplier").get().val()
+        print("Mult: " + str(multiplier))
+
+        try:
+            db.child("cooldowns").child(user).child("cooldownEnd").set(now + (cooldowntime * multiplier))
+        except ValueError:
+            print("Mult error!")
+            db.child("cooldowns").child(user).child("cooldownEnd").set(now + cooldowntime)
+
+
+def get_cooldown_multiplier(user):
+    if hasattr(user, "id"):
+        user = user.id
+
+    print("Got mult: " + str(db.child("cooldowns").child(user).child("multiplier").get().val()))
+
+    return db.child("cooldowns").child(user).child("multiplier").get().val()
+
+
+def adjust_cooldown_multiplier(user, dealstarttime):
+    print("Adjusting mult")
+    if hasattr(user, "id"):
+        user = user.id
+
+    cooldownend = get_cooldown_end_time(user)
+    print("End: " + str(cooldownend))
+    if cooldownend is not None:
+        print("There is an end time!")
+        currentmultiplier = db.child("cooldowns").child(user).child("multiplier").get().val()
+        if currentmultiplier is None:
+            currentmultiplier = 1.0
+            db.child("cooldowns").child(user).child("multiplier").set(currentmultiplier)
+
+        if dealstarttime - cooldownend > patiencerange:
+            if not currentmultiplier == 1.0:
+                print("Decreasing cooldown")
+                db.child("cooldowns").child(user).child("multiplier").set(round(currentmultiplier - 0.1, 1))
+            else:
+                print("Leaving mult at 1.0")
+        else:
+            print("Increasing cooldown")
+            db.child("cooldowns").child(user).child("multiplier").set(round(currentmultiplier + 0.1, 1))
 
 
 def award_medal(user, medal):
