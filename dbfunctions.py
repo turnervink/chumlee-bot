@@ -180,6 +180,12 @@ def is_in_deal(user):
 
 
 def get_cooldown_end_time(user):
+    """
+    Gets the timestamp for the end time of a user's cooldown.
+
+    :param user: the user ID string or User object to get the cooldown end of
+    :return: a Unix timestamp of the end time for the user's cooldown
+    """
     if hasattr(user, "id"):
         user = user.id
 
@@ -187,6 +193,12 @@ def get_cooldown_end_time(user):
 
 
 def get_remaining_cooldown_time(user):
+    """
+    Gets the remaining amount of time in a user's cooldown.
+
+    :param user: the user ID string or User object to get the time remaining of
+    :return: the remaining time in seconds
+    """
     if hasattr(user, "id"):
         user = user.id
 
@@ -198,6 +210,12 @@ def get_remaining_cooldown_time(user):
 
 
 def update_cooldown_end(user):
+    """
+    Gets the current time and adds the cooldown length to it. Stores the result at cooldowns/user/cooldownEnd in the
+    database.
+
+    :param user: the user ID string or User object to set the cooldown end for
+    """
     if hasattr(user, "id"):
         user = user.id
 
@@ -214,6 +232,12 @@ def update_cooldown_end(user):
 
 
 def get_cooldown_multiplier(user):
+    """
+    Currently unused. Gets the current cooldown time multiplier for a user.
+
+    :param user: the user ID string or User object to get the multiplier of
+    :return: the current multiplier
+    """
     if hasattr(user, "id"):
         user = user.id
 
@@ -223,6 +247,14 @@ def get_cooldown_multiplier(user):
 
 
 def adjust_cooldown_multiplier(user, dealstarttime):
+    """
+    Determines whether to increase or decrease a user's cooldown multiplier based on how long they have waited between
+    making deals. If a user has waited longer than the "patience time" the multiplier is reduced by 0.1, otherwise it
+    is increased by 0.1. If the multiplier is already at 1.0 it will not be reduced further.
+
+    :param user: the user ID string or User object to adjust the multiplier for
+    :param dealstarttime: the time the current deal was started as a Unix timestamp
+    """
     print("Adjusting mult")
     if hasattr(user, "id"):
         user = user.id

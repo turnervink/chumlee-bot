@@ -40,6 +40,12 @@ def is_valid_userid(user):
 
 
 def cooldown_expired(user):
+    """
+    Checks if a user's cooldown has expired.
+
+    :param user: the user ID string or User object to check the cooldown of
+    :return: True if the user's cooldown is expired
+    """
     if hasattr(user, "id"):
         user = user.id
 
