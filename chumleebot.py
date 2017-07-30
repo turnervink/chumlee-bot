@@ -268,15 +268,14 @@ async def on_message(msg):
                                               "Looks like you've already got a deal on the table "
                                               + msg.author.mention + "!")
                 elif not functions.cooldown_expired(msg.author):
-                    await client.send_message(msg.channel, "You're in the cooldown!")
-                    # secondstonextdeal = functions.get_remaining_cooldown_time(msg.author)
-                    # if secondstonextdeal <= 60:
-                    #     timetodealstring = "" + str(int(round(secondstonextdeal, 0))) + " more seconds"
-                    # else:
-                    #     timetodealstring = "" + str(int(round(secondstonextdeal / 60, 0))) + " more minutes"
-                    #
-                    # await client.send_message(msg.channel, "You've gotta wait " + timetodealstring
-                    #                           + " until your next deal " + msg.author.mention + ".")
+                    secondstonextdeal = dbfunctions.get_remaining_cooldown_time(msg.author)
+                    if secondstonextdeal <= 60:
+                        timetodealstring = "" + str(int(round(secondstonextdeal, 0))) + " more seconds"
+                    else:
+                        timetodealstring = "" + str(int(round(secondstonextdeal / 60, 0))) + " more minutes"
+
+                    await client.send_message(msg.channel, "You've gotta wait " + timetodealstring
+                                              + " until your next deal " + msg.author.mention + ".")
                 else:
                     seller = msg.author
                     dbfunctions.set_deal_status(seller, True)
@@ -352,7 +351,7 @@ async def on_message(msg):
                     await client.send_message(msg.channel, "You're not in the cooldown period "
                                               + msg.author.mention + "!")
                 else:
-                    secondstonextdeal = functions.get_remaining_cooldown_time(msg.author)
+                    secondstonextdeal = dbfunctions.get_remaining_cooldown_time(msg.author)
                     if secondstonextdeal <= 60:
                         timetodealstring = "" + str(int(round(secondstonextdeal, 0))) + " more seconds"
                     else:

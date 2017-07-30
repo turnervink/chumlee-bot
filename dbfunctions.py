@@ -186,6 +186,17 @@ def get_cooldown_end_time(user):
     return db.child("cooldowns").child(user).child("cooldownEnd").get().val()
 
 
+def get_remaining_cooldown_time(user):
+    if hasattr(user, "id"):
+        user = user.id
+
+    try:
+        return db.child("cooldowns").child(user).child("cooldownEnd").get().val() - int(time.time())
+    except ValueError:
+        print("Error calculating time left in cooldown!")
+        return None
+
+
 def update_cooldown_end(user):
     if hasattr(user, "id"):
         user = user.id
