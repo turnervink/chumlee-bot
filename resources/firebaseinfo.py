@@ -13,7 +13,7 @@ result = req.json()
 config = {
   "apiKey": "AIzaSyAF0_Z_eSA0ICIvML2PouaCuizk3ADUWVg",
   "authDomain": "chumlee-bot.firebaseapp.com",
-  "databaseURL": "https://chumlee-bot.firebaseio.com/",
+  "databaseURL": "https://chumlee-bot.firebaseio.com/" + os.environ["location"],
   "storageBucket": "chumlee-bot.appspot.com",
   "serviceAccount": {
     "type": "service_account",
