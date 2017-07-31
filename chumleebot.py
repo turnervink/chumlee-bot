@@ -40,7 +40,8 @@ commands = [
     ".medals",
     ".mymedals",
     ".profile",
-    ".buymedal"
+    ".buymedal",
+    ".lotto"
     # ".gif"
 ]
 
@@ -404,6 +405,30 @@ async def on_message(msg):
                     await client.send_message(msg.channel, "Usage: .buymedal <medal>")
                 else:
                     await client.send_message(msg.channel, functions.buy_medal(msg.author, args[1]))
+
+            elif msg.content.startswith(".lotto"):
+                args = str.split(msg.content)
+
+                if not len(args) == 2:
+                    await client.send_message(msg.channel, "Usage: .lotto <bet>")
+                else:
+                    bet = int(args[1])
+                    await client.send_message(msg.channel, msg.author.mention
+                                              + " has started a Chumlottery! Type **.bet** to bet "
+                                              + str(bet) + " <:chumcoin:337841443907305473> and join!")
+
+                    players = []
+
+                    def check(i):
+                        if i.content == ".bet":
+                            players.append(i.author)
+
+                    response = await client.wait_for_message(timeout=30, check=check)
+
+                    if response is None:
+                        print("Lotto bets ended")
+                        print(players)
+
 
             # Sends a random gif from the resources/img/gifs directory (currently unused).
             elif msg.content.startswith(".gif"):
