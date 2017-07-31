@@ -395,6 +395,7 @@ async def on_message(msg):
 
             # Lists a user's medals.
             elif msg.content.startswith(".mymedals") or msg.content.startswith(".profile"):
+                print("Generating profile")
                 await client.send_file(msg.channel, io.BytesIO(profile.gen_profile(msg.author)), filename="profile.png")
 
             # Lets a user buy a Chummedal.
@@ -428,6 +429,24 @@ async def on_message(msg):
                     if response is None:
                         print("Lotto bets ended")
                         print(players)
+
+                        if len(players) > 1:
+                            await client.send_message(msg.channel, "Alright, no more bets!")
+
+                            # Loop through players and withdraw bets
+
+                            await client.send_message(msg.channel, "Drawing a name... :slot_machine:")
+
+                            winner = random.choice(players)
+                            print(winner.display_name)
+
+                            await client.send_message(msg.channel, "Congrats "
+                                                      + winner.mention + "! You won X  <:chumcoin:337841443907305473>!")
+
+                            # Award prize
+
+                        else:
+                            await client.send_message(msg.channel, "No one entered the Chumlottery!")
 
 
             # Sends a random gif from the resources/img/gifs directory (currently unused).
