@@ -321,3 +321,11 @@ def get_medals(user):
         return None
 
     return medals
+
+
+def update_lotto_status(server, state):
+    db.child("lotteries").child(server.id).child("lottoInProgress").set(state)
+
+
+def get_lotto_status(server):
+    return db.child("lotteries").child(server.id).child("lottoInProgress").get().val()

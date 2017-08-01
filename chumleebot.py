@@ -17,6 +17,7 @@ medals = resources.medals
 
 client = discord.Client()
 
+
 allowedchannels = ["bot-testing", "the-pawnshop"]  # Names of channels where bot commands can be used
 globalcommands = [".help", ".commands"]  # Commands that can be used in any channel
 
@@ -410,21 +411,36 @@ async def on_message(msg):
             elif msg.content.startswith(".lotto"):
                 args = str.split(msg.content)
 
-                if not len(args) == 2:
+                if not dbfunctions.is_registered(msg.author):
+                    await client.send_message(msg.channel, "You need to use **.register** first "
+                                              + msg.author.mention + "!")
+                elif not len(args) == 2:
                     await client.send_message(msg.channel, "Usage: .lotto <bet>")
+                elif dbfunctions.get_lotto_status(msg.server):
+                    await client.send_message(msg.channel,
+                                              "Looks like a Chumlottery is already in progress on this server!")
                 else:
+                    dbfunctions.update_lotto_status(msg.server, True)
                     bet = int(args[1])
+                    jackpot = 0
+
                     await client.send_message(msg.channel, msg.author.mention
                                               + " has started a Chumlottery! Type **.bet** to bet "
                                               + str(bet) + " <:chumcoin:337841443907305473> and join!")
 
-                    players = []
+                    players = [msg.author]
 
                     def check(i):
-                        if i.content == ".bet":
+                        if not i.author.id == msg.author.id \
+                                and i.author not in players \
+                                and dbfunctions.is_registered(i.author) \
+                                and i.content == ".bet":
+                            print(i.author.display_name + " entered the lotto")
                             players.append(i.author)
+                        else:
+                            print("Not a valid .bet")
 
-                    response = await client.wait_for_message(timeout=30, check=check)
+                    response = await client.wait_for_message(timeout=10, check=check)
 
                     if response is None:
                         print("Lotto bets ended")
@@ -433,21 +449,29 @@ async def on_message(msg):
                         if len(players) > 1:
                             await client.send_message(msg.channel, "Alright, no more bets!")
 
-                            # Loop through players and withdraw bets
+                            for user in players:
+                                print("Withdrawing " + str(bet) + " from " + user.display_name)
+                                await client.send_message(msg.channel, dbfunctions.withdraw(user, bet))
+                                jackpot += bet
+
+                            print(jackpot)
 
                             await client.send_message(msg.channel, "Drawing a name... :slot_machine:")
 
                             winner = random.choice(players)
                             print(winner.display_name)
 
-                            await client.send_message(msg.channel, "Congrats "
-                                                      + winner.mention + "! You won X  <:chumcoin:337841443907305473>!")
+                            await client.send_message(msg.channel, "Congrats " + winner.mention + "! You won "
+                                                      + str(jackpot) + " <:chumcoin:337841443907305473>!")
 
-                            # Award prize
+                            await client.send_message(msg.channel, dbfunctions.deposit(winner, jackpot))
+                            dbfunctions.update_lotto_status(msg.server, False)
 
                         else:
-                            await client.send_message(msg.channel, "No one entered the Chumlottery!")
+                            await client.send_message(msg.channel, "No registered users entered the Chumlottery!")
 
+                            dbfunctions.deposit(msg.author, bet)
+                            dbfunctions.update_lotto_status(msg.server, False)
 
             # Sends a random gif from the resources/img/gifs directory (currently unused).
             elif msg.content.startswith(".gif"):
