@@ -440,7 +440,7 @@ async def on_message(msg):
                         else:
                             print("Not a valid .bet")
 
-                    response = await client.wait_for_message(timeout=10, check=check)
+                    response = await client.wait_for_message(timeout=60, check=check)
 
                     if response is None:
                         print("Lotto bets ended")
@@ -470,7 +470,6 @@ async def on_message(msg):
                         else:
                             await client.send_message(msg.channel, "No registered users entered the Chumlottery!")
 
-                            dbfunctions.deposit(msg.author, bet)
                             dbfunctions.update_lotto_status(msg.server, False)
 
             # Sends a random gif from the resources/img/gifs directory (currently unused).
