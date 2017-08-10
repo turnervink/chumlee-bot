@@ -231,6 +231,31 @@ def update_cooldown_end(user):
             db.child("cooldowns").child(user).child("cooldownEnd").set(now + cooldowntime)
 
 
+def update_last_nodeal_time(user):
+    """
+    Sets the last time a user rejected a deal to the current time.
+
+    :param user: the user ID string or User object to update the time for
+    """
+    if hasattr(user, "id"):
+        user = user.id
+
+    db.child("cooldowns").child(user).child("lastDealRejection").set(int(time.time()))
+
+
+def get_last_nodeal_time(user):
+    """
+    Gets the last time a user rejected a deal.
+
+    :param user: the user ID string or User object to get the time for
+    :return: the time as a Unix timestamp
+    """
+    if hasattr(user, "id"):
+        user = user.id
+
+    return db.child("cooldowns").child(user).child("lastDealRejection").get().val()
+
+
 def get_cooldown_multiplier(user):
     """
     Currently unused. Gets the current cooldown time multiplier for a user.
@@ -324,8 +349,68 @@ def get_medals(user):
 
 
 def update_lotto_status(server, state):
+    """
+    Updates the lottery-in-progress status of a server.
+
+    :param server: the server ID
+    :param state: the state to set (True if a lottery is in progress)
+    """
     db.child("lotteries").child(server.id).child("lottoInProgress").set(state)
 
 
 def get_lotto_status(server):
+    """
+    Gets the lottery-in-progress status of a server.
+
+    :param server: the server ID
+    :return: True if a lottery is in progress
+    """
     return db.child("lotteries").child(server.id).child("lottoInProgress").get().val()
+
+
+def update_deal_attempts(user):
+    """
+    Updates the number of times a user has rejected a deal. If there is no recorded last rejection or no recorded
+    attempts the number is set to 1.
+
+    :param user: the user ID string or User object to set attempts for
+    """
+    if hasattr(user, "id"):
+        user = user.id
+
+    if get_last_nodeal_time(user) is not None and int(time.time()) - get_last_nodeal_time(user) <= cooldowntime:
+        attempts = db.child("cooldowns").child(user).child("dealAttempts").get().val()
+
+        if attempts is None:
+            attempts = 1
+        else:
+            attempts = attempts + 1
+
+        db.child("cooldowns").child(user).child("dealAttempts").set(attempts)
+    else:
+        db.child("cooldowns").child(user).child("dealAttempts").set(1)
+
+
+def reset_deal_attempts(user):
+    """
+    Resets a users deal attempts to 0.
+
+    :param user: the user ID string or User object to reset attempts for
+    """
+    if hasattr(user, "id"):
+        user = user.id
+
+    db.child("cooldowns").child(user).child("dealAttempts").set(0)
+
+
+def get_deal_attempts(user):
+    """
+    Gets the number of deal attempts for a user.
+
+    :param user: the user ID string or User object to get attempts for
+    :return: the number of attempts
+    """
+    if hasattr(user, "id"):
+        user = user.id
+
+    return db.child("cooldowns").child(user).child("dealAttempts").get().val()
