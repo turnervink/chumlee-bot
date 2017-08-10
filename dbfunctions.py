@@ -231,6 +231,20 @@ def update_cooldown_end(user):
             db.child("cooldowns").child(user).child("cooldownEnd").set(now + cooldowntime)
 
 
+def update_last_nodeal_time(user):
+    if hasattr(user, "id"):
+        user = user.id
+
+    db.child("cooldowns").child(user).child("lastDealRejection").set(int(time.time()))
+
+
+def get_last_deal_time(user):
+    if hasattr(user, "id"):
+        user = user.id
+
+    return db.child("cooldowns").child(user).child("lastDealRejection").get().val()
+
+
 def get_cooldown_multiplier(user):
     """
     Currently unused. Gets the current cooldown time multiplier for a user.
@@ -329,3 +343,34 @@ def update_lotto_status(server, state):
 
 def get_lotto_status(server):
     return db.child("lotteries").child(server.id).child("lottoInProgress").get().val()
+
+
+def update_deal_attempts(user):
+    if hasattr(user, "id"):
+        user = user.id
+
+    if get_last_deal_time(user) is not None and int(time.time()) - get_last_deal_time(user) <= cooldowntime:
+        attempts = db.child("cooldowns").child(user).child("dealAttempts").get().val()
+
+        if attempts is None:
+            attempts = 1
+        else:
+            attempts = attempts + 1
+
+        db.child("cooldowns").child(user).child("dealAttempts").set(attempts)
+    else:
+        db.child("cooldowns").child(user).child("dealAttempts").set(1)
+
+
+def reset_deal_attempts(user):
+    if hasattr(user, "id"):
+        user = user.id
+
+    db.child("cooldowns").child(user).child("dealAttempts").set(0)
+
+
+def get_deal_attempts(user):
+    if hasattr(user, "id"):
+        user = user.id
+
+    return db.child("cooldowns").child(user).child("dealAttempts").get().val()

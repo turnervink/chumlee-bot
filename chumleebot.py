@@ -278,10 +278,20 @@ async def on_message(msg):
 
                     await client.send_message(msg.channel, "You've gotta wait " + timetodealstring
                                               + " until your next deal " + msg.author.mention + ".")
+                # check if nodeal count is >= 3
+                # if true, say you can't make a deal and start cooldown
+                # reset count to 0
+                elif dbfunctions.get_deal_attempts(msg.author) is not None \
+                        and dbfunctions.get_deal_attempts(msg.author) >= 3:
+                    print("too many attempts!")
+                    await client.send_message(msg.channel,
+                                              "You've tried to make too many deals lately " + msg.author.mention
+                                              + "! Come back a bit later.")
+                    dbfunctions.reset_deal_attempts(msg.author)
+                    dbfunctions.update_cooldown_end(msg.author)
                 else:
                     seller = msg.author
                     dbfunctions.set_deal_status(seller, True)
-                    dbfunctions.adjust_cooldown_multiplier(seller, int(time.time()))
 
                     args = str.split(msg.content)
                     files = msg.attachments
@@ -316,6 +326,8 @@ async def on_message(msg):
                                 dbfunctions.update_cooldown_end(seller)
 
                             elif response.content == ".deal":
+                                dbfunctions.adjust_cooldown_multiplier(seller, int(time.time()))
+
                                 await client.send_message(msg.channel,
                                                           "Alright! I'll meet you over there and do some paperwork.")
                                 await client.send_message(msg.channel,
@@ -325,14 +337,16 @@ async def on_message(msg):
 
                                 dbfunctions.deposit(msg.author, value)
                                 dbfunctions.set_deal_status(seller, False)
+                                dbfunctions.reset_deal_attempts(seller)
                                 dbfunctions.update_cooldown_end(seller)
 
                             elif response.content == ".nodeal":
                                 await client.send_message(msg.channel, "Alright, no deal then.")
 
                                 dbfunctions.set_deal_status(seller, False)
-                                dbfunctions.update_cooldown_end(seller)
-
+                                # increment nodeal counter
+                                dbfunctions.update_deal_attempts(seller)
+                                dbfunctions.update_last_nodeal_time(seller)
                             else:
                                 await client.send_message(msg.channel, "Something went wrong!")
 
@@ -450,9 +464,15 @@ async def on_message(msg):
                             await client.send_message(msg.channel, "Alright, no more bets!")
 
                             for user in players:
-                                print("Withdrawing " + str(bet) + " from " + user.display_name)
-                                await client.send_message(msg.channel, dbfunctions.withdraw(user, bet))
-                                jackpot += bet
+                                if not dbfunctions.check_for_funds(user, bet):
+                                    print(user.display_name + " is poor and is being removed from the lotto")
+                                    await client.send_message(msg.channel, user.mention
+                                                              + " doesn't have the Chumcoins to play the Chumlottery!")
+                                    del players[user]
+                                else:
+                                    print("Withdrawing " + str(bet) + " from " + user.display_name)
+                                    await client.send_message(msg.channel, dbfunctions.withdraw(user, bet))
+                                    jackpot += bet
 
                             print(jackpot)
 
