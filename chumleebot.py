@@ -439,8 +439,12 @@ async def on_message(msg):
 
             # Lists a user's medals.
             elif msg.content.startswith(".mymedals") or msg.content.startswith(".profile"):
-                print("Generating profile")
-                await client.send_file(msg.channel, io.BytesIO(profile.gen_profile(msg.author)), filename="profile.png")
+                if not dbfunctions.is_registered(msg.author):
+                    await client.send_message(msg.channel, "You need to use **.register** first "
+                                              + msg.author.mention + "!")
+                else:
+                    print("Generating profile")
+                    await client.send_file(msg.channel, io.BytesIO(profile.gen_profile(msg.author)), filename="profile.png")
 
             # Lets a user buy a Chummedal.
             elif msg.content.startswith(".buymedal"):
