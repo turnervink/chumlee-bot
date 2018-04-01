@@ -414,3 +414,42 @@ def get_deal_attempts(user):
         user = user.id
 
     return db.child("cooldowns").child(user).child("dealAttempts").get().val()
+
+
+def update_user_metadata(user):
+    """
+    Updates the username for the user.
+
+    :param user: the User object to update the username for
+    """
+
+    db.child("users").child(user.id).child("metadata").child("userName").set(user.name)
+    db.child("users").child(user.id).child("metadata").child("discriminator").set(user.discriminator)
+
+
+def push_analytics_datapoint(msg):
+    """
+    Push a command use.
+
+    :param msg: the message containing the command
+    """
+    db.child("analytics").child(msg.server.id).child("serverName").set(msg.server.name)
+    db.child("analytics").child(msg.server.id).child("serverRegion").set(str(msg.server.region))
+    db.child("analytics").child(msg.server.id).child("memberCount").set(msg.server.member_count)
+    db.child("analytics").child(msg.server.id).child("commands").child(msg.id).set({
+        "command": msg.content,
+        "issuingUser": msg.author.id,
+        "timeIssued": str(msg.timestamp)
+    })
+
+
+def push_bot_response(msg, response):
+    """
+    Pushes a response from the bot to an analytics datapoint.
+
+    :param msg: the message the bot is responding to
+    :param response: the response the bot has given
+    """
+
+    db.child("analytics").child(msg.server.id).child("commands").child(msg.id).child("botResponses").push(response)
+
