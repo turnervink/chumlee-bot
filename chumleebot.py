@@ -78,6 +78,13 @@ async def on_message(msg):
         else:
             await client.send_typing(msg.channel)
 
+            # Push a new analytics datapoint
+            dbfunctions.push_analytics_datapoint(msg)
+
+            if dbfunctions.is_registered(msg.author):
+                # Update user info in Firebase
+                dbfunctions.update_user_metadata(msg.author)
+
             # Displays a help/welcome message to get users started.
             if msg.content.startswith(".help"):
                 welcomemsg = ("Hi! I'm Chumlee, and I run this pawn shop. To get started, "
@@ -119,6 +126,8 @@ async def on_message(msg):
             elif msg.content.startswith(".register"):
                 if not dbfunctions.is_registered(msg.author):
                     newuserdata = {
+                        "userName": msg.author.name,
+                        "discriminator": msg.author.discriminator,
                         "balance": 20,
                         "isInDeal": False,
                         "medals": {
@@ -263,9 +272,13 @@ async def on_message(msg):
             elif msg.content.startswith(".appraise"):
 
                 if not dbfunctions.is_registered(msg.author):
+                    dbfunctions.push_bot_response(msg, "You need to use **.register** first "
+                                              + msg.author.mention + "!")
                     await client.send_message(msg.channel, "You need to use **.register** first "
                                               + msg.author.mention + "!")
                 elif dbfunctions.is_in_deal(msg.author):
+                    dbfunctions.push_bot_response(msg, "Looks like you've already got a deal on the table "
+                                              + msg.author.mention + "!")
                     await client.send_message(msg.channel,
                                               "Looks like you've already got a deal on the table "
                                               + msg.author.mention + "!")
@@ -275,7 +288,8 @@ async def on_message(msg):
                         timetodealstring = "" + str(int(round(secondstonextdeal, 0))) + " more seconds"
                     else:
                         timetodealstring = "" + str(int(round(secondstonextdeal / 60, 0))) + " more minutes"
-
+                    dbfunctions.push_bot_response(msg, "You've gotta wait " + timetodealstring
+                                              + " until your next deal " + msg.author.mention + ".")
                     await client.send_message(msg.channel, "You've gotta wait " + timetodealstring
                                               + " until your next deal " + msg.author.mention + ".")
                 # check if nodeal count is >= 3
@@ -284,6 +298,8 @@ async def on_message(msg):
                 elif dbfunctions.get_deal_attempts(msg.author) is not None \
                         and dbfunctions.get_deal_attempts(msg.author) >= 3:
                     print("too many attempts!")
+                    dbfunctions.push_bot_response(msg, "You've tried to make too many deals lately " + msg.author.mention
+                                              + "! Come back a bit later.")
                     await client.send_message(msg.channel,
                                               "You've tried to make too many deals lately " + msg.author.mention
                                               + "! Come back a bit later.")
@@ -303,14 +319,19 @@ async def on_message(msg):
                     quote = functions.get_appraisal_quote(base)
 
                     if len(args) == 1 and len(files) == 0:
+                        dbfunctions.push_bot_response(msg, "You must include something to appraise")
                         await client.send_message(msg.channel, "You must include something to appraise")
                         dbfunctions.set_deal_status(seller, False)
                     elif len(args) > 1 and re.match('<@!?338421932426919936>', args[1]):
+                        dbfunctions.push_bot_response(msg, "I'll all about self love " + msg.author.mention
+                                                  + ", so I'll give myself a 10/10.")
                         await client.send_message(msg.channel, "I'll all about self love " + msg.author.mention
                                                   + ", so I'll give myself a 10/10.")
                         dbfunctions.set_deal_status(msg.author, False)
                     else:
                         if not value == 0:
+                            dbfunctions.push_bot_response(msg, "\n\n" + msg.author.mention + " Offer: "
+                                                      + str(value) + " <:chumcoin:337841443907305473> (.deal/.nodeal)")
                             await client.send_message(msg.channel, quote + "\n\n" + msg.author.mention + " Offer: "
                                                       + str(value) + " <:chumcoin:337841443907305473> (.deal/.nodeal)")
 
@@ -320,6 +341,7 @@ async def on_message(msg):
                             response = await client.wait_for_message(timeout=30.0, author=msg.author, check=check)
 
                             if response is None:
+                                dbfunctions.push_bot_response(msg.id, "Alright, no deal then.")
                                 await client.send_message(msg.channel, "Alright, no deal then.")
 
                                 dbfunctions.set_deal_status(seller, False)
@@ -328,8 +350,13 @@ async def on_message(msg):
                             elif response.content == ".deal":
                                 dbfunctions.adjust_cooldown_multiplier(seller, int(time.time()))
 
+                                dbfunctions.push_bot_response(msg,
+                                                              "Alright! I'll meet you over there and do some paperwork.")
                                 await client.send_message(msg.channel,
                                                           "Alright! I'll meet you over there and do some paperwork.")
+                                dbfunctions.push_bot_response(msg, "<:chumlee:337842115931537408>  :arrow_right:  "
+                                                          "<:chumcoin:337841443907305473> x" + str(
+                                                              value) + "  :arrow_right:  " + msg.author.mention)
                                 await client.send_message(msg.channel,
                                                           "<:chumlee:337842115931537408>  :arrow_right:  "
                                                           "<:chumcoin:337841443907305473> x" + str(
@@ -449,6 +476,7 @@ async def on_message(msg):
                                 and i.author not in players \
                                 and dbfunctions.is_registered(i.author) \
                                 and i.content == ".bet":
+                            
                             print(i.author.display_name + " entered the lotto")
                             players.append(i.author)
                         else:

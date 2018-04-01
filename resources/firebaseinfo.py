@@ -1,14 +1,5 @@
 import pyrebase
-import requests
 import os
-
-url = "https://api.heroku.com/apps/chumlee-bot/config-vars"
-headers = {
-  "Accept": "application/vnd.heroku+json; version=3"
-}
-
-req = requests.get(url, headers=headers)
-result = req.json()
 
 config = {
   "apiKey": "AIzaSyAF0_Z_eSA0ICIvML2PouaCuizk3ADUWVg",
