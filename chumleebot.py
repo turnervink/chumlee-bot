@@ -57,7 +57,7 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print("-----")
-    await client.change_presence(game=discord.Game(name=random.choice(resources.prawnsrars.statuses)))
+    await client.change_presence(game=discord.Game(name=".help"))
 
 
 @client.event
@@ -91,7 +91,10 @@ async def on_message(msg):
                               "use **.register** to register yourself in the database. "
                               "Then use **.commands** to see what I can do!  If you "
                               "haven't already, set up a channel called **#the-pawnshop** "
-                              "so you can interact with me!")
+                              "so you can interact with me!"
+                              "\n\n"
+                              "By having me in your server, you're agreeing to the terms of service "
+                              "which can be found here https://sites.google.com/view/chumlee-bot-tos/home")
                 await client.send_message(msg.channel, welcomemsg)
 
             # Displays available commands and their uses.
