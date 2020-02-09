@@ -2,7 +2,7 @@ import pyrebase
 import os
 
 config = {
-    "apiKey": "AIzaSyAF0_Z_eSA0ICIvML2PouaCuizk3ADUWVg",
+    "apiKey": os.environ['FIREBASE_API_KEY'],
     "authDomain": "chumlee-bot.firebaseapp.com",
     "databaseURL": "https://chumlee-bot.firebaseio.com/" + os.environ["DB_ROOT"],
     "storageBucket": "chumlee-bot.appspot.com",
