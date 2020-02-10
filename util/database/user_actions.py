@@ -21,6 +21,10 @@ def is_registered(user: discord.User) -> bool:
     return record.val() is not None
 
 
+def is_in_deal(user: discord.User) -> bool:
+    return db.child('users').child(user.id).child('isInDeal').get().val()
+
+
 def get_balance(user: discord.User) -> int:
     return db.child('users').child(user.id).child('balance').get().val()
 

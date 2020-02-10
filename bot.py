@@ -13,6 +13,7 @@ async def on_ready():
     bot.load_extension('command.user.registration')
     bot.load_extension('command.user.profile')
     bot.load_extension('command.user.transaction')
+    bot.load_extension('command.pawnshop.transaction')
     print('Bot ready!')
 
 bot.run(os.environ['BOT_TOKEN'])
