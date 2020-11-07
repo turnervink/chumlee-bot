@@ -50,7 +50,7 @@ def deposit(user, amt):
         mention = user.mention
         user = user.id
     else:
-        mention = "<@" + user + ">"
+        mention = "<@" + str(user) + ">"
 
     try:
         amt = int(amt)
@@ -79,7 +79,7 @@ def withdraw(user, amt):
         mention = user.mention
         user = user.id
     else:
-        mention = "<@" + user + ">"
+        mention = "<@" + str(user) + ">"
 
     try:
         amt = int(amt)
@@ -94,7 +94,7 @@ def withdraw(user, amt):
         return "That's more than " + mention + "'s account has!"
     else:
         db.child("users").child(user).child("balance").set(balance - amt)
-        return "<@" + user + ">  :arrow_right:  <:chumcoin:337841443907305473> x" + str(amt)
+        return "<@" + str(user) + ">  :arrow_right:  <:chumcoin:337841443907305473> x" + str(amt)
 
 
 def transfer(payer, payee, amt):
@@ -110,13 +110,13 @@ def transfer(payer, payee, amt):
         payermention = payer.mention
         payer = payer.id
     else:
-        payermention = "<@" + payer + ">"
+        payermention = "<@" + str(payer) + ">"
 
     if hasattr(payee, "id"):
         payeemention = payee.mention
         payee = payee.id
     else:
-        payeemention = "<@" + payee + ">"
+        payeemention = "<@" + str(payee) + ">"
 
     try:
         amt = int(amt)
@@ -149,7 +149,7 @@ def check_for_funds(user, amt):
     if hasattr(user, "id"):
         user = user.id
 
-    currentbalance = db.child("users").child(user).child("balance").get().val();
+    currentbalance = db.child("users").child(user).child("balance").get().val()
     return currentbalance >= amt
 
 
@@ -425,31 +425,3 @@ def update_user_metadata(user):
 
     db.child("users").child(user.id).child("metadata").child("userName").set(user.name)
     db.child("users").child(user.id).child("metadata").child("discriminator").set(user.discriminator)
-
-
-def push_analytics_datapoint(msg):
-    """
-    Push a command use.
-
-    :param msg: the message containing the command
-    """
-    db.child("analytics").child(msg.server.id).child("serverName").set(msg.server.name)
-    db.child("analytics").child(msg.server.id).child("serverRegion").set(str(msg.server.region))
-    db.child("analytics").child(msg.server.id).child("memberCount").set(msg.server.member_count)
-    db.child("analytics").child(msg.server.id).child("commands").child(msg.id).set({
-        "command": msg.content,
-        "issuingUser": msg.author.id,
-        "timeIssued": str(msg.timestamp)
-    })
-
-
-def push_bot_response(msg, response):
-    """
-    Pushes a response from the bot to an analytics datapoint.
-
-    :param msg: the message the bot is responding to
-    :param response: the response the bot has given
-    """
-
-    db.child("analytics").child(msg.server.id).child("commands").child(msg.id).child("botResponses").push(response)
-
