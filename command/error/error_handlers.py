@@ -4,7 +4,7 @@ from discord.ext import commands
 def handle_command_cooldown_error(ctx, error):
     def time_remaining(seconds: float) -> str:
         if seconds < 60:
-            return f'{round(seconds, 1)} seconds'
+            return f'{round(seconds, 0)} seconds'
 
         minutes = round(seconds / 60)
         return f'{minutes} minutes' if minutes != 1 else f'{minutes} minute'

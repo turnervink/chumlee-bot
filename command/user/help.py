@@ -8,10 +8,7 @@ class Help(commands.Cog):
     @commands.command(name='help', description='Show help info')
     async def help(self, ctx, *cog):
         welcome_message = ("Hi! I'm Chumlee, and I run this pawn shop. To get started, "
-                           "use **.register** to register yourself in the database. "
-                           "Then use **.command** to see what I can do!  If you "
-                           "haven't already, set up a channel called **#the-pawnshop** "
-                           "so you can interact with me!")
+                           "use **.register**, then use **.commands** to see what I can do!")
 
         await ctx.send(welcome_message)
 

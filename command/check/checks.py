@@ -1,7 +1,9 @@
 from discord.ext import commands
 
 from command.error import errors
-from util.database import user_actions
+from util.database import user_actions, cooldown_actions
+
+import time
 
 
 def user_registered():
@@ -29,6 +31,20 @@ def user_not_in_deal():
             return True
         else:
             raise errors.UserAlreadyInDealError(ctx.message.author)
+
+    return commands.check(predicate)
+
+
+def user_not_in_cooldown():
+    def predicate(ctx):
+        cooldown_end = cooldown_actions.get_cooldown_end_time(ctx.message.author)
+        if cooldown_end is None:
+            return True
+        else:
+            now = int(time.time())
+            if not now > cooldown_end:
+                seconds_remaining = cooldown_end - now
+                raise commands.CommandOnCooldown(commands.cooldown(1, 900), seconds_remaining)
 
     return commands.check(predicate)
 
