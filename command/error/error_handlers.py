@@ -27,6 +27,8 @@ class CommandErrorHandler(commands.Cog):
 
         if isinstance(error, commands.CommandOnCooldown):
             return await ctx.send(handle_command_cooldown_error(ctx, error))
+        elif isinstance(error, commands.BadArgument):
+            return await ctx.send(f"Usage: {ctx.command.usage}")
 
         await ctx.send(error)
 

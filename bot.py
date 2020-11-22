@@ -20,7 +20,6 @@ async def is_in_valid_channel(ctx: commands.Context):
 @bot.event
 async def on_ready():
     bot.load_extension('command.error.error_handlers')
-    bot.load_extension('command.greetings')
     bot.load_extension('command.user.help')
     bot.load_extension('command.user.registration')
     bot.load_extension('command.user.profile')

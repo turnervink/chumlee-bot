@@ -16,7 +16,7 @@ class Help(commands.Cog):
     async def commands(self, ctx):
         response = "```"
         for command in self.bot.commands:
-            response += f"{command.name}\n"
+            response += f"{command.name} - {command.description}\n"
         response += "```"
 
         await ctx.send(response)
