@@ -28,9 +28,6 @@ class CommandErrorHandler(commands.Cog):
         if isinstance(error, commands.CommandOnCooldown):
             return await ctx.send(handle_command_cooldown_error(ctx, error))
 
-        if not isinstance(error, commands.CommandOnCooldown) and not isinstance(error, commands.CommandNotFound):
-            ctx.command.reset_cooldown(ctx)
-
         await ctx.send(error)
 
 

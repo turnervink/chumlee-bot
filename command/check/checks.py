@@ -25,16 +25,6 @@ def user_not_registered():
     return commands.check(predicate)
 
 
-def user_not_in_deal():
-    def predicate(ctx):
-        if not user_actions.is_in_deal(ctx.message.author):
-            return True
-        else:
-            raise errors.UserAlreadyInDealError(ctx.message.author)
-
-    return commands.check(predicate)
-
-
 def user_not_in_cooldown():
     def predicate(ctx):
         cooldown_end = cooldown_actions.get_cooldown_end_time(ctx.message.author)

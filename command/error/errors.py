@@ -34,3 +34,10 @@ class NoItemToAppraiseError(commands.CommandError):
         self.user = user
         message = f'{user.mention} you must include an attachment or some text to appraise'
         super().__init__(message=message, *args)
+
+
+class InvalidChannelError(commands.CommandError):
+    def __init__(self, user, *args):
+        self.user = user
+        message = f'{user.mention} only #the-pawnshop can be used for commands!'
+        super().__init__(message=message, *args)
