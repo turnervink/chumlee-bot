@@ -1,7 +1,7 @@
 from command.error import errors
 
 
-class Medal:
+class Chummedal:
     VALID_MEDALS = [
         "paper",
         "chocolate",

@@ -9,7 +9,7 @@ import io
 from command.check import checks
 from util.database import user_actions
 from util.emoji import CHUMCOIN
-from util.pawnshop.medal import Medal
+from util.pawnshop.chummedal import Chummedal
 
 
 class Profile(commands.Cog):
@@ -51,7 +51,7 @@ async def generate_profile(user: discord.User):
 
     if medals is not None:
         for m in medals:
-            medal = Medal(m)
+            medal = Chummedal(m)
             medal_image = Image.open(medal.image_path).resize((216, 209))
             background.paste(medal_image, box=medal.profile_xy, mask=medal_image)
             medal_image.close()

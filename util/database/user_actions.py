@@ -1,6 +1,6 @@
 from .config import db
 from .error.errors import *
-import discord
+from util.pawnshop.chummedal import Chummedal
 
 
 def get_user(user: discord.User):
@@ -32,6 +32,10 @@ def get_medals(user: discord.User):
         return None
 
     return medals
+
+
+def award_medal(user: discord.User, medal: Chummedal):
+    db.child("users").child(user.id).child("medals").child(medal.name).set(True)
 
 
 NEW_USER_DATA = {
