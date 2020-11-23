@@ -25,6 +25,15 @@ def get_balance(user: discord.User) -> int:
     return db.child('users').child(user.id).child('balance').get().val()
 
 
+def get_medals(user: discord.User):
+    try:
+        medals = db.child("users").child(user.id).child("medals").order_by_value().equal_to(True).get().val()
+    except IndexError:
+        return None
+
+    return medals
+
+
 NEW_USER_DATA = {
     "balance": 20,
     "medals": {

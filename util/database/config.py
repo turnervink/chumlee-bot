@@ -1,6 +1,11 @@
 import pyrebase
 import os
 
+
+def noquote(s):
+    return s
+
+
 config = {
     "apiKey": os.environ['FIREBASE_API_KEY'],
     "authDomain": "chumlee-bot.firebaseapp.com",
@@ -19,6 +24,9 @@ config = {
         "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-r5ehf%40chumlee-bot.iam.gserviceaccount.com"
     }
 }
+
+# Pyrebase is broken (see https://github.com/thisbejim/Pyrebase/issues/296), so this is a workaround
+pyrebase.pyrebase.quote = noquote
 
 firebase = pyrebase.initialize_app(config)
 db = firebase.database()

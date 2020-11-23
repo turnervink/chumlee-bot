@@ -41,3 +41,10 @@ class InvalidChannelError(commands.CommandError):
         self.user = user
         message = f'{user.mention} only #the-pawnshop can be used for commands!'
         super().__init__(message=message, *args)
+
+
+class InvalidMedalNameError(commands.CommandError):
+    def __init__(self, invalid_name, *args):
+        self.invalid_name = invalid_name
+        message = f'{invalid_name} is not a valid medal name'
+        super().__init__(message=message, *args)
