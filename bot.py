@@ -6,7 +6,7 @@ from command.error.errors import InvalidChannelError
 
 ALLOWED_CHANNELS = ["bot-testing", "the-pawnshop"]  # Names of channels where bot commands can be used
 
-bot = commands.Bot(command_prefix="$")
+bot = commands.Bot(command_prefix=".")
 
 
 @bot.check

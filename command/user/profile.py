@@ -46,6 +46,11 @@ async def generate_profile(user: discord.User):
     font = ImageFont.truetype("resources/Roboto-Regular.ttf", 90)
     draw.text((305, 32), user.display_name, (255, 255, 255), font=font)
 
+    # Draw the user's balance
+    draw = ImageDraw.Draw(background)
+    font = ImageFont.truetype("resources/Roboto-Regular.ttf", 70)
+    draw.text((406, 155), str(user_actions.get_balance(user)), (255, 255, 255), font=font)
+
     # Fill in the user's acquired medals
     medals = user_actions.get_medals(user)
 
