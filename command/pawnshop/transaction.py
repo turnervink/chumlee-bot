@@ -15,10 +15,12 @@ class Transaction(commands.Cog):
     @commands.command(name="appraise", description="Have Chumlee appraise an item")
     @checks.user_registered()
     @checks.user_not_in_cooldown()
-    @checks.message_has_item_to_appraise()
     async def appraise(self, ctx: commands.Context, *, item=None):
         if ctx.message.author.id in self.deals_in_progress:
             raise errors.UserAlreadyInDealError(ctx.message.author)
+
+        if item is None and ctx.message.attachments is None:
+            raise errors.NoItemToAppraiseError(ctx.message.author)
 
         appraisal = Appraisal()
         self.deals_in_progress[ctx.message.author.id] = appraisal
@@ -35,6 +37,7 @@ class Transaction(commands.Cog):
                         "\n\n"
                         f"{ctx.message.author.mention} No deal {emoji.NO_ENTRY}")
             await ctx.send(response)
+            self.deals_in_progress.pop(ctx.message.author.id)
 
     @commands.command(name="deal", description="Accept an offer")
     @checks.user_registered()
