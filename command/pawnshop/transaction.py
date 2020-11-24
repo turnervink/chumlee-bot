@@ -67,6 +67,22 @@ class Transaction(commands.Cog):
             cooldown_actions.update_cooldown_end_time(ctx.message.author)
             self.deals_in_progress.pop(ctx.message.author.id)
 
+    @commands.command(name="cooldown", description="See how much longer you have left in your cooldown")
+    @checks.user_registered()
+    async def cooldown(self, ctx: commands.Context):
+        cooldown = cooldown_actions.get_remaining_cooldown_time(ctx.message.author)
+
+        if cooldown is not None:
+            if cooldown < 60:
+                time_remaining = f"{round(cooldown, 0)} seconds"
+            else:
+                minutes = round(cooldown / 60)
+                time_remaining = f"{minutes} minutes" if minutes != 1 else f"{minutes} minute"
+
+            await ctx.send(f"You need to wait {time_remaining} until your next appraisal {ctx.message.author.mention}")
+        else:
+            await ctx.send(f"You're not in a cooldown {ctx.message.author.mention}!")
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Transaction(bot))

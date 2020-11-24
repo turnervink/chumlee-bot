@@ -10,8 +10,8 @@ def handle_command_cooldown_error(ctx, error):
         return f'{minutes} minutes' if minutes != 1 else f'{minutes} minute'
 
     if ctx.command.name == 'appraise':
-        return f'{ctx.message.author.mention} you need to wait {time_remaining(error.retry_after)} ' \
-               f'until your next appraisal'
+        return f'{ctx.message.author.mention} You need to wait {time_remaining(error.retry_after)} ' \
+               f'until your next appraisal {ctx.message.author.mention}'
 
     return error
 
