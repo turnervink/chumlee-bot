@@ -1,1 +1,1 @@
-worker: python3 chumleebot.py
+worker: python3 bot.py
