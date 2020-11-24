@@ -35,6 +35,8 @@ def user_not_in_cooldown():
             if not now > cooldown_end:
                 seconds_remaining = cooldown_end - now
                 raise commands.CommandOnCooldown(commands.cooldown(1, 900), seconds_remaining)
+            else:
+                return True
 
     return commands.check(predicate)
 

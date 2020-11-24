@@ -13,8 +13,8 @@ class Transaction(commands.Cog):
         self.deals_in_progress = {}
 
     @commands.command(name="appraise", description="Have Chumlee appraise an item")
-    @checks.user_registered()
     @checks.user_not_in_cooldown()
+    @checks.user_registered()
     async def appraise(self, ctx: commands.Context, *, item=None):
         if ctx.message.author.id in self.deals_in_progress:
             raise errors.UserAlreadyInDealError(ctx.message.author)
