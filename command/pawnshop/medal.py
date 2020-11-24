@@ -2,7 +2,7 @@ from discord.ext import commands
 
 from util import emoji
 from util.database import user_actions, transaction_actions
-from util.pawnshop.chummedal import Chummedal
+from util.pawnshop.medal import Medal as MedalObject
 
 
 class Medal(commands.Cog):
@@ -13,14 +13,14 @@ class Medal(commands.Cog):
     async def list_medals(self, ctx: commands.Context):
         response = ""
 
-        for medal in Chummedal.VALID_MEDALS:
-            response += f"{medal.title()} Chummedal - {Chummedal.MEDAL_DATA[medal]['price']} {emoji.CHUMCOIN}\n"
+        for medal in MedalObject.VALID_MEDALS:
+            response += f"{medal.title()} Chummedal - {MedalObject.MEDAL_DATA[medal]['price']} {emoji.CHUMCOIN}\n"
 
         await ctx.send(response)
 
     @commands.command(name="buymedal", description="Buy a Chummedal")
     async def buy_medal(self, ctx: commands.Context, medal_name: str):
-        medal = Chummedal(medal_name.lower())
+        medal = MedalObject(medal_name.lower())
         user_medals = user_actions.get_medals(ctx.message.author)
 
         if user_medals is None or medal.name not in user_medals:

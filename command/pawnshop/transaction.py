@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 from command.check import checks
-from util.database import transaction_actions, cooldown_actions
+from util.database import transaction_actions, cooldown_actions, user_actions
 from util.pawnshop.appraisal import Appraisal
 from util import emoji
 from command.error import errors

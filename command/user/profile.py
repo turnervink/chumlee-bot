@@ -9,7 +9,8 @@ import io
 from command.check import checks
 from util.database import user_actions
 from util.emoji import CHUMCOIN
-from util.pawnshop.chummedal import Chummedal
+from util.pawnshop.medal import Medal
+from util.pawnshop.level import Level
 
 
 class Profile(commands.Cog):
@@ -51,12 +52,18 @@ async def generate_profile(user: discord.User):
     font = ImageFont.truetype("resources/Roboto-Regular.ttf", 70)
     draw.text((406, 155), str(user_actions.get_balance(user)), (255, 255, 255), font=font)
 
+    # Draw the user's level title
+    # level = Level(user_actions.get_level(user))
+    # draw = ImageDraw.Draw(background)
+    # font = ImageFont.truetype("resources/Roboto-Regular.ttf", 60)
+    # draw.text((325, 245), level.title, (255, 255, 255), font=font)
+
     # Fill in the user's acquired medals
     medals = user_actions.get_medals(user)
 
     if medals is not None:
         for m in medals:
-            medal = Chummedal(m)
+            medal = Medal(m)
             medal_image = Image.open(medal.image_path).resize((216, 209))
             background.paste(medal_image, box=medal.profile_xy, mask=medal_image)
             medal_image.close()
