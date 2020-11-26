@@ -3,6 +3,7 @@ from discord.ext import commands
 from command.check import checks
 from util.database import transaction_actions, cooldown_actions, user_actions
 from util.pawnshop.appraisal import Appraisal
+from util.pawnshop.level import Level
 from util import emoji
 from command.error import errors
 
@@ -52,8 +53,14 @@ class Transaction(commands.Cog):
             await ctx.send(response)
 
             transaction_actions.deposit(ctx.message.author, appraisal.offer)
+            did_level_up = user_actions.user_will_level_up(ctx.message.author, appraisal.offer)
+            user_actions.increment_total_earnings(ctx.message.author, appraisal.offer)
             cooldown_actions.update_cooldown_end_time(ctx.message.author)
             self.deals_in_progress.pop(ctx.message.author.id)
+
+            if did_level_up:
+                level = Level(user_actions.get_total_earnings(ctx.message.author))
+                await ctx.send(f"Congrats {ctx.message.author.mention}! You're now a {level.title}!")
 
     @commands.command(name="nodeal", description="Reject an offer")
     @checks.user_registered()

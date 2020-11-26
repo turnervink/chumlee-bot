@@ -53,10 +53,10 @@ async def generate_profile(user: discord.User):
     draw.text((406, 155), str(user_actions.get_balance(user)), (255, 255, 255), font=font)
 
     # Draw the user's level title
-    # level = Level(user_actions.get_level(user))
-    # draw = ImageDraw.Draw(background)
-    # font = ImageFont.truetype("resources/Roboto-Regular.ttf", 60)
-    # draw.text((325, 245), level.title, (255, 255, 255), font=font)
+    level = Level(user_actions.get_total_earnings(user))
+    draw = ImageDraw.Draw(background)
+    font = ImageFont.truetype("resources/Roboto-Regular.ttf", 60)
+    draw.text((325, 245), level.title, (255, 255, 255), font=font)
 
     # Fill in the user's acquired medals
     medals = user_actions.get_medals(user)

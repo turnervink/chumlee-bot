@@ -1,6 +1,7 @@
 from .config import db
 from .error.errors import *
 from util.pawnshop.medal import Medal
+from util.pawnshop.level import Level
 
 
 def get_user(user: discord.User):
@@ -38,17 +39,43 @@ def award_medal(user: discord.User, medal: Medal):
     db.child("users").child(user.id).child("medals").child(medal.name).set(True)
 
 
+def user_will_level_up(user: discord.User, new_deposit: int):
+    current_total = get_total_earnings(user)
+    current_level = Level(current_total)
+    potential_new_level = Level(current_total + new_deposit)
+
+    if current_level.title != potential_new_level.title:
+        return True
+
+    return False
+
+
+def get_total_earnings(user: discord.User):
+    earnings = db.child("users").child(user.id).child("totalEarnings").get().val()
+    if earnings is None:
+        db.child("users").child(user.id).child("totalEarnings").set(0)
+        return 0
+
+    return earnings
+
+
+def increment_total_earnings(user: discord.User, amt: int):
+    current_total = get_total_earnings(user)
+
+    if current_total is None:
+        current_total = 0
+
+    db.child("users").child(user.id).child("totalEarnings").set(current_total + amt)
+
+
 def get_level(user: discord.User):
-    return db.child("users").child(user.id).child("level").get().val()
-
-
-def set_level(user: discord.User, new_level: int):
-    db.child("users").child(user.id).child("level").set(new_level)
+    earnings = get_total_earnings(user)
+    return Level(earnings)
 
 
 NEW_USER_DATA = {
     "balance": 20,
-    "level": 1,
+    "totalEarnings": 0,
     "medals": {
         "paper": False,
         "chocolate": False,

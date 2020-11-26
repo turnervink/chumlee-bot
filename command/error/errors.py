@@ -48,3 +48,10 @@ class InvalidMedalNameError(commands.CommandError):
         self.invalid_name = invalid_name
         message = f'{invalid_name} is not a valid medal name'
         super().__init__(message=message, *args)
+
+
+class LevelNotFoundError(commands.CommandError):
+    def __init__(self, value, *args):
+        self.value = value
+        message = f"No level found for earnings value {value}"
+        super().__init__(message=message, *args)
