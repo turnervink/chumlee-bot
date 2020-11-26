@@ -33,7 +33,7 @@ class Transaction(commands.Cog):
                         f"{self.bot.command_prefix}deal / {self.bot.command_prefix}nodeal")
             await ctx.send(response)
         else:
-            response = ("Sorry, no can do."
+            response = (f"{appraisal.offer_message}"
                         "\n\n"
                         f"{ctx.message.author.mention} No deal {emoji.NO_ENTRY}")
             await ctx.send(response)
