@@ -40,7 +40,7 @@ class Lotto(commands.Cog):
                        "\n\n"
                        f"Type **{self.bot.command_prefix}bet** to bet {bet} {emoji.CHUMCOIN} and join!")
 
-        await sleep(10)
+        await sleep(60)
 
         if not len(self.lotteries[ctx.guild.id]["players"]) > 1:
             await ctx.send("No one else joined the Chumlottery, so it cannot run.")
