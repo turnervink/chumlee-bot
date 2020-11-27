@@ -35,7 +35,8 @@ class Lotto(commands.Cog):
             ]
         }
 
-        await ctx.send(f"{ctx.message.author.mention} has started a Chumlottery!"
+        egg = " Nice." if bet == 69 else ""
+        await ctx.send(f"{ctx.message.author.mention} has started a Chumlottery!{egg}"
                        "\n\n"
                        f"Type **{self.bot.command_prefix}bet** to bet {bet} {emoji.CHUMCOIN} and join!")
 
