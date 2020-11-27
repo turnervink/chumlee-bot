@@ -20,8 +20,9 @@ class Profile(commands.Cog):
     @commands.command(name='profile', description='View your profile')
     @checks.user_registered()
     async def profile(self, ctx: commands.Context):
-        profile_bytes = await generate_profile(ctx.message.author)
-        await ctx.send(file=discord.File(io.BytesIO(profile_bytes), filename="profile.png"))
+        async with ctx.message.channel.typing():
+            profile_bytes = await generate_profile(ctx.message.author)
+            await ctx.send(file=discord.File(io.BytesIO(profile_bytes), filename="profile.png"))
 
     @commands.command(name='balance', aliases=['bal'], description='Get your Chumcoin balance')
     @checks.user_registered()
