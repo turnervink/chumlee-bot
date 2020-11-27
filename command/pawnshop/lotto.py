@@ -10,6 +10,9 @@ from util.database import transaction_actions, user_actions
 import random
 
 
+BETTING_WINDOW_LENGTH_SECONDS = 60
+
+
 class Lotto(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -38,9 +41,10 @@ class Lotto(commands.Cog):
         egg = " Nice." if bet == 69 else ""
         await ctx.send(f"{ctx.message.author.mention} has started a Chumlottery!{egg}"
                        "\n\n"
-                       f"Type **{self.bot.command_prefix}bet** to bet {bet} {emoji.CHUMCOIN} and join!")
+                       f"Type **{self.bot.command_prefix}bet** to bet {bet} {emoji.CHUMCOIN} and join! Bets are open "
+                       f"for {BETTING_WINDOW_LENGTH_SECONDS} seconds.")
 
-        await sleep(60)
+        await sleep(BETTING_WINDOW_LENGTH_SECONDS)
 
         if not len(self.lotteries[ctx.guild.id]["players"]) > 1:
             await ctx.send("No one else joined the Chumlottery, so it cannot run.")
@@ -62,7 +66,7 @@ class Lotto(commands.Cog):
             await ctx.send(f"Congratulations {winner.mention}! You won {prize} {emoji.CHUMCOIN}!"
                            "\n\n"
                            f"{emoji.CHUMLEE} {emoji.ARROW_RIGHT} {prize} {emoji.CHUMCOIN} "
-                           f"{emoji.ARROW_RIGHT} {ctx.message.author.mention}")
+                           f"{emoji.ARROW_RIGHT} {winner.mention}")
             transaction_actions.deposit(winner, prize)
 
         self.lotteries.pop(ctx.guild.id)
