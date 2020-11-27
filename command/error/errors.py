@@ -55,3 +55,22 @@ class LevelNotFoundError(commands.CommandError):
         self.value = value
         message = f"No level found for earnings value {value}"
         super().__init__(message=message, *args)
+
+
+class LottoInProgressError(commands.CommandError):
+    def __init__(self):
+        message = f"A lottery is already in progress!"
+        super().__init__(message=message)
+
+
+class NoLottoInProgressError(commands.CommandError):
+    def __init__(self):
+        message = f"There's no lottery in progress!"
+        super().__init__(message=message)
+
+
+class UserAlreadyInLottoError(commands.CommandError):
+    def __init__(self, user, *args):
+        self.user = user
+        message = f"You've already bet in this Chumlottery {user.mention}!"
+        super().__init__(message=message)

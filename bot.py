@@ -19,13 +19,14 @@ async def is_in_valid_channel(ctx: commands.Context):
 
 @bot.event
 async def on_ready():
-    bot.load_extension('command.error.error_handlers')
-    bot.load_extension('command.user.help')
-    bot.load_extension('command.user.registration')
-    bot.load_extension('command.user.profile')
-    bot.load_extension('command.user.transaction')
-    bot.load_extension('command.pawnshop.transaction')
-    bot.load_extension('command.pawnshop.medal')
-    print('Bot ready!')
+    bot.load_extension("command.error.error_handlers")
+    bot.load_extension("command.user.help")
+    bot.load_extension("command.user.registration")
+    bot.load_extension("command.user.profile")
+    bot.load_extension("command.user.transaction")
+    bot.load_extension("command.pawnshop.transaction")
+    bot.load_extension("command.pawnshop.medal")
+    bot.load_extension("command.pawnshop.lotto")
+    print("Bot ready!")
 
 bot.run(os.environ['BOT_TOKEN'])
