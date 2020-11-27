@@ -12,6 +12,7 @@ class Transaction(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.deals_in_progress = {}
+        self.offer_rejections = {}
 
     @commands.command(name="appraise", description="Have Chumlee appraise an item")
     @checks.user_not_in_cooldown()
@@ -71,7 +72,16 @@ class Transaction(commands.Cog):
                         f"{ctx.message.author.mention} No deal {emoji.NO_ENTRY}")
             await ctx.send(response)
 
-            cooldown_actions.update_cooldown_end_time(ctx.message.author)
+            if ctx.message.author.id in self.offer_rejections:
+                rejection_count = self.offer_rejections[ctx.message.author.id]
+                if rejection_count == 2:
+                    cooldown_actions.update_cooldown_end_time(ctx.message.author)
+                    self.offer_rejections.pop(ctx.message.author.id)
+                else:
+                    self.offer_rejections[ctx.message.author.id] = rejection_count + 1
+            else:
+                self.offer_rejections[ctx.message.author.id] = 1
+
             self.deals_in_progress.pop(ctx.message.author.id)
 
     @commands.command(name="cooldown", description="See how much longer you have left in your cooldown")
