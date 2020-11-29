@@ -18,6 +18,10 @@ class Transaction(commands.Cog):
     @checks.user_not_in_cooldown()
     @checks.user_registered()
     async def appraise(self, ctx: commands.Context, *, item=None):
+        if item == f"<@!{self.bot.user.id}>":
+            await ctx.send(f"I'm all about self love {ctx.message.author.mention}, so I'll give myself a 10/10!")
+            return
+
         if ctx.message.author.id in self.deals_in_progress:
             raise errors.UserAlreadyInDealError(ctx.message.author)
 

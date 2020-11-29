@@ -53,7 +53,7 @@ def user_will_level_up(user: discord.User, new_deposit: int):
 def get_total_earnings(user: discord.User):
     earnings = db.reference(f"{db_root}/users/{user.id}/totalEarnings").get()
     if earnings is None:
-        db.child("users").child(user.id).child("totalEarnings").set(0)
+        db.reference(f"{db_root}/users/{user.id}/totalEarnings").set(0)
         return 0
 
     return earnings
