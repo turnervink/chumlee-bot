@@ -87,6 +87,16 @@ TIER_FIVE_QUOTES = [
     "Hell yeah I can make you a deal!"
 ]
 
+ACCEPTED_OFFER_QUOTES = [
+    "Alright! I'll meet you over there and do some paperwork.",
+    "Sick! It's a deal!",
+    "Awesome! Let's make a deal!",
+    "Deal!"
+]
 
-
-
+REJECTED_OFFER_QUOTES = [
+    "Okay, no deal then.",
+    "Alright, your loss.",
+    "No deal? Alright then!",
+    "Your call, man. No deal."
+]

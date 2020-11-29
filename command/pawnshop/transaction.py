@@ -1,11 +1,14 @@
+import discord
 from discord.ext import commands
 
 from command.check import checks
 from util.database import transaction_actions, cooldown_actions, user_actions
-from util.pawnshop.appraisal import Appraisal
+from util.pawnshop.appraisal import Appraisal, ACCEPTED_OFFER_QUOTES, REJECTED_OFFER_QUOTES
 from util.pawnshop.level import Level
 from util import emoji
 from command.error import errors
+
+import random
 
 
 class Transaction(commands.Cog):
@@ -51,7 +54,7 @@ class Transaction(commands.Cog):
         if ctx.message.author.id in self.deals_in_progress:
             appraisal = self.deals_in_progress[ctx.message.author.id]
 
-            response = ("Alright! I'll meet you over there and do some paperwork."
+            response = (f"{random.choice(ACCEPTED_OFFER_QUOTES)}"
                         "\n\n"
                         f"{emoji.CHUMLEE} {emoji.ARROW_RIGHT} {appraisal.offer} {emoji.CHUMCOIN} "
                         f"{emoji.ARROW_RIGHT} {ctx.message.author.mention}")
@@ -65,13 +68,21 @@ class Transaction(commands.Cog):
 
             if did_level_up:
                 level = Level(user_actions.get_total_earnings(ctx.message.author))
-                await ctx.send(f"Congrats {ctx.message.author.mention}! You're now a {level.title}!")
+                embed = discord.Embed(title="Level Up! <:chumlee:337842115931537408> :tada:",
+                                      colour=discord.Colour(0xf1c40f),
+                                      description=f"**Congratulations {ctx.message.author.mention}, "
+                                                  f"you levelled up!** \n\n You're now a {level.title}!")
+
+                embed.set_thumbnail(url=ctx.message.author.avatar_url)
+                embed.set_footer(text="Keep levelling up by selling more stuff to Chumlee!")
+
+                await ctx.send(embed=embed)
 
     @commands.command(name="nodeal", description="Reject an offer")
     @checks.user_registered()
     async def nodeal(self, ctx: commands.Context):
         if ctx.message.author.id in self.deals_in_progress:
-            response = ("Okay, no deal then."
+            response = (f"{random.choice(REJECTED_OFFER_QUOTES)}"
                         "\n\n"
                         f"{ctx.message.author.mention} No deal {emoji.NO_ENTRY}")
             await ctx.send(response)
