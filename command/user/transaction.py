@@ -3,6 +3,7 @@ from discord.ext import commands
 
 from command.check import checks
 from util.database import transaction_actions, user_actions
+from util import emoji
 from command.error import errors
 
 
@@ -27,6 +28,10 @@ class Transaction(commands.Cog):
 
         transaction_actions.withdraw(payer, amount)
         transaction_actions.deposit(payee, amount)
+
+        await ctx.send(f"{ctx.message.author.mention} {emoji.ARROW_RIGHT} {amount} {emoji.CHUMCOIN} "
+                       f"{emoji.ARROW_RIGHT} {payee.mention}")
+
 
 
 def setup(bot: commands.Bot):

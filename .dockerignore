@@ -1,0 +1,10 @@
+.DS_Store
+.git
+.idea
+*.env
+.envrc
+.gitignore
+db-creds.json
+Procfile
+runtime.txt
+/venv

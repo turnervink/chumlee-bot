@@ -1,11 +1,11 @@
-from .config import db
+from .config import db, db_root
 from .error.errors import *
 from util.pawnshop.medal import Medal
 from util.pawnshop.level import Level
 
 
 def get_user(user: discord.User):
-    db_record = db.child("users").child(user.id).get().val()
+    db_record = db.reference(f"{db_root}/users/{user.id}").get()
     if db_record is None:
         raise UserNotFoundError(user)
     else:
@@ -13,22 +13,22 @@ def get_user(user: discord.User):
 
 
 def register(user: discord.User):
-    db.child("users").child(user.id).set(NEW_USER_DATA)
+    db.reference(f"{db_root}/users/{user.id}").set(NEW_USER_DATA)
 
 
-def is_registered(user: discord.User) -> bool:
-    record = db.child("users").child(user.id).get()
+def is_registered(user: discord.User):
+    record = db.reference(f"{db_root}/users/{user.id}").get()
 
-    return record.val() is not None
+    return record is not None
 
 
-def get_balance(user: discord.User) -> int:
-    return db.child("users").child(user.id).child("balance").get().val()
+def get_balance(user: discord.User):
+    return db.reference(f"{db_root}/users/{user.id}/balance").get()
 
 
 def get_medals(user: discord.User):
     try:
-        medals = db.child("users").child(user.id).child("medals").order_by_value().equal_to(True).get().val()
+        medals = db.reference(f"{db_root}/users/{user.id}/medals").order_by_value().equal_to(True).get()
     except IndexError:
         return None
 
@@ -36,7 +36,7 @@ def get_medals(user: discord.User):
 
 
 def award_medal(user: discord.User, medal: Medal):
-    db.child("users").child(user.id).child("medals").child(medal.name).set(True)
+    db.reference(f"{db_root}/users/{user.id}/medals/{medal.name}").set(True)
 
 
 def user_will_level_up(user: discord.User, new_deposit: int):
@@ -51,7 +51,7 @@ def user_will_level_up(user: discord.User, new_deposit: int):
 
 
 def get_total_earnings(user: discord.User):
-    earnings = db.child("users").child(user.id).child("totalEarnings").get().val()
+    earnings = db.reference(f"{db_root}/users/{user.id}/totalEarnings").get()
     if earnings is None:
         db.child("users").child(user.id).child("totalEarnings").set(0)
         return 0
@@ -65,7 +65,7 @@ def increment_total_earnings(user: discord.User, amt: int):
     if current_total is None:
         current_total = 0
 
-    db.child("users").child(user.id).child("totalEarnings").set(current_total + amt)
+    db.reference(f"{db_root}/users/{user.id}/totalEarnings").set(current_total + amt)
 
 
 def get_level(user: discord.User):

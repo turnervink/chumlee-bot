@@ -1,32 +1,12 @@
-import pyrebase
+import firebase_admin
+from firebase_admin import db, credentials
+
 import os
 
+cred = credentials.Certificate(os.environ["GOOGLE_APPLICATION_CREDENTIALS"])
+default_app = firebase_admin.initialize_app(cred, {
+    "databaseURL": "https://chumlee-bot.firebaseio.com"
+})
 
-def noquote(s):
-    return s
-
-
-config = {
-    "apiKey": os.environ['FIREBASE_API_KEY'],
-    "authDomain": "chumlee-bot.firebaseapp.com",
-    "databaseURL": "https://chumlee-bot.firebaseio.com/" + os.environ["DB_ROOT"],
-    "storageBucket": "chumlee-bot.appspot.com",
-    "serviceAccount": {
-        "type": "service_account",
-        "project_id": "chumlee-bot",
-        "private_key_id": os.environ["DB_PRIVATE_KEY_ID"],
-        "private_key": os.environ["DB_PRIVATE_KEY"].replace('\\n', '\n'),
-        "client_email": os.environ["DB_CLIENT_EMAIL"],
-        "client_id": os.environ["DB_CLIENT_ID"],
-        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-        "token_uri": "https://accounts.google.com/o/oauth2/token",
-        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-        "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-r5ehf%40chumlee-bot.iam.gserviceaccount.com"
-    }
-}
-
-# Pyrebase is broken (see https://github.com/thisbejim/Pyrebase/issues/296), so this is a workaround
-pyrebase.pyrebase.quote = noquote
-
-firebase = pyrebase.initialize_app(config)
-db = firebase.database()
+db = db
+db_root = os.environ["DB_ROOT"]
