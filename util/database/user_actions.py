@@ -3,6 +3,11 @@ from .error.errors import *
 from util.pawnshop.medal import Medal
 from util.pawnshop.level import Level
 
+import logging
+
+
+logger = logging.getLogger("chumlee-bot")
+
 
 def get_user(user: discord.User):
     db_record = db.reference(f"{db_root}/users/{user.id}").get()
@@ -53,6 +58,7 @@ def user_will_level_up(user: discord.User, new_deposit: int):
 def get_total_earnings(user: discord.User):
     earnings = db.reference(f"{db_root}/users/{user.id}/totalEarnings").get()
     if earnings is None:
+        logger.warning(f"User {user.id} had no totalEarnings, setting it to 0")
         db.reference(f"{db_root}/users/{user.id}/totalEarnings").set(0)
         return 0
 

@@ -1,5 +1,10 @@
 from discord.ext import commands
 
+import logging
+
+
+logger = logging.getLogger("chumlee-bot")
+
 
 def handle_command_cooldown_error(ctx, error):
     def time_remaining(seconds: float) -> str:
@@ -9,7 +14,7 @@ def handle_command_cooldown_error(ctx, error):
         minutes = round(seconds / 60)
         return f"{minutes} minutes" if minutes != 1 else f"{minutes} minute"
 
-    if ctx.command.name == 'appraise':
+    if ctx.command.name == "appraise":
         return f"You need to wait {time_remaining(error.retry_after)} " \
                f"until your next appraisal {ctx.message.author.mention}"
 
@@ -22,15 +27,17 @@ class CommandErrorHandler(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        if hasattr(ctx.command, 'on_error'):
+        logger.error(f"Command {ctx.command.name} raised an error for user {ctx.message.author.id}: %s", error)
+
+        if hasattr(ctx.command, "on_error"):
             return
 
         if isinstance(error, commands.CommandOnCooldown):
             return await ctx.send(handle_command_cooldown_error(ctx, error))
         elif isinstance(error, commands.BadArgument):
             return await ctx.send(f"Usage: {ctx.command.usage}")
-
-        await ctx.send(error)
+        else:
+            await ctx.send("Sorry, something went wrong!")
 
 
 def setup(bot: commands.Bot):
