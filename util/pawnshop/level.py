@@ -24,11 +24,23 @@ class Level:
 
 LEVEL_DATA = [
     {
-        "title": "Chumbaby",
-        "range": (0, 1500)
+        "title": "Chumbebbie",
+        "range": (0, 5000)
     },
     {
         "title": "Chumpeddler",
-        "range": (1500, 5000)
+        "range": (5000, 20000)
+    },
+    {
+        "title": "Chumtrader",
+        "range": (20000, 50000)
+    },
+    {
+        "title": "Chumdealer",
+        "range": (50000, 100000)
+    },
+    {
+        "title": "Chumwholesaler",
+        "range": (100000, 250000)
     }
 ]
