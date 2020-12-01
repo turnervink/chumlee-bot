@@ -21,99 +21,103 @@ class Transaction(commands.Cog):
     @checks.user_not_in_cooldown()
     @checks.user_registered()
     async def appraise(self, ctx: commands.Context, *, item=None):
-        if item == f"<@!{self.bot.user.id}>":
-            await ctx.send(f"I'm all about self love {ctx.message.author.mention}, so I'll give myself a 10/10!")
-            return
+        async with ctx.message.channel.typing():
+            if item == f"<@!{self.bot.user.id}>":
+                await ctx.send(f"I'm all about self love {ctx.message.author.mention}, so I'll give myself a 10/10!")
+                return
 
-        if ctx.message.author.id in self.deals_in_progress:
-            raise errors.UserAlreadyInDealError(ctx.message.author)
+            if ctx.message.author.id in self.deals_in_progress:
+                raise errors.UserAlreadyInDealError(ctx.message.author)
 
-        if item is None and ctx.message.attachments is None:
-            raise errors.NoItemToAppraiseError(ctx.message.author)
+            if item is None and ctx.message.attachments is None:
+                raise errors.NoItemToAppraiseError(ctx.message.author)
 
-        appraisal = Appraisal()
-        self.deals_in_progress[ctx.message.author.id] = appraisal
+            appraisal = Appraisal()
+            self.deals_in_progress[ctx.message.author.id] = appraisal
 
-        if appraisal.offer > 0:
-            response = (f"{appraisal.offer_message}"
-                        "\n\n"
-                        f"{ctx.message.author.mention} How's {appraisal.offer} {emoji.CHUMCOIN} sound?"
-                        "\n\n"
-                        f"{self.bot.command_prefix}deal / {self.bot.command_prefix}nodeal")
-            await ctx.send(response)
-        else:
-            response = (f"{appraisal.offer_message}"
-                        "\n\n"
-                        f"{ctx.message.author.mention} No deal {emoji.NO_ENTRY}")
-            await ctx.send(response)
-            self.deals_in_progress.pop(ctx.message.author.id)
+            if appraisal.offer > 0:
+                response = (f"{appraisal.offer_message}"
+                            "\n\n"
+                            f"{ctx.message.author.mention} How's {appraisal.offer} {emoji.CHUMCOIN} sound?"
+                            "\n\n"
+                            f"{self.bot.command_prefix}deal / {self.bot.command_prefix}nodeal")
+                await ctx.send(response)
+            else:
+                response = (f"{appraisal.offer_message}"
+                            "\n\n"
+                            f"{ctx.message.author.mention} No deal {emoji.NO_ENTRY}")
+                await ctx.send(response)
+                self.deals_in_progress.pop(ctx.message.author.id)
 
     @commands.command(name="deal", description="Accept an offer")
     @checks.user_registered()
     async def deal(self, ctx: commands.Context):
-        if ctx.message.author.id in self.deals_in_progress:
-            appraisal = self.deals_in_progress[ctx.message.author.id]
+        async with ctx.message.channel.typing():
+            if ctx.message.author.id in self.deals_in_progress:
+                appraisal = self.deals_in_progress[ctx.message.author.id]
 
-            response = (f"{random.choice(ACCEPTED_OFFER_QUOTES)}"
-                        "\n\n"
-                        f"{emoji.CHUMLEE} {emoji.ARROW_RIGHT} {appraisal.offer} {emoji.CHUMCOIN} "
-                        f"{emoji.ARROW_RIGHT} {ctx.message.author.mention}")
-            await ctx.send(response)
+                response = (f"{random.choice(ACCEPTED_OFFER_QUOTES)}"
+                            "\n\n"
+                            f"{emoji.CHUMLEE} {emoji.ARROW_RIGHT} {appraisal.offer} {emoji.CHUMCOIN} "
+                            f"{emoji.ARROW_RIGHT} {ctx.message.author.mention}")
+                await ctx.send(response)
 
-            transaction_actions.deposit(ctx.message.author, appraisal.offer)
-            did_level_up = user_actions.user_will_level_up(ctx.message.author, appraisal.offer)
-            user_actions.increment_total_earnings(ctx.message.author, appraisal.offer)
-            cooldown_actions.update_cooldown_end_time(ctx.message.author)
-            self.deals_in_progress.pop(ctx.message.author.id)
+                transaction_actions.deposit(ctx.message.author, appraisal.offer)
+                did_level_up = user_actions.user_will_level_up(ctx.message.author, appraisal.offer)
+                user_actions.increment_total_earnings(ctx.message.author, appraisal.offer)
+                cooldown_actions.update_cooldown_end_time(ctx.message.author)
+                self.deals_in_progress.pop(ctx.message.author.id)
 
-            if did_level_up:
-                level = Level(user_actions.get_total_earnings(ctx.message.author))
-                embed = discord.Embed(title="Level Up! <:chumlee:337842115931537408> :tada:",
-                                      colour=discord.Colour(0xf1c40f),
-                                      description=f"**Congratulations {ctx.message.author.mention}, "
-                                                  f"you levelled up!** \n\n You're now a {level.title}!")
+                if did_level_up:
+                    level = Level(user_actions.get_total_earnings(ctx.message.author))
+                    embed = discord.Embed(title="Level Up! <:chumlee:337842115931537408> :tada:",
+                                          colour=discord.Colour(0xf1c40f),
+                                          description=f"**Congratulations {ctx.message.author.mention}, "
+                                                      f"you levelled up!** \n\n You're now a {level.title}!")
 
-                embed.set_thumbnail(url=ctx.message.author.avatar_url)
-                embed.set_footer(text="Keep levelling up by selling more stuff to Chumlee!")
+                    embed.set_thumbnail(url=ctx.message.author.avatar_url)
+                    embed.set_footer(text="Keep levelling up by selling more stuff to Chumlee!")
 
-                await ctx.send(embed=embed)
+                    await ctx.send(embed=embed)
 
     @commands.command(name="nodeal", description="Reject an offer")
     @checks.user_registered()
     async def nodeal(self, ctx: commands.Context):
-        if ctx.message.author.id in self.deals_in_progress:
-            response = (f"{random.choice(REJECTED_OFFER_QUOTES)}"
-                        "\n\n"
-                        f"{ctx.message.author.mention} No deal {emoji.NO_ENTRY}")
-            await ctx.send(response)
+        async with ctx.message.channel.typing():
+            if ctx.message.author.id in self.deals_in_progress:
+                response = (f"{random.choice(REJECTED_OFFER_QUOTES)}"
+                            "\n\n"
+                            f"{ctx.message.author.mention} No deal {emoji.NO_ENTRY}")
+                await ctx.send(response)
 
-            if ctx.message.author.id in self.offer_rejections:
-                rejection_count = self.offer_rejections[ctx.message.author.id]
-                if rejection_count == 2:
-                    cooldown_actions.update_cooldown_end_time(ctx.message.author)
-                    self.offer_rejections.pop(ctx.message.author.id)
+                if ctx.message.author.id in self.offer_rejections:
+                    rejection_count = self.offer_rejections[ctx.message.author.id]
+                    if rejection_count == 2:
+                        cooldown_actions.update_cooldown_end_time(ctx.message.author)
+                        self.offer_rejections.pop(ctx.message.author.id)
+                    else:
+                        self.offer_rejections[ctx.message.author.id] = rejection_count + 1
                 else:
-                    self.offer_rejections[ctx.message.author.id] = rejection_count + 1
-            else:
-                self.offer_rejections[ctx.message.author.id] = 1
+                    self.offer_rejections[ctx.message.author.id] = 1
 
-            self.deals_in_progress.pop(ctx.message.author.id)
+                self.deals_in_progress.pop(ctx.message.author.id)
 
     @commands.command(name="cooldown", description="See how much longer you have left in your cooldown")
     @checks.user_registered()
     async def cooldown(self, ctx: commands.Context):
-        cooldown = cooldown_actions.get_remaining_cooldown_time(ctx.message.author)
+        async with ctx.message.channel.typing():
+            cooldown = cooldown_actions.get_remaining_cooldown_time(ctx.message.author)
 
-        if cooldown is not None:
-            if cooldown < 60:
-                time_remaining = f"{round(cooldown, 0)} seconds"
+            if cooldown is not None:
+                if cooldown < 60:
+                    time_remaining = f"{round(cooldown, 0)} seconds"
+                else:
+                    minutes = round(cooldown / 60)
+                    time_remaining = f"{minutes} minutes" if minutes != 1 else f"{minutes} minute"
+
+                await ctx.send(f"You need to wait {time_remaining} until your next appraisal {ctx.message.author.mention}")
             else:
-                minutes = round(cooldown / 60)
-                time_remaining = f"{minutes} minutes" if minutes != 1 else f"{minutes} minute"
-
-            await ctx.send(f"You need to wait {time_remaining} until your next appraisal {ctx.message.author.mention}")
-        else:
-            await ctx.send(f"You're not in a cooldown {ctx.message.author.mention}!")
+                await ctx.send(f"You're not in a cooldown {ctx.message.author.mention}!")
 
 
 def setup(bot: commands.Bot):

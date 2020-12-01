@@ -29,18 +29,18 @@ LEVEL_DATA = [
     },
     {
         "title": "Chumpeddler",
-        "range": (5000, 20000)
+        "range": (5000, 20_000)
     },
     {
         "title": "Chumtrader",
-        "range": (20000, 50000)
+        "range": (20_000, 65_000)
     },
     {
         "title": "Chumdealer",
-        "range": (50000, 100000)
+        "range": (65_000, 200_000)
     },
     {
         "title": "Chumwholesaler",
-        "range": (100000, 250000)
+        "range": (200_000, 605_000)
     }
 ]
