@@ -15,23 +15,23 @@ class Transaction(commands.Cog):
                                                                                        "amount as a positive number>")
     @checks.user_registered()
     async def pay(self, ctx, payee: discord.User, amount: int):
-        payer = ctx.message.author
-        
-        if payer == payee:
-            raise errors.TransactionUsersAreEqualError(payer)
+        async with ctx.message.channel.typing():
+            payer = ctx.message.author
 
-        if not user_actions.is_registered(payee):
-            raise errors.UserNotRegisteredError(payee)
+            if payer == payee:
+                raise errors.TransactionUsersAreEqualError(payer)
 
-        if amount <= 0:
-            raise commands.BadArgument("You can't pay someone a value that's zero or less!")
+            if not user_actions.is_registered(payee):
+                raise errors.UserNotRegisteredError(payee)
 
-        transaction_actions.withdraw(payer, amount)
-        transaction_actions.deposit(payee, amount)
+            if amount <= 0:
+                raise commands.BadArgument("You can't pay someone a value that's zero or less!")
 
-        await ctx.send(f"{ctx.message.author.mention} {emoji.ARROW_RIGHT} {amount} {emoji.CHUMCOIN} "
-                       f"{emoji.ARROW_RIGHT} {payee.mention}")
+            transaction_actions.withdraw(payer, amount)
+            transaction_actions.deposit(payee, amount)
 
+            await ctx.send(f"{ctx.message.author.mention} {emoji.ARROW_RIGHT} {amount} {emoji.CHUMCOIN} "
+                           f"{emoji.ARROW_RIGHT} {payee.mention}")
 
 
 def setup(bot: commands.Bot):

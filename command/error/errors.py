@@ -39,7 +39,7 @@ class NoItemToAppraiseError(commands.CommandError):
 class InvalidChannelError(commands.CommandError):
     def __init__(self, user, *args):
         self.user = user
-        message = f'{user.mention} only #the-pawnshop can be used for commands!'
+        message = f"{user.mention} this channel can't be used for commands!"
         super().__init__(message=message, *args)
 
 

@@ -27,8 +27,9 @@ class Profile(commands.Cog):
     @commands.command(name='balance', aliases=['bal'], description='Get your Chumcoin balance')
     @checks.user_registered()
     async def balance(self, ctx: commands.Context):
-        balance = user_actions.get_balance(ctx.message.author)
-        await ctx.send(f'{ctx.message.author.mention} your balance is {balance} {CHUMCOIN}')
+        async with ctx.message.channel.typing():
+            balance = user_actions.get_balance(ctx.message.author)
+            await ctx.send(f'{ctx.message.author.mention} your balance is {balance} {CHUMCOIN}')
 
 
 async def generate_profile(user: discord.User):
