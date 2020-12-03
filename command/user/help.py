@@ -7,20 +7,22 @@ class Help(commands.Cog):
 
     @commands.command(name="help", description="Show help info")
     async def help(self, ctx):
-        welcome_message = ("Hi! I'm Chumlee, and I run this pawn shop. To get started, "
-                           f"use **{self.bot.command_prefix}register**, then "
-                           f"use **{self.bot.command_prefix}commands** to see what I can do!")
+        async with ctx.message.channel.typing():
+            welcome_message = ("Hi! I'm Chumlee, and I run this pawn shop. To get started, "
+                               f"use **{self.bot.command_prefix}register**, then "
+                               f"use **{self.bot.command_prefix}commands** to see what I can do!")
 
-        await ctx.send(welcome_message)
+            await ctx.send(welcome_message)
 
     @commands.command(name="commands", description="List all commands")
     async def commands(self, ctx):
-        response = "```"
-        for command in self.bot.commands:
-            response += f"{command.name} - {command.description}\n"
-        response += "```"
+        async with ctx.message.channel.typing():
+            response = "```"
+            for command in self.bot.commands:
+                response += f"{command.name} - {command.description}\n"
+            response += "```"
 
-        await ctx.send(response)
+            await ctx.send(response)
 
 
 def setup(bot):
