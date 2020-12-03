@@ -36,8 +36,6 @@ class CommandErrorHandler(commands.Cog):
             return await ctx.send(handle_command_cooldown_error(ctx, error))
         elif isinstance(error, commands.BadArgument):
             return await ctx.send(f"Usage: {ctx.command.usage}")
-        else:
-            await ctx.send("Sorry, something went wrong!")
 
 
 def setup(bot: commands.Bot):
