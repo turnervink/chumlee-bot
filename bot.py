@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from command.error.errors import InvalidChannelError
-from util import log
+from util import log, reaction_triggers
 from util.database import guild_actions
 
 import os
@@ -27,6 +27,17 @@ async def is_in_allowed_channel(ctx: commands.Context):
 @bot.check
 async def is_not_dm(ctx: commands.Context):
     return not isinstance(ctx.message.channel, discord.DMChannel)
+
+
+@bot.event
+async def on_message(message: discord.Message):
+    if message.author != bot.user:
+        if any(trigger in message.content.lower() for trigger in reaction_triggers.TRIGGERS):
+            chumlee_emoji = discord.utils.get(bot.emojis, name="chumlee")
+            if chumlee_emoji is not None:
+                await message.add_reaction(chumlee_emoji)
+        else:
+            await bot.process_commands(message)
 
 
 @bot.event
