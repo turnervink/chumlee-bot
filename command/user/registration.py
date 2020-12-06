@@ -8,7 +8,7 @@ class Registration(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='register', description='Register to sell at the pawnshop')
+    @commands.command(name="register", description="Register yourself to sell at the pawnshop", usage="register")
     @checks.user_not_registered()
     async def register(self, ctx):
         async with ctx.message.channel.typing():

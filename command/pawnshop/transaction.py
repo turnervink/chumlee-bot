@@ -17,20 +17,25 @@ class Transaction(commands.Cog):
         self.deals_in_progress = {}
         self.offer_rejections = {}
 
-    @commands.command(name="appraise", description="Have Chumlee appraise an item")
+    @commands.command(name="appraise", description="Have Chumlee appraise an item",
+                      usage="appraise <some text or an attachment>")
     @checks.user_not_in_cooldown()
     @checks.user_registered()
     async def appraise(self, ctx: commands.Context, *, item=None):
         async with ctx.message.channel.typing():
-            if item == f"<@!{self.bot.user.id}>":
-                await ctx.send(f"I'm all about self love {ctx.message.author.mention}, so I'll give myself a 10/10!")
-                return
+            print(item)
+            print(ctx.message.attachments)
 
             if ctx.message.author.id in self.deals_in_progress:
                 raise errors.UserAlreadyInDealError(ctx.message.author)
 
-            if item is None and ctx.message.attachments is None:
+            if item is None and not ctx.message.attachments:
+                print("no item!")
                 raise errors.NoItemToAppraiseError(ctx.message.author)
+
+            if item == f"<@!{self.bot.user.id}>":
+                await ctx.send(f"I'm all about self love {ctx.message.author.mention}, so I'll give myself a 10/10!")
+                return
 
             appraisal = Appraisal()
             self.deals_in_progress[ctx.message.author.id] = appraisal
@@ -49,7 +54,7 @@ class Transaction(commands.Cog):
                 await ctx.send(response)
                 self.deals_in_progress.pop(ctx.message.author.id)
 
-    @commands.command(name="deal", description="Accept an offer")
+    @commands.command(name="deal", description="Accept an offer", hidden=True)
     @checks.user_registered()
     async def deal(self, ctx: commands.Context):
         async with ctx.message.channel.typing():
@@ -80,7 +85,7 @@ class Transaction(commands.Cog):
 
                     await ctx.send(embed=embed)
 
-    @commands.command(name="nodeal", description="Reject an offer")
+    @commands.command(name="nodeal", description="Reject an offer", hidden=True)
     @checks.user_registered()
     async def nodeal(self, ctx: commands.Context):
         async with ctx.message.channel.typing():
@@ -102,7 +107,8 @@ class Transaction(commands.Cog):
 
                 self.deals_in_progress.pop(ctx.message.author.id)
 
-    @commands.command(name="cooldown", description="See how much longer you have left in your cooldown")
+    @commands.command(name="cooldown", description="See how much longer you have left in your cooldown",
+                      usage="cooldown")
     @checks.user_registered()
     async def cooldown(self, ctx: commands.Context):
         async with ctx.message.channel.typing():

@@ -17,14 +17,14 @@ class Profile(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='profile', description='View your profile')
+    @commands.command(name="profile", description="View your profile", usage="profile")
     @checks.user_registered()
     async def profile(self, ctx: commands.Context):
         async with ctx.message.channel.typing():
             profile_bytes = await generate_profile(ctx.message.author)
             await ctx.send(file=discord.File(io.BytesIO(profile_bytes), filename="profile.png"))
 
-    @commands.command(name='balance', aliases=['bal'], description='Get your Chumcoin balance')
+    @commands.command(name="balance", aliases=["bal"], description="Get your Chumcoin balance", usage="balance")
     @checks.user_registered()
     async def balance(self, ctx: commands.Context):
         async with ctx.message.channel.typing():

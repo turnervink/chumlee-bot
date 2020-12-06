@@ -11,8 +11,7 @@ class Transaction(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='pay', description='Pay another user some Chumcoins', usage="pay <mention a user> <an "
-                                                                                       "amount as a positive number>")
+    @commands.command(name="pay", description="Pay another user some Chumcoins", usage="pay <@user> <amount>")
     @checks.user_registered()
     async def pay(self, ctx, payee: discord.User, amount: int):
         async with ctx.message.channel.typing():
