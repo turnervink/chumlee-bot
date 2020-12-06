@@ -9,7 +9,8 @@ class Medal(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="listmedals", aliases=["medals"], description="See a list of available Chummedals")
+    @commands.command(name="listmedals", aliases=["medals"], description="See a list of available Chummedals",
+                      usage="listmedals")
     async def list_medals(self, ctx: commands.Context):
         async with ctx.message.channel.typing():
             response = ""
@@ -19,7 +20,7 @@ class Medal(commands.Cog):
 
             await ctx.send(response)
 
-    @commands.command(name="buymedal", description="Buy a Chummedal")
+    @commands.command(name="buymedal", description="Buy a Chummedal", usage="buymedal <medal name>")
     async def buy_medal(self, ctx: commands.Context, medal_name: str):
         async with ctx.message.channel.typing():
             medal = MedalObject(medal_name.lower())
