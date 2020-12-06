@@ -23,14 +23,10 @@ class Transaction(commands.Cog):
     @checks.user_registered()
     async def appraise(self, ctx: commands.Context, *, item=None):
         async with ctx.message.channel.typing():
-            print(item)
-            print(ctx.message.attachments)
-
             if ctx.message.author.id in self.deals_in_progress:
                 raise errors.UserAlreadyInDealError(ctx.message.author)
 
             if item is None and not ctx.message.attachments:
-                print("no item!")
                 raise errors.NoItemToAppraiseError(ctx.message.author)
 
             if item == f"<@!{self.bot.user.id}>":
