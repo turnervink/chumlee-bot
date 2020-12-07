@@ -66,7 +66,7 @@ class Transaction(commands.Cog):
                 transaction_actions.deposit(ctx.message.author, appraisal.offer)
                 did_level_up = user_actions.user_will_level_up(ctx.message.author, appraisal.offer)
                 user_actions.increment_total_earnings(ctx.message.author, appraisal.offer)
-                cooldown_actions.update_cooldown_end_time(ctx.message.author)
+                cooldown_actions.update_cooldown_end_time(ctx.message.author, appraisal.timestamp)
                 self.deals_in_progress.pop(ctx.message.author.id)
 
                 if did_level_up:
@@ -94,7 +94,8 @@ class Transaction(commands.Cog):
                 if ctx.message.author.id in self.offer_rejections:
                     rejection_count = self.offer_rejections[ctx.message.author.id]
                     if rejection_count == 2:
-                        cooldown_actions.update_cooldown_end_time(ctx.message.author)
+                        appraisal = self.deals_in_progress[ctx.message.author.id]
+                        cooldown_actions.update_cooldown_end_time(ctx.message.author, appraisal.timestamp)
                         self.offer_rejections.pop(ctx.message.author.id)
                     else:
                         self.offer_rejections[ctx.message.author.id] = rejection_count + 1
