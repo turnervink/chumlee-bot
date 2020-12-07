@@ -23,6 +23,8 @@ class Transaction(commands.Cog):
     @checks.user_not_in_cooldown()
     @checks.user_registered()
     async def appraise(self, ctx: commands.Context, *, item=None):
+        await self.analytics.send_event(category="command", action="appraise")
+
         async with ctx.message.channel.typing():
             if ctx.message.author.id in self.deals_in_progress:
                 raise errors.UserAlreadyInDealError(ctx.message.author)
@@ -112,6 +114,7 @@ class Transaction(commands.Cog):
     @checks.user_registered()
     async def cooldown(self, ctx: commands.Context):
         await self.analytics.send_event(category="command", action="cooldown")
+
         async with ctx.message.channel.typing():
             cooldown = cooldown_actions.get_remaining_cooldown_time(ctx.message.author)
 
