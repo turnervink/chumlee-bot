@@ -5,7 +5,7 @@ from command.check import checks
 from util.database import transaction_actions, cooldown_actions, user_actions
 from util.pawnshop.appraisal import Appraisal, ACCEPTED_OFFER_QUOTES, REJECTED_OFFER_QUOTES
 from util.pawnshop.level import Level
-from util import emoji
+from util import emoji, analytics
 from error import errors
 
 import random
@@ -14,6 +14,7 @@ import random
 class Transaction(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.analytics = analytics.Analytics()
         self.deals_in_progress = {}
         self.offer_rejections = {}
 
@@ -68,6 +69,7 @@ class Transaction(commands.Cog):
                 user_actions.increment_total_earnings(ctx.message.author, appraisal.offer)
                 cooldown_actions.update_cooldown_end_time(ctx.message.author, appraisal.timestamp)
                 self.deals_in_progress.pop(ctx.message.author.id)
+                await self.analytics.send_event(category="offer_response", action="accept", value=appraisal.offer)
 
                 if did_level_up:
                     level = Level(user_actions.get_total_earnings(ctx.message.author))
@@ -103,11 +105,13 @@ class Transaction(commands.Cog):
                     self.offer_rejections[ctx.message.author.id] = 1
 
                 self.deals_in_progress.pop(ctx.message.author.id)
+                await self.analytics.send_event(category="offer_response", action="reject", value=appraisal.offer)
 
     @commands.command(name="cooldown", description="See how much longer you have left in your cooldown",
                       usage="cooldown")
     @checks.user_registered()
     async def cooldown(self, ctx: commands.Context):
+        await self.analytics.send_event(category="command", action="cooldown")
         async with ctx.message.channel.typing():
             cooldown = cooldown_actions.get_remaining_cooldown_time(ctx.message.author)
 
