@@ -5,6 +5,4 @@
 .envrc
 .gitignore
 db-creds.json
-Procfile
-runtime.txt
 /venv
