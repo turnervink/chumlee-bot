@@ -1,5 +1,5 @@
 # Chumlee Bot
-Inspired by History's _[Pawn Stars](https://en.wikipedia.org/wiki/Pawn_Stars)_ and dathings1's 
+Inspired by History's _[Pawn Stars](https://en.wikipedia.org/wiki/Pawn_Stars)_ and DaThings's 
 _[Prawn Srars](https://www.youtube.com/watch?v=5mEJbX5pio8)_, Chumlee Bot is a Discord bot that your guild members
 can "sell" items like text and media attachments to in exchange for Chumcoins. As users earn more Chumcoins, they
 can level up and trade in those coins for exclusive Chummedals to be displayed on their profile.
