@@ -1,9 +1,11 @@
 import random
+import time
 
 
 class Appraisal:
     def __init__(self):
         random.seed()
+        self.timestamp = int(time.time())
         self.item_tier_value = random.random()
         self.offer = self.__get_offer()
         self.offer_message = self.__get_offer_message()
