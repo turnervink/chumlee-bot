@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from command.error.errors import InvalidChannelError
+from error.errors import InvalidChannelError
 from util import log, reaction_triggers
 from util.database import guild_actions
 

@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from command.error import errors
+from error import errors
 from util.database import user_actions, cooldown_actions
 
 import time
