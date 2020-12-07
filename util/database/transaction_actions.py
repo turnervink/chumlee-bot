@@ -1,5 +1,5 @@
 from .config import db, db_root
-from util.database.error.errors import *
+from error.errors import *
 
 import discord
 

@@ -6,7 +6,7 @@ from util.database import transaction_actions, cooldown_actions, user_actions
 from util.pawnshop.appraisal import Appraisal, ACCEPTED_OFFER_QUOTES, REJECTED_OFFER_QUOTES
 from util.pawnshop.level import Level
 from util import emoji
-from command.error import errors
+from error import errors
 
 import random
 

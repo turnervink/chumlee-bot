@@ -2,8 +2,7 @@ from asyncio import sleep
 from discord.ext import commands
 
 from command.check import checks
-from command.error.errors import LottoInProgressError, NoLottoInProgressError, UserAlreadyInLottoError
-from util.database.error.errors import InsufficientFundsError
+from error.errors import LottoInProgressError, NoLottoInProgressError, UserAlreadyInLottoError, InsufficientFundsError
 from util import emoji
 from util.database import transaction_actions, user_actions
 

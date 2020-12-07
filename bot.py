@@ -1,11 +1,12 @@
 import discord
 from discord.ext import commands
 
-from command.error.errors import InvalidChannelError
-from util import log, reaction_triggers
+from error.errors import InvalidChannelError
+from util import log, message_triggers
 from util.database import guild_actions
 
 import os
+import random
 
 ALLOWED_CHANNELS = ["bot-testing", "the-pawnshop"]  # Names of channels where bot commands can be used
 
@@ -32,10 +33,13 @@ async def is_not_dm(ctx: commands.Context):
 @bot.event
 async def on_message(message: discord.Message):
     if message.author != bot.user:
-        if any(trigger in message.content.lower() for trigger in reaction_triggers.TRIGGERS):
+        if any(trigger in message.content.lower() for trigger in message_triggers.REACTION_TRIGGERS):
             chumlee_emoji = discord.utils.get(bot.emojis, name="chumlee")
             if chumlee_emoji is not None:
                 await message.add_reaction(chumlee_emoji)
+        elif any (trigger in message.content.lower() for trigger in message_triggers.YOUTUBE_LINK_TRIGGERS):
+            quote = random.choice(message_triggers.YOUTUBE_VIDEO_QUOTES)
+            await message.channel.send(f"{quote}\n\n{message_triggers.YOUTUBE_LINK}")
         else:
             await bot.process_commands(message)
 
@@ -44,7 +48,7 @@ async def on_message(message: discord.Message):
 async def on_ready():
     bot.load_extension("util.status")
     bot.load_extension("util.channel_bind")
-    bot.load_extension("command.error.error_handlers")
+    bot.load_extension("error.error_handlers")
     bot.load_extension("command.user.help")
     bot.load_extension("command.user.registration")
     bot.load_extension("command.user.profile")

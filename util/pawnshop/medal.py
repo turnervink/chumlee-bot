@@ -1,4 +1,4 @@
-from command.error import errors
+from error import errors
 
 
 class Medal:

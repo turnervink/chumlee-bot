@@ -1,5 +1,5 @@
 from .config import db, db_root
-from .error.errors import *
+from error.errors import *
 from util.pawnshop.medal import Medal
 from util.pawnshop.level import Level
 

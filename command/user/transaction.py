@@ -4,7 +4,7 @@ from discord.ext import commands
 from command.check import checks
 from util.database import transaction_actions, user_actions
 from util import emoji
-from command.error import errors
+from error import errors
 
 
 class Transaction(commands.Cog):
