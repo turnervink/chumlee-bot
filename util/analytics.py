@@ -37,7 +37,5 @@ class Analytics:
 
         async with aiohttp.ClientSession() as session:
             async with session.post(f"{ROOT_URL}/collect", params=params) as r:
-                print(r)
-
                 if r.status != 200:
                     logging.error("Could not send Google Analytics event: %s", r)
