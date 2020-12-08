@@ -90,6 +90,8 @@ class Transaction(commands.Cog):
     async def nodeal(self, ctx: commands.Context):
         async with ctx.message.channel.typing():
             if ctx.message.author.id in self.deals_in_progress:
+                appraisal = self.deals_in_progress[ctx.message.author.id]
+
                 response = (f"{random.choice(REJECTED_OFFER_QUOTES)}"
                             "\n\n"
                             f"{ctx.message.author.mention} No deal {emoji.NO_ENTRY}")
@@ -98,7 +100,6 @@ class Transaction(commands.Cog):
                 if ctx.message.author.id in self.offer_rejections:
                     rejection_count = self.offer_rejections[ctx.message.author.id]
                     if rejection_count == 2:
-                        appraisal = self.deals_in_progress[ctx.message.author.id]
                         cooldown_actions.update_cooldown_end_time(ctx.message.author, appraisal.timestamp)
                         self.offer_rejections.pop(ctx.message.author.id)
                     else:
