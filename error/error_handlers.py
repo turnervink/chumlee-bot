@@ -27,7 +27,10 @@ class CommandErrorHandler(commands.Cog):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        logger.error(f"Command {ctx.command.name} raised an error for user {ctx.message.author.id}: %s", error)
+        if ctx.command is not None:
+            logger.error(f"Command {ctx.command.name} raised an error for user {ctx.message.author.id}: %s", error)
+        else:
+            logger.error(f"Command was None is error for user {ctx.message.author.id}: %s", error)
 
         if hasattr(ctx.command, "on_error"):
             return

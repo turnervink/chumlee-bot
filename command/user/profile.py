@@ -1,16 +1,19 @@
 import aiohttp
 import discord
 from discord.ext import commands
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 from PIL import ImageFont
 from PIL import ImageDraw
 import io
 
 from command.check import checks
+import logging
 from util.database import user_actions
 from util.emoji import CHUMCOIN
 from util.pawnshop.medal import Medal
 from util.pawnshop.level import Level
+
+logger = logging.getLogger("chumlee-bot")
 
 
 class Profile(commands.Cog):
@@ -37,10 +40,20 @@ async def generate_profile(user: discord.User):
 
     async with aiohttp.ClientSession() as session:
         async with session.get(str(user.avatar_url)) as r:
-            avatar_data = io.BytesIO(await r.read())
+            if r.status == 200:
+                avatar_data = io.BytesIO(await r.read())
+            else:
+                logger.error(f"Could not fetch avatar for user {user.id}, "
+                             f"response was {r.status} for url {str(user.avatar_url)}")
+                avatar_data = None
 
     # Draw the user's avatar
-    avatar = Image.open(avatar_data)
+    try:
+        avatar = Image.open(avatar_data)
+    except UnidentifiedImageError as e:
+        logger.error(f"Could not load avatar data for user {user.id}: %s", e)
+        avatar = Image.open("resources/default-avatar.jpg")
+
     avatar = avatar.resize((225, 225))
     background.paste(avatar, box=(55, 55))
 
