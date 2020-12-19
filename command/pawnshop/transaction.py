@@ -1,7 +1,9 @@
 import discord
 from discord.ext import commands
+from asyncio import TimeoutError
 
 from command.check import checks
+from util.pawnshop import cyberbullying
 from util.database import transaction_actions, cooldown_actions, user_actions
 from util.pawnshop.appraisal import Appraisal, ACCEPTED_OFFER_QUOTES, REJECTED_OFFER_QUOTES
 from util.pawnshop.level import Level
@@ -46,6 +48,14 @@ class Transaction(commands.Cog):
                             "\n\n"
                             f"{self.bot.command_prefix}deal / {self.bot.command_prefix}nodeal")
                 await ctx.send(response)
+
+                try:
+                    await self.bot.wait_for("message",
+                                            check=lambda m: cyberbullying.message_has_insult(m, ctx.message.author),
+                                            timeout=10)
+                    await ctx.send(random.choice(cyberbullying.RESPONSES).format(ctx.message.author.mention))
+                except TimeoutError:
+                    pass
             else:
                 response = (f"{appraisal.offer_message}"
                             "\n\n"
