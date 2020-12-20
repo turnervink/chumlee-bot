@@ -12,6 +12,9 @@ from error import errors
 
 import random
 
+MAX_NODEAL_BEFORE_COOLDOWN = 2
+INSULT_TIME_WINDOW_SECONDS = 30
+
 
 class Transaction(commands.Cog):
     def __init__(self, bot):
@@ -52,7 +55,7 @@ class Transaction(commands.Cog):
                 try:
                     await self.bot.wait_for("message",
                                             check=lambda m: cyberbullying.message_has_insult(m, ctx.message.author),
-                                            timeout=10)
+                                            timeout=INSULT_TIME_WINDOW_SECONDS)
                     await ctx.send(random.choice(cyberbullying.RESPONSES).format(ctx.message.author.mention))
                 except TimeoutError:
                     pass
@@ -109,7 +112,7 @@ class Transaction(commands.Cog):
 
                 if ctx.message.author.id in self.offer_rejections:
                     rejection_count = self.offer_rejections[ctx.message.author.id]
-                    if rejection_count == 2:
+                    if rejection_count == MAX_NODEAL_BEFORE_COOLDOWN:
                         cooldown_actions.update_cooldown_end_time(ctx.message.author, appraisal.timestamp)
                         self.offer_rejections.pop(ctx.message.author.id)
                     else:
