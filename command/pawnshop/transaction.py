@@ -51,20 +51,20 @@ class Transaction(commands.Cog):
                             "\n\n"
                             f"{self.bot.command_prefix}deal / {self.bot.command_prefix}nodeal")
                 await ctx.send(response)
-
-                try:
-                    await self.bot.wait_for("message",
-                                            check=lambda m: cyberbullying.message_has_insult(m, ctx.message.author),
-                                            timeout=INSULT_TIME_WINDOW_SECONDS)
-                    await ctx.send(random.choice(cyberbullying.RESPONSES).format(ctx.message.author.mention))
-                except TimeoutError:
-                    pass
             else:
                 response = (f"{appraisal.offer_message}"
                             "\n\n"
                             f"{ctx.message.author.mention} No deal {emoji.NO_ENTRY}")
                 await ctx.send(response)
                 self.deals_in_progress.pop(ctx.message.author.id)
+
+            try:
+                await self.bot.wait_for("message",
+                                        check=lambda m: cyberbullying.message_has_insult(m, ctx.message.author),
+                                        timeout=INSULT_TIME_WINDOW_SECONDS)
+                await ctx.send(random.choice(cyberbullying.RESPONSES).format(ctx.message.author.mention))
+            except TimeoutError:
+                pass
 
     @commands.command(name="deal", description="Accept an offer", hidden=True)
     @checks.user_registered()
