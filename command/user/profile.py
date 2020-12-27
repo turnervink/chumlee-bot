@@ -48,10 +48,13 @@ async def generate_profile(user: discord.User):
                 avatar_data = None
 
     # Draw the user's avatar
-    try:
-        avatar = Image.open(avatar_data)
-    except UnidentifiedImageError as e:
-        logger.error(f"Could not load avatar data for user {user.id}: %s", e)
+    if avatar_data is not None:
+        try:
+            avatar = Image.open(avatar_data)
+        except UnidentifiedImageError as e:
+            logger.error(f"Could not load avatar data for user {user.id}: %s", e)
+            avatar = Image.open("resources/default-avatar.jpg")
+    else:
         avatar = Image.open("resources/default-avatar.jpg")
 
     avatar = avatar.resize((225, 225))
