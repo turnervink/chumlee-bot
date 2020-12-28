@@ -41,7 +41,8 @@ class Transaction(commands.Cog):
             if item is None and not ctx.message.attachments:
                 raise errors.NoItemToAppraiseError(ctx.message.author)
 
-            if any(blacklisted_item in item for blacklisted_item in BLACKLISTED_ITEMS) or item == "again":
+            if item is not None and any(blacklisted_item in item for blacklisted_item in BLACKLISTED_ITEMS) \
+                    or item == "again":
                 await ctx.send(f"Nice try {ctx.message.author.mention}, but I already took a look at that!")
                 return
 
