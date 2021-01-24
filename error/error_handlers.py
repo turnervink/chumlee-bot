@@ -30,9 +30,12 @@ class CommandErrorHandler(commands.Cog):
         if ctx.command is not None:
             logger.error(f"Command {ctx.command.name} raised an error for user {ctx.message.author.id}: %s", error)
         else:
-            logger.error(f"Command was None is error for user {ctx.message.author.id}: %s", error)
+            logger.error(f"Command was None in error for user {ctx.message.author.id}: %s", error)
 
         if hasattr(ctx.command, "on_error"):
+            return
+
+        if ctx.command is None and ctx.message.content[1] == '.':
             return
 
         if isinstance(error, commands.CommandOnCooldown):
