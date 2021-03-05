@@ -15,7 +15,7 @@ bot = commands.Bot(command_prefix=".")
 
 @bot.check
 async def is_in_allowed_channel(ctx: commands.Context):
-    if ctx.command.name in ["allowchannel", "disallowchannel", "allowedchannels"]:
+    if ctx.command.name in ["allowchannel", "disallowchannel", "allowedchannels", "roll"]:
         return True
 
     allowed_channels = list(guild_actions.get_allowed_channels(ctx.guild.id).keys())
@@ -56,6 +56,7 @@ async def on_ready():
     bot.load_extension("command.pawnshop.transaction")
     bot.load_extension("command.pawnshop.medal")
     bot.load_extension("command.pawnshop.lotto")
+    bot.load_extension("command.dice.dice")
 
     logger = log.setup_logger("chumlee-bot")
     logger.info(f"Bot ready! Logged in as {bot.user.name} - ID: {bot.user.id}")
