@@ -24,7 +24,7 @@ google-cloud-storage==1.41.1
 google-crc32c==1.0.0
 google-resumable-media==2.1.0
 googleapis-common-protos==1.52.0
-grpcio==1.33.2
+grpcio==1.43.0
 grpcio-status==1.43.0
 httplib2==0.19.0
 idna==2.10
@@ -34,9 +34,9 @@ msgpack==1.0.0
 multidict==4.7.6
 oauth2client==3.0.0
 packaging==21.3
-Pillow==9.0.0
+Pillow==9.0.1
 proto-plus==1.11.0
-protobuf==3.14.0
+protobuf==3.15.0
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycparser==2.21
