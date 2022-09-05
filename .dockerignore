@@ -5,3 +5,4 @@
 .envrc
 .gitignore
 /venv
+config/db-creds.json
