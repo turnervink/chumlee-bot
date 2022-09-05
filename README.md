@@ -21,15 +21,24 @@ Chumlee Bot isn't currently publicly available. Keep an eye on this repo for upd
 1. Set up your working directory
 2. Create a new Python virtual environment
 3. Install the dependencies in `requirements.txt`
-4. Configure the following environment variables
+4. Obtain your [Firebase service account credentials](https://firebase.google.com/docs/admin/setup#initialize-sdk) and place the JSON file in the project directory
+5. Configure the following environment variables
 ```sh
-GOOGLE_APPLICATION_CREDENTIALS=<path to a JSON file containing your Firebase service account credentials>
+BOT_TOKEN=<a Discord app bot token>
+GOOGLE_APPLICATION_CREDENTIALS=<path to your Firebase credentials JSON file>
 DB_ROOT=<the root path of your database, useful for having different paths for dev and prod>
 DB_AUTH_UID=<a uid to authorize Firebase requests, set up in your Firebase auth rules>
-BOT_TOKEN=<a Discord app bot token>
 LOGLEVEL=<logging level>
 ```
-5. Start the bot and invite it to a server for testing
+6. Start the bot and invite it to a server for testing
+
+### Setup With Docker
+1. Obtain your [Firebase service account credentials](https://firebase.google.com/docs/admin/setup#initialize-sdk) and place the JSON file in the project directory
+2. Create a `.env` file with the environment variables listed in the section above
+3. Build and tag the image: `docker build -t chumlee-bot:latest .`
+4. Run the image, passing in your `.env` file and mounting the directory with the Firebase credentials file to the path you specified in `GOOGLE_APPLICATION_CREDENTIALS`:  
+`docker run --env-file .env -v /path/to/creds/dir:${GOOGLE_APPLICATION_CREDENTIALS} chumlee-bot:latest`  
+Note: Docker requires absolute paths when mounting volumes
 
 ## Contributing
 If you for some reason want to contribute to this silly thing feel free to fork it and open a PR!
