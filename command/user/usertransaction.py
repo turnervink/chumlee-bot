@@ -7,14 +7,14 @@ from util import emoji
 from error import errors
 
 
-class Transaction(commands.Cog):
+class UserTransaction(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command(name="pay", description="Pay another user some Chumcoins", usage="pay <@user> <amount>")
     @checks.user_registered()
     async def pay(self, ctx, payee: discord.User, amount: int):
-        async with ctx.message.channel.typing():
+        async with ctx.typing():
             payer = ctx.message.author
 
             if payer == payee:
@@ -34,4 +34,4 @@ class Transaction(commands.Cog):
 
 
 def setup(bot: commands.Bot):
-    bot.add_cog(Transaction(bot))
+    bot.add_cog(UserTransaction(bot))

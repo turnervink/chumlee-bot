@@ -1,4 +1,5 @@
 from discord.ext import commands
+from discord.ext.commands import BucketType
 
 from error import errors
 from util.database import user_actions, cooldown_actions
@@ -34,9 +35,19 @@ def user_not_in_cooldown():
             now = int(time.time())
             if not now > cooldown_end:
                 seconds_remaining = cooldown_end - now
-                raise commands.CommandOnCooldown(commands.cooldown(1, 900), seconds_remaining)
+                raise commands.CommandOnCooldown(commands.cooldown(1, 900, BucketType.user), seconds_remaining, BucketType.user)
             else:
                 return True
+
+    return commands.check(predicate)
+
+
+def user_not_in_deal():
+    def predicate(ctx):
+        if user_actions.get_is_in_deal(ctx.message.author, ctx.message.guild):
+            raise errors.UserAlreadyInDealError(ctx.message.author)
+        else:
+            return True
 
     return commands.check(predicate)
 

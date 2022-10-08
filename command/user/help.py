@@ -32,12 +32,12 @@ class Help(commands.Cog):
 
     @commands.command(name="help", description="Show help info", usage="help")
     async def help(self, ctx):
-        async with ctx.message.channel.typing():
+        async with ctx.typing():
             await ctx.send(embed=self.welcome_embed)
 
     @commands.command(name="commands", description="List all commands", usage="commands")
     async def commands(self, ctx):
-        async with ctx.message.channel.typing():
+        async with ctx.typing():
             embed = discord.Embed(colour=discord.Colour(0xffffff))
             for command in self.bot.commands:
                 if not command.hidden:

@@ -38,7 +38,7 @@ class Lotto(commands.Cog):
         }
 
         egg = " Nice." if bet == 69 else ""
-        async with ctx.message.channel.typing():
+        async with ctx.typing():
             await ctx.send(f"{ctx.message.author.mention} has started a Chumlottery!{egg}"
                            "\n\n"
                            f"Type **{self.bot.command_prefix}bet** to bet {bet} {emoji.CHUMCOIN} and join! Bets are open "
@@ -46,7 +46,7 @@ class Lotto(commands.Cog):
 
         await sleep(BETTING_WINDOW_LENGTH_SECONDS)
 
-        async with ctx.message.channel.typing():
+        async with ctx.typing():
             if not len(self.lotteries[ctx.guild.id]["players"]) > 1:
                 await ctx.send("No one else joined the Chumlottery, so it cannot run.")
             else:
@@ -74,7 +74,7 @@ class Lotto(commands.Cog):
 
     @commands.command(name="bet", description="Join a Chumlottery", hidden=True)
     async def join_lotto(self, ctx: commands.Context):
-        async with ctx.message.channel.typing():
+        async with ctx.typing():
             if ctx.guild.id not in self.lotteries:
                 raise NoLottoInProgressError
 
