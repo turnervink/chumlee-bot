@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from discord.ext.commands import CommandError
 
@@ -6,7 +7,6 @@ import random
 
 def split_roll(roll: str):
     split = str.lower(roll).split('d')
-    print(split)
     if len(split) != 2:
         raise CommandError("Usage: .roll 1d20 +1")
 
@@ -40,10 +40,10 @@ class Dice(commands.Cog):
         total += modifier
         modifier_prefix = "+" if modifier >= 0 else ""
 
-        await ctx.send(
-            f"{ctx.message.author.mention}: "
-            f"`{qty}d{sides}` = ({'+'.join(str(x) for x in rolls)}){modifier_prefix}{modifier} = {total}"
-        )
+        embed = discord.Embed(title=f"Roll Result for {qty}d{sides}{modifier_prefix}{modifier}")
+        embed.add_field(name="Dice", value=f"({'+'.join(str(x) for x in rolls)}){modifier_prefix}{modifier}", inline=False)
+        embed.add_field(name="Result", value=f"{total}", inline=True)
+        await ctx.send(embed=embed)
 
 
 def setup(bot: commands.Bot):
