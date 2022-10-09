@@ -12,7 +12,7 @@ class Medal(commands.Cog):
     @commands.command(name="listmedals", aliases=["medals"], description="See a list of available Chummedals",
                       usage="listmedals")
     async def list_medals(self, ctx: commands.Context):
-        async with ctx.message.channel.typing():
+        async with ctx.typing():
             response = ""
 
             for medal in MedalObject.VALID_MEDALS:
@@ -22,7 +22,7 @@ class Medal(commands.Cog):
 
     @commands.command(name="buymedal", description="Buy a Chummedal", usage="buymedal <medal name>")
     async def buy_medal(self, ctx: commands.Context, medal_name: str):
-        async with ctx.message.channel.typing():
+        async with ctx.typing():
             medal = MedalObject(medal_name.lower())
             user_medals = user_actions.get_medals(ctx.message.author)
 

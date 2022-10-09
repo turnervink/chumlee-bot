@@ -11,7 +11,7 @@ class Registration(commands.Cog):
     @commands.command(name="register", description="Register yourself to sell at the pawnshop", usage="register")
     @checks.user_not_registered()
     async def register(self, ctx):
-        async with ctx.message.channel.typing():
+        async with ctx.typing():
             user_actions.register(ctx.message.author)
             await ctx.send(f'You\'re all set {ctx.message.author.mention}!')
 

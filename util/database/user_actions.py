@@ -79,6 +79,20 @@ def get_level(user: discord.User):
     return Level(earnings)
 
 
+def get_is_in_deal(user: discord.User, guild: discord.Guild):
+    is_in_deal = db.reference(f"{db_root}/deals/{user.id}/{guild.id}/isInDeal").get()
+    if is_in_deal is None:
+        logger.warning(f"User {user.id} has no isInDeal value set for guild {guild.id}, setting it to False")
+        db.reference(f"{db_root}/deals/{user.id}/{guild.id}/isInDeal").set(False)
+        return False
+
+    return is_in_deal
+
+
+def set_is_in_deal(user: discord.User, guild: discord.Guild, value: bool):
+    db.reference(f"{db_root}/deals/{user.id}/{guild.id}/isInDeal").set(value)
+
+
 NEW_USER_DATA = {
     "balance": 20,
     "totalEarnings": 0,

@@ -23,14 +23,14 @@ class Profile(commands.Cog):
     @commands.command(name="profile", description="View your profile", usage="profile")
     @checks.user_registered()
     async def profile(self, ctx: commands.Context):
-        async with ctx.message.channel.typing():
+        async with ctx.typing():
             profile_bytes = await generate_profile(ctx.message.author)
             await ctx.send(file=discord.File(io.BytesIO(profile_bytes), filename="profile.png"))
 
     @commands.command(name="balance", aliases=["bal"], description="Get your Chumcoin balance", usage="balance")
     @checks.user_registered()
     async def balance(self, ctx: commands.Context):
-        async with ctx.message.channel.typing():
+        async with ctx.typing():
             balance = user_actions.get_balance(ctx.message.author)
             await ctx.send(f'{ctx.message.author.mention} your balance is {balance} {CHUMCOIN}')
 
@@ -39,12 +39,12 @@ async def generate_profile(user: discord.User):
     background = Image.open("resources/profile.png")
 
     async with aiohttp.ClientSession() as session:
-        async with session.get(str(user.avatar_url)) as r:
+        async with session.get(str(user.avatar)) as r:
             if r.status == 200:
                 avatar_data = io.BytesIO(await r.read())
             else:
                 logger.error(f"Could not fetch avatar for user {user.id}, "
-                             f"response was {r.status} for url {str(user.avatar_url)}")
+                             f"response was {r.status} for url {str(user.avatar)}")
                 avatar_data = None
 
     # Draw the user's avatar
