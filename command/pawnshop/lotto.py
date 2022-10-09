@@ -31,12 +31,19 @@ class Lotto(commands.Cog):
         if user_actions.get_balance(ctx.message.author) < bet:
             raise InsufficientFundsError(ctx.message.author)
 
-        lotto = LottoDetails(bet, ctx.guild, ctx.message.channel, [ctx.message.author])
+        lotto = LottoDetails(
+            bet,
+            BETTING_WINDOW_LENGTH_SECONDS,
+            ctx.guild,
+            ctx.message.author,
+            ctx.message.channel,
+            [ctx.message.author]
+        )
         self.lotteries_in_progress.append(ctx.guild.id)
 
         async with ctx.typing():
             await ctx.send(
-                lotto.message(ctx.message.author, BETTING_WINDOW_LENGTH_SECONDS),
+                lotto.message(),
                 view=LottoStartView(
                     lotto=lotto,
                     betting_window_sec=BETTING_WINDOW_LENGTH_SECONDS,

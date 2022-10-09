@@ -6,21 +6,31 @@ from util import emoji
 
 
 class LottoDetails:
-    def __init__(self, bet: int, guild: discord.Guild, channel: discord.PartialMessageable, players: List[discord.User]):
+    def __init__(
+            self,
+            bet: int,
+            betting_window: int,
+            guild: discord.Guild,
+            starting_user: discord.User,
+            channel: discord.PartialMessageable,
+            players: List[discord.User]
+    ):
         self.bet = bet
+        self.betting_window = betting_window
         self.guild = guild
+        self.starting_user = starting_user
         self.channel = channel
         self.players = players
 
-    def message(self, user: discord.User, betting_window_sec: int):
+    def message(self):
         player_mentions = (player.mention for player in self.players)
         player_list = "\n".join(player_mentions)
 
         egg = " Nice." if self.bet == 69 else ""
-        return (f"{user.mention} has started a Chumlottery!{egg}"
+        return (f"{self.starting_user.mention} has started a Chumlottery!{egg}"
                 "\n\n"
                 f"Click **Join** to bet {self.bet} {emoji.CHUMCOIN} and join! Bets are open "
-                f"for {betting_window_sec} seconds. "
+                f"for {self.betting_window} seconds. "
                 "\n\n"
                 "**Who's in**"
                 "\n"
