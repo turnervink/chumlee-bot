@@ -26,7 +26,7 @@ class Dice(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="roll", aliases=["r"])
+    @commands.command(name="roll", aliases=["r"], description="Roll some dice", usage="roll <qty>d<sides>+/-<modifier>")
     async def roll(self, ctx: commands.Context, roll: str, modifier: int = 0):
         qty, sides = split_roll(roll)
 

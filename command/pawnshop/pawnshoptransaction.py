@@ -27,10 +27,6 @@ class PawnshopTransaction(commands.Cog):
         self.deals_in_progress = {}
         self.offer_rejections = {}
 
-    @commands.slash_command(name="button")
-    async def button_test(self, ctx: discord.ApplicationContext):
-        await ctx.respond("This is a button!", view=AppraisalOfferView())
-
     @commands.command(name="appraise", description="Have Chumlee appraise an item",
                       usage="appraise <some text or an attachment>")
     @checks.user_not_in_deal()

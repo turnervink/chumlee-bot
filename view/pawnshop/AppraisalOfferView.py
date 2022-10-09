@@ -13,6 +13,9 @@ class AppraisalOfferView(discord.ui.View):
         super().__init__(*items)
         self.appraisal = appraisal
 
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        return self.appraisal.user.id == interaction.user.id
+
     def update_cooldown(self):
         cooldown_actions.update_cooldown_end_time(self.appraisal.user, self.appraisal.timestamp)
 
@@ -25,12 +28,14 @@ class AppraisalOfferView(discord.ui.View):
 
         response = (f"{random.choice(ACCEPTED_OFFER_QUOTES)}"
                     "\n\n"
-                    f"{emoji.CHUMLEE} {emoji.ARROW_RIGHT} {self.appraisal.offer} {emoji.CHUMCOIN}")
+                    f"{emoji.CHUMLEE} {emoji.ARROW_RIGHT} {self.appraisal.offer} {emoji.CHUMCOIN} {emoji.ARROW_RIGHT} {self.appraisal.user.mention}")
 
-        await interaction.response.send_message(response)
+        for child in self.children:
+            child.disabled = True
+        await interaction.response.edit_message(content=response, view=self)
 
     @discord.ui.button(label="No deal", style=discord.ButtonStyle.red)
-    async def reject_offer_callback(self, button, interaction):
+    async def reject_offer_callback(self, button, interaction: discord.Interaction):
         # TODO Track rejection count in the database
         self.update_cooldown()
         user_actions.set_is_in_deal(self.appraisal.user, self.appraisal.guild, False)
@@ -39,4 +44,6 @@ class AppraisalOfferView(discord.ui.View):
                     "\n\n"
                     f"{self.appraisal.user.mention} No deal {emoji.NO_ENTRY}")
 
-        await interaction.response.send_message(response)
+        for child in self.children:
+            child.disabled = True
+        await interaction.response.edit_message(content=response, view=self)
