@@ -35,6 +35,6 @@ class LottoStartView(discord.ui.View):
 
         self.lotto.players.append(interaction.user)
         await interaction.response.edit_message(
-            content=self.lotto.message(interaction.user, self.betting_window_sec),
+            content=self.lotto.message(),
             view=self
         )
