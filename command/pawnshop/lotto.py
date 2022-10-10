@@ -75,7 +75,7 @@ class Lotto(commands.Cog):
                            f"{emoji.ARROW_RIGHT} {winner.mention}")
             transaction_actions.deposit(winner, prize)
 
-        self.lotteries_in_progress.pop(lotto.guild.id)
+        self.lotteries_in_progress.remove(lotto.guild.id)
 
 
 def setup(bot: commands.Bot):

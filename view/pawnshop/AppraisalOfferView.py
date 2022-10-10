@@ -16,6 +16,7 @@ class AppraisalOfferView(discord.ui.View):
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         return self.appraisal.user.id == interaction.user.id
 
+    # TODO Use the local variable to track cooldowns again
     def update_cooldown(self):
         cooldown_actions.update_cooldown_end_time(self.appraisal.user, self.appraisal.timestamp)
 
@@ -36,7 +37,6 @@ class AppraisalOfferView(discord.ui.View):
 
     @discord.ui.button(label="No deal", style=discord.ButtonStyle.red)
     async def reject_offer_callback(self, button, interaction: discord.Interaction):
-        # TODO Track rejection count in the database
         self.update_cooldown()
         user_actions.set_is_in_deal(self.appraisal.user, self.appraisal.guild, False)
 
