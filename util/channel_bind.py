@@ -27,14 +27,17 @@ class ChannelBind(commands.Cog):
         response = "You can interact with me in the following channels:\n\n"
 
         channel_ids = guild_actions.get_allowed_channels(ctx.guild.id)
-        for channel_id in channel_ids:
-            channel = self.bot.get_channel(int(channel_id))
-            if channel is None:
-                guild_actions.remove_allowed_channel(ctx.guild.id, channel_id)
-            else:
-                response += f"{channel.mention}\n"
+        try:
+            for channel_id in channel_ids:
+                channel = self.bot.get_channel(int(channel_id))
+                if channel is None:
+                    guild_actions.remove_allowed_channel(ctx.guild.id, channel_id)
+                else:
+                    response += f"{channel.mention}\n"
 
-        await ctx.send(response)
+            await ctx.send(response)
+        except TypeError:
+            await ctx.send("There's no allowed channels in this server. You can add one with **.allowchannel**.")
 
 
 def setup(bot: commands.Bot):
