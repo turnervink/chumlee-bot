@@ -12,8 +12,9 @@ import random
 
 ALLOWED_CHANNELS = ["bot-testing", "the-pawnshop"]  # Names of channels where bot commands can be used
 
-intents = discord.Intents(messages=True, reactions=True, message_content=True)
+intents = discord.Intents(messages=True, reactions=True, message_content=True, guilds=True)
 bot = commands.Bot(command_prefix=".", intents=intents)
+
 
 # Until everything is a slash command we need to check the context type to infer
 # if it is, since slash commands won't have `message` on the context
@@ -22,8 +23,8 @@ async def is_in_allowed_channel(ctx: Union[commands.Context, discord.Application
     if ctx.command.name in ["allowchannel", "disallowchannel", "allowedchannels", "roll"]:
         return True
 
-    allowed_channels = list(guild_actions.get_allowed_channels(str(ctx.guild.id)).keys())
-    if str(ctx.channel.id) in allowed_channels:
+    allowed_channels = guild_actions.get_allowed_channels(str(ctx.guild.id))
+    if allowed_channels is not None and str(ctx.channel.id) in list(allowed_channels.keys()):
         return True
     else:
         if type(ctx) is commands.Context:

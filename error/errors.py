@@ -5,7 +5,7 @@ from discord.ext import commands
 class UserNotRegisteredError(commands.CommandError):
     def __init__(self, user, *args):
         self.user = user
-        message = f'You need to use .register first {user.mention}'
+        message = f'You need to use **.register** first {user.mention}'
         super().__init__(message=message, *args)
 
 
@@ -40,7 +40,8 @@ class NoItemToAppraiseError(commands.CommandError):
 class InvalidChannelError(commands.CommandError):
     def __init__(self, user, *args):
         self.user = user
-        message = f"{user.mention} this channel can't be used for commands!"
+        message = f"{user.mention} this channel can't be used for commands!" \
+                  f"\nYou can allow a channel using **.allowchannel**"
         super().__init__(message=message, *args)
 
 
