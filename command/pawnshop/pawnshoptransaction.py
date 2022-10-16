@@ -12,7 +12,6 @@ from util.pawnshop import cyberbullying
 from util.pawnshop.appraisal import Appraisal
 from view.pawnshop.AppraisalOfferView import AppraisalOfferView
 
-MAX_NODEAL_BEFORE_COOLDOWN = 2
 INSULT_TIME_WINDOW_SECONDS = 30
 BLACKLISTED_ITEMS = [
     "it again",
@@ -28,7 +27,6 @@ class PawnshopTransaction(commands.Cog):
 
     @commands.slash_command(name="appraise", description="Have Chumlee appraise an item",
                             usage="appraise <some text or an attachment>")
-    @checks.user_not_in_deal()
     @checks.user_not_in_cooldown()
     @checks.user_registered()
     async def appraise(
@@ -38,6 +36,9 @@ class PawnshopTransaction(commands.Cog):
             image: discord.Option(discord.Attachment, required=False, default=None)
     ):
         await ctx.defer()
+
+        if ctx.author.id in self.deals_in_progress:
+            raise errors.UserAlreadyInDealError(ctx.author)
 
         if text is None and image is None:
             raise errors.NoItemToAppraiseError(ctx.author)
@@ -52,17 +53,25 @@ class PawnshopTransaction(commands.Cog):
             return
 
         appraisal = Appraisal(ctx.author, ctx.guild)
-        user_actions.set_is_in_deal(ctx.author, ctx.guild, True)
+        self.deals_in_progress[ctx.author.id] = appraisal
 
         if appraisal.offer > 0:
             response = (f"{appraisal.offer_message}"
                         "\n\n"
                         f"{ctx.author.mention} How's {appraisal.offer} {emoji.CHUMCOIN} sound?")
-            await ctx.respond(response, view=AppraisalOfferView(appraisal=appraisal))
+            await ctx.respond(
+                response,
+                view=AppraisalOfferView(
+                    appraisal=appraisal,
+                    deals_in_progress=self.deals_in_progress,
+                    offer_rejections=self.offer_rejections
+                )
+            )
         else:
             response = (f"{appraisal.offer_message}"
                         "\n\n"
                         f"{ctx.author.mention} No deal {emoji.NO_ENTRY}")
+            self.deals_in_progress.pop(ctx.author.id)
             await ctx.respond(response)
 
         try:

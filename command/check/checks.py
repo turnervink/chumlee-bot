@@ -41,13 +41,3 @@ def user_not_in_cooldown():
                 return True
 
     return commands.check(predicate)
-
-
-def user_not_in_deal():
-    def predicate(ctx: discord.ApplicationContext):
-        if user_actions.get_is_in_deal(ctx.author, ctx.guild):
-            raise errors.UserAlreadyInDealError(ctx.author)
-        else:
-            return True
-
-    return commands.check(predicate)
