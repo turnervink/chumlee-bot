@@ -52,14 +52,30 @@ class PawnshopTransaction(commands.Cog):
             await ctx.respond(f"I'm all about self love {ctx.author.mention}, so I'll give myself a 10/10!")
             return
 
-        appraisal = Appraisal(ctx.author, ctx.guild)
+        # TODO Add support for video attachments
+        if image is not None and image.content_type.split("/")[0] != "image":
+            await ctx.respond("That attachment doesn't look like an image file, I can only accept text or images!")
+            return
+
+        appraisal = Appraisal(ctx.author, ctx.guild, text, image)
         self.deals_in_progress[ctx.author.id] = appraisal
+
+        offer_embed = discord.Embed(title="Let's take a look...", color=0xffffff)
+        offer_embed.set_thumbnail(url=self.bot.user.avatar)
+
+        if image is not None:
+            offer_embed.set_image(url=image.url)
+
+        if text is not None:
+            offer_embed.add_field(name="Your offer", value=text, inline=False)
+
+        await ctx.respond(embed=offer_embed)
 
         if appraisal.offer > 0:
             response = (f"{appraisal.offer_message}"
                         "\n\n"
                         f"{ctx.author.mention} How's {appraisal.offer} {emoji.CHUMCOIN} sound?")
-            await ctx.respond(
+            await ctx.followup.send(
                 response,
                 view=AppraisalOfferView(
                     appraisal=appraisal,
@@ -72,7 +88,7 @@ class PawnshopTransaction(commands.Cog):
                         "\n\n"
                         f"{ctx.author.mention} No deal {emoji.NO_ENTRY}")
             self.deals_in_progress.pop(ctx.author.id)
-            await ctx.respond(response)
+            await ctx.followup.send(response)
 
         try:
             await self.bot.wait_for("message",
@@ -83,7 +99,7 @@ class PawnshopTransaction(commands.Cog):
             pass
 
     @commands.slash_command(name="cooldown", description="See how much longer you have left in your cooldown",
-                      usage="cooldown")
+                            usage="cooldown")
     @checks.user_registered()
     async def cooldown(self, ctx: discord.ApplicationContext):
         await ctx.defer()

@@ -1,3 +1,4 @@
+import json
 import os
 
 import discord
@@ -7,7 +8,12 @@ from error.errors import InvalidChannelError
 from util import log
 from util.database import guild_actions
 
-bot = discord.Bot(debug_guilds=[339533012725268480])
+try:
+    debug_guild_ids = json.loads(os.environ['DEBUG_GUILD_IDS'])
+    print("Starting bot with debug_guilds=" + str(debug_guild_ids))
+    bot = discord.Bot(debug_guilds=debug_guild_ids)
+except KeyError:
+    bot = discord.Bot()
 
 
 @bot.check
