@@ -38,17 +38,6 @@ class Help(commands.Cog):
         await ctx.defer()
         await ctx.respond(embed=self.welcome_embed)
 
-    @commands.command(name="commands", description="List all commands", usage="commands")
-    async def commands(self, ctx):
-        async with ctx.typing():
-            embed = discord.Embed(title="Commands", colour=discord.Colour(0xffffff))
-            for command in self.bot.commands:
-                if not command.hidden:
-                    embed.add_field(name=f"{self.bot.command_prefix}{command.usage}",
-                                    value=f"{command.description}", inline=False)
-
-            await ctx.send(embed=embed)
-
 
 def setup(bot):
     bot.remove_command("help")
