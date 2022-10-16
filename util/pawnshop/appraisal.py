@@ -1,14 +1,17 @@
 import random
 import time
+from typing import Optional
 
 import discord
 
 
 class Appraisal:
-    def __init__(self, user: discord.User, guild: discord.Guild):
+    def __init__(self, user: discord.User, guild: discord.Guild, text_offer: Optional[str], img_offer: Optional[discord.Attachment]):
         random.seed()
         self.user = user
         self.guild = guild
+        self.text_offer = text_offer
+        self.img_offer = img_offer
         self.timestamp = int(time.time())
         self.item_tier_value = random.random()
         self.offer = self.__get_offer()

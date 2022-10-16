@@ -15,9 +15,6 @@ class Help(commands.Cog):
                                                   "more you collect the more you'll level up. You can trade in your "
                                                   f"Chumcoins {CHUMCOIN} for different Chummedals to display on your ."
                                                   "profile")
-        welcome_embed.set_thumbnail(
-            url="https://cdn.discordapp.com/attachments/430116913797136384/785220324241047583/"
-                "rs_600x600-140313141217-600.chumlee-pawn-stars.ls.31314.jpg")
         welcome_embed.add_field(name="Register a channel",
                                 value=f"Use **/allowchannel** so I can interact with people there",
                                 inline=False)
@@ -35,9 +32,9 @@ class Help(commands.Cog):
     @commands.slash_command(name="help", description="Show help info", usage="help")
     async def help(self, ctx: discord.ApplicationContext):
         await ctx.defer()
-        await ctx.respond(embed=self.welcome_embed)
+        self.welcome_embed.set_thumbnail(url=self.bot.user.avatar)
+        await ctx.followup.send(embed=self.welcome_embed)
 
 
 def setup(bot):
-    # bot.remove_command("help")
     bot.add_cog(Help(bot))

@@ -10,6 +10,7 @@ class Dice(commands.Cog):
 
     @commands.slash_command(name="roll", description="Roll some dice", usage="roll <qty>d<sides>+/-<modifier>")
     async def roll(self, ctx: discord.ApplicationContext, qty: int, sides: int, modifier: int = 0):
+        await ctx.defer()
         rolls = []
         total = 0
         for i in range(0, qty):
@@ -23,7 +24,7 @@ class Dice(commands.Cog):
         embed = discord.Embed(title=f"Roll Result for {qty}d{sides}{modifier_prefix}{modifier}")
         embed.add_field(name="Dice", value=f"({'+'.join(str(x) for x in rolls)}){modifier_prefix}{modifier}", inline=False)
         embed.add_field(name="Result", value=f"{total}", inline=True)
-        await ctx.respond(embed=embed)
+        await ctx.followup.send(embed=embed)
 
 
 def setup(bot: commands.Bot):
