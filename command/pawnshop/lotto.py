@@ -1,5 +1,5 @@
 from asyncio import sleep
-from discord.ext import commands
+from discord.ext import bridge, commands
 
 from command.check import checks
 from error.errors import LottoInProgressError, InsufficientFundsError
@@ -18,41 +18,41 @@ class Lotto(commands.Cog):
         self.bot = bot
         self.lotteries_in_progress = []
 
-    @commands.command(name="lotto", aliases=["lottery", "chumlotto", "chumlottery"], description="Start a Chumlottery",
-                      usage="lotto <bet amount>")
+    @commands.slash_command(name="lotto", description="Start a Chumlottery", usage="lotto <bet amount>")
     @checks.user_registered()
-    async def start_lotto(self, ctx: commands.Context, bet: int):
+    async def start_lotto(self, ctx: bridge.BridgeApplicationContext, bet: int):
+        await ctx.defer()
+
         if bet <= 0:
             raise commands.BadArgument("You can't bet a value that's zero or less!")
 
         if ctx.guild.id in self.lotteries_in_progress:
             raise LottoInProgressError
 
-        if user_actions.get_balance(ctx.message.author) < bet:
-            raise InsufficientFundsError(ctx.message.author)
+        if user_actions.get_balance(ctx.author) < bet:
+            raise InsufficientFundsError(ctx.author)
 
         lotto = LottoDetails(
             bet,
             BETTING_WINDOW_LENGTH_SECONDS,
             ctx.guild,
-            ctx.message.author,
-            ctx.message.channel,
-            [ctx.message.author]
+            ctx.author,
+            ctx.channel,
+            [ctx.author]
         )
         self.lotteries_in_progress.append(ctx.guild.id)
 
-        async with ctx.typing():
-            await ctx.send(
-                lotto.message(),
-                view=LottoStartView(
-                    lotto=lotto,
-                    betting_window_sec=BETTING_WINDOW_LENGTH_SECONDS,
-                    run_lotto_callback=self.run_lotto
-                )
+        await ctx.respond(
+            lotto.message(),
+            view=LottoStartView(
+                lotto=lotto,
+                betting_window_sec=BETTING_WINDOW_LENGTH_SECONDS,
+                run_lotto_callback=self.run_lotto
             )
+        )
 
     async def run_lotto(self, lotto: LottoDetails):
-        if not len(lotto.players) > 1:
+        if not len(lotto.players) > 0:
             await lotto.channel.send("No one else joined the Chumlottery, so it cannot run.")
         else:
             await lotto.channel.send("Alright! No more bets!"
