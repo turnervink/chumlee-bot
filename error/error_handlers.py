@@ -1,11 +1,10 @@
+import logging
 from typing import Union
 
 import discord
 from discord.ext import commands, bridge
 
-import logging
-
-from error.errors import NoItemToAppraiseError
+from error.errors import NoItemToAppraiseError, UserNotRegisteredError, UserAlreadyRegisteredError
 
 logger = logging.getLogger("chumlee-bot")
 
@@ -63,10 +62,8 @@ class CommandErrorHandler(commands.Cog):
 
         if isinstance(error, commands.CommandOnCooldown):
             return await ctx.respond(handle_command_cooldown_error(ctx, error))
-        elif isinstance(error, NoItemToAppraiseError):
-            return await ctx.respond("You must include some text or an image to appraise")
         else:
-            return await ctx.respond(f"Sorry, that didn't work! Please check the command usage and try again.")
+            return await ctx.respond(error)
 
 
 def setup(bot: commands.Bot):
