@@ -33,7 +33,7 @@ class Help(commands.Cog):
     async def help(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         self.welcome_embed.set_thumbnail(url=self.bot.user.avatar)
-        await ctx.respond(embed=self.welcome_embed)
+        await ctx.followup.send(embed=self.welcome_embed)
 
 
 def setup(bot):

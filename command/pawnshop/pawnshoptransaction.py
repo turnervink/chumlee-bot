@@ -45,16 +45,16 @@ class PawnshopTransaction(commands.Cog):
 
         if text is not None and any(blacklisted_item in text for blacklisted_item in BLACKLISTED_ITEMS) \
                 or text == "again":
-            await ctx.respond(f"Nice try {ctx.author.mention}, but I already took a look at that!")
+            await ctx.followup.send(f"Nice try {ctx.author.mention}, but I already took a look at that!")
             return
 
         if text == f"<@!{self.bot.user.id}>":
-            await ctx.respond(f"I'm all about self love {ctx.author.mention}, so I'll give myself a 10/10!")
+            await ctx.followup.send(f"I'm all about self love {ctx.author.mention}, so I'll give myself a 10/10!")
             return
 
         # TODO Add support for video attachments
         if image is not None and image.content_type.split("/")[0] != "image":
-            await ctx.respond("That attachment doesn't look like an image file, I can only accept text or images!")
+            await ctx.followup.send("That attachment doesn't look like an image file, I can only accept text or images!")
             return
 
         appraisal = Appraisal(ctx.author, ctx.guild, text, image)
@@ -69,7 +69,7 @@ class PawnshopTransaction(commands.Cog):
         if text is not None:
             offer_embed.add_field(name="Your offer", value=text, inline=False)
 
-        await ctx.respond(embed=offer_embed)
+        await ctx.followup.send(embed=offer_embed)
 
         if appraisal.offer > 0:
             response = (f"{appraisal.offer_message}"
@@ -112,9 +112,9 @@ class PawnshopTransaction(commands.Cog):
                 minutes = round(cooldown / 60)
                 time_remaining = f"{minutes} minutes" if minutes != 1 else f"{minutes} minute"
 
-            await ctx.respond(f"You need to wait {time_remaining} until your next appraisal")
+            await ctx.followup.send(f"You need to wait {time_remaining} until your next appraisal")
         else:
-            await ctx.respond(f"You're not in a cooldown!")
+            await ctx.followup.send(f"You're not in a cooldown!")
 
 
 def setup(bot: commands.Bot):

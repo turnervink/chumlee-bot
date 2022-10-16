@@ -19,7 +19,7 @@ class Medal(commands.Cog):
         for medal in MedalObject.VALID_MEDALS:
             response += f"{medal.title()} Chummedal - {MedalObject.MEDAL_DATA[medal]['price']} {emoji.CHUMCOIN}\n"
 
-        await ctx.respond(response)
+        await ctx.followup.send(response)
 
     @commands.slash_command(name="buymedal", description="Buy a Chummedal", usage="buymedal <medal name>")
     async def buy_medal(
@@ -38,9 +38,9 @@ class Medal(commands.Cog):
                         "\n\n"
                         f"{ctx.author.mention} {emoji.ARROW_RIGHT} {medal.price} "
                         f"{emoji.CHUMCOIN} {emoji.ARROW_RIGHT} {emoji.CHUMLEE}")
-            await ctx.respond(response)
+            await ctx.followup.send(response)
         else:
-            await ctx.respond(f"Looks like you've already got the {medal.name} Chummedal {ctx.author.mention}!")
+            await ctx.followup.send(f"Looks like you've already got the {medal.name} Chummedal {ctx.author.mention}!")
 
 
 def setup(bot: commands.Bot):

@@ -43,7 +43,7 @@ class Lotto(commands.Cog):
         )
         self.lotteries_in_progress.append(ctx.guild.id)
 
-        await ctx.respond(
+        await ctx.followup.send(
             lotto.message(),
             view=LottoStartView(
                 lotto=lotto,

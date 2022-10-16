@@ -26,14 +26,14 @@ class Profile(commands.Cog):
     async def profile(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         profile_bytes = await generate_profile(ctx.author)
-        await ctx.respond(file=discord.File(io.BytesIO(profile_bytes), filename="profile.png"))
+        await ctx.followup.send(file=discord.File(io.BytesIO(profile_bytes), filename="profile.png"))
 
     @commands.slash_command(name="balance", description="Get your Chumcoin balance", usage="balance")
     @checks.user_registered()
     async def balance(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         balance = user_actions.get_balance(ctx.author)
-        await ctx.respond(f"Your balance is {balance} {CHUMCOIN}")
+        await ctx.followup.send(f"Your balance is {balance} {CHUMCOIN}")
 
 
 async def generate_profile(user: discord.User):
