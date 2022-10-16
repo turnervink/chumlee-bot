@@ -1,5 +1,5 @@
 import discord
-from discord.ext import bridge, commands
+from discord.ext import commands
 
 from util import emoji
 from util.database import user_actions, transaction_actions
@@ -12,7 +12,7 @@ class Medal(commands.Cog):
 
     @commands.slash_command(name="medals", description="See a list of available Chummedals",
                       usage="medals")
-    async def list_medals(self, ctx: bridge.BridgeApplicationContext):
+    async def list_medals(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         response = ""
 
@@ -24,7 +24,7 @@ class Medal(commands.Cog):
     @commands.slash_command(name="buymedal", description="Buy a Chummedal", usage="buymedal <medal name>")
     async def buy_medal(
             self,
-            ctx: bridge.BridgeApplicationContext,
+            ctx: discord.ApplicationContext,
             medal_name: discord.Option(str, choices=MedalObject.VALID_MEDALS)
     ):
         await ctx.defer()

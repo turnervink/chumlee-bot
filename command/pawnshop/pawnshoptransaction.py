@@ -2,7 +2,7 @@ import random
 from asyncio import TimeoutError
 
 import discord
-from discord.ext import bridge, commands
+from discord.ext import commands
 
 from command.check import checks
 from error import errors
@@ -33,7 +33,7 @@ class PawnshopTransaction(commands.Cog):
     @checks.user_registered()
     async def appraise(
             self,
-            ctx: bridge.BridgeApplicationContext,
+            ctx: discord.ApplicationContext,
             text: discord.Option(str, required=False, default=None),
             image: discord.Option(discord.Attachment, required=False, default=None)
     ):
@@ -69,14 +69,14 @@ class PawnshopTransaction(commands.Cog):
             await self.bot.wait_for("message",
                                     check=lambda m: cyberbullying.message_has_insult(m, ctx.author),
                                     timeout=INSULT_TIME_WINDOW_SECONDS)
-            await ctx.respond(random.choice(cyberbullying.RESPONSES).format(ctx.author.mention))
+            await ctx.send(random.choice(cyberbullying.RESPONSES).format(ctx.author.mention))
         except TimeoutError:
             pass
 
     @commands.slash_command(name="cooldown", description="See how much longer you have left in your cooldown",
                       usage="cooldown")
     @checks.user_registered()
-    async def cooldown(self, ctx: bridge.BridgeApplicationContext):
+    async def cooldown(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         cooldown = cooldown_actions.get_remaining_cooldown_time(ctx.author)
 

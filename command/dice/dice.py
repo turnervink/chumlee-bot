@@ -1,7 +1,7 @@
 import random
 
 import discord
-from discord.ext import bridge, commands
+from discord.ext import commands
 
 
 class Dice(commands.Cog):
@@ -9,7 +9,7 @@ class Dice(commands.Cog):
         self.bot = bot
 
     @commands.slash_command(name="roll", description="Roll some dice", usage="roll <qty>d<sides>+/-<modifier>")
-    async def roll(self, ctx: bridge.BridgeApplicationContext, qty: int, sides: int, modifier: int = 0):
+    async def roll(self, ctx: discord.ApplicationContext, qty: int, sides: int, modifier: int = 0):
         rolls = []
         total = 0
         for i in range(0, qty):

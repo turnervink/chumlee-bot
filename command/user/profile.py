@@ -6,7 +6,7 @@ import discord
 from PIL import Image, UnidentifiedImageError
 from PIL import ImageDraw
 from PIL import ImageFont
-from discord.ext import bridge, commands
+from discord.ext import commands
 
 from command.check import checks
 from util.database import user_actions
@@ -23,14 +23,14 @@ class Profile(commands.Cog):
 
     @commands.slash_command(name="profile", description="View your profile", usage="profile")
     @checks.user_registered()
-    async def profile(self, ctx: bridge.BridgeApplicationContext):
+    async def profile(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         profile_bytes = await generate_profile(ctx.author)
         await ctx.respond(file=discord.File(io.BytesIO(profile_bytes), filename="profile.png"))
 
     @commands.slash_command(name="balance", description="Get your Chumcoin balance", usage="balance")
     @checks.user_registered()
-    async def balance(self, ctx: bridge.BridgeApplicationContext):
+    async def balance(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         balance = user_actions.get_balance(ctx.author)
         await ctx.respond(f"Your balance is {balance} {CHUMCOIN}")

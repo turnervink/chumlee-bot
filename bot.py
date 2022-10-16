@@ -13,13 +13,11 @@ import random
 ALLOWED_CHANNELS = ["bot-testing", "the-pawnshop"]  # Names of channels where bot commands can be used
 
 intents = discord.Intents(messages=True, reactions=True, message_content=True, guilds=True)
-bot = bridge.Bot(command_prefix=".", intents=intents, debug_guilds=[339533012725268480])
+bot = discord.Bot(intents=intents, debug_guilds=[339533012725268480])
 
 
-# Until everything is a slash command we need to check the context type to infer
-# if it is, since slash commands won't have `message` on the context
 @bot.check
-async def is_in_allowed_channel(ctx: Union[commands.Context, discord.ApplicationContext]):
+async def is_in_allowed_channel(ctx: discord.ApplicationContext):
     if ctx.command.name in ["allowchannel", "disallowchannel", "allowedchannels", "roll"]:
         return True
 
@@ -27,32 +25,16 @@ async def is_in_allowed_channel(ctx: Union[commands.Context, discord.Application
     if allowed_channels is not None and str(ctx.channel.id) in list(allowed_channels.keys()):
         return True
     else:
-        if type(ctx) is commands.Context:
-            raise InvalidChannelError(ctx.message.author)
-        else:
-            raise InvalidChannelError(ctx.author)
+        raise InvalidChannelError(ctx.author)
 
 
 @bot.check
-async def is_not_dm(ctx: Union[commands.Context, discord.ApplicationContext]):
+async def is_not_dm(ctx):
+    print(type(ctx))
     if type(ctx) is commands.Context:
         return not isinstance(ctx.message.channel, discord.DMChannel)
     else:
         return not isinstance(ctx.channel, discord.DMChannel)
-
-
-@bot.event
-async def on_message(message: discord.Message):
-    if message.author != bot.user:
-        if any(trigger in message.content.lower() for trigger in message_triggers.REACTION_TRIGGERS):
-            chumlee_emoji = discord.utils.get(bot.emojis, name="chumlee")
-            if chumlee_emoji is not None:
-                await message.add_reaction(chumlee_emoji)
-        elif any (trigger in message.content.lower() for trigger in message_triggers.YOUTUBE_LINK_TRIGGERS):
-            quote = random.choice(message_triggers.YOUTUBE_VIDEO_QUOTES)
-            await message.channel.send(f"{quote}\n\n{message_triggers.YOUTUBE_LINK}")
-        else:
-            await bot.process_commands(message)
 
 
 @bot.event

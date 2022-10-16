@@ -1,5 +1,5 @@
 import discord
-from discord.ext import bridge, commands
+from discord.ext import commands
 
 from command.check import checks
 from error import errors
@@ -13,7 +13,7 @@ class UserTransaction(commands.Cog):
 
     @commands.slash_command(name="pay", description="Pay another user some Chumcoins", usage="pay <@user> <amount>")
     @checks.user_registered()
-    async def pay(self, ctx: bridge.BridgeApplicationContext, payee: discord.User, amount: int):
+    async def pay(self, ctx: discord.ApplicationContext, payee: discord.User, amount: int):
         async with ctx.typing():
             payer = ctx.author
 

@@ -1,5 +1,5 @@
 import discord
-from discord.ext import bridge, commands
+from discord.ext import commands
 
 from util.emoji import CHUMCOIN
 
@@ -8,7 +8,6 @@ class Help(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        p = self.bot.command_prefix
         welcome_embed = discord.Embed(title="Hi! I'm Chumlee, and I run this pawnshop.",
                                       colour=discord.Colour(0xffffff),
                                       description="I'm here to appraise your memes, jokes, and anything else you can "
@@ -34,11 +33,11 @@ class Help(commands.Cog):
         self.welcome_embed = welcome_embed
 
     @commands.slash_command(name="help", description="Show help info", usage="help")
-    async def help(self, ctx: bridge.BridgeApplicationContext):
+    async def help(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         await ctx.respond(embed=self.welcome_embed)
 
 
 def setup(bot):
-    bot.remove_command("help")
+    # bot.remove_command("help")
     bot.add_cog(Help(bot))

@@ -1,4 +1,5 @@
-from discord.ext import bridge, commands
+import discord
+from discord.ext import commands
 
 from util.database import guild_actions
 
@@ -10,20 +11,20 @@ class ChannelBind(commands.Cog):
     @commands.slash_command(name="allowchannel", description="Allow the bot to be used in a channel "
                                                              "(run in the channel you want to add)",
                             usage="allowchannel")
-    async def allow_channel(self, ctx: bridge.BridgeApplicationContext):
+    async def allow_channel(self, ctx: discord.ApplicationContext):
         guild_actions.add_allowed_channel(ctx.guild.id, ctx.channel.id)
         await ctx.respond(f"Added {ctx.channel.mention} to the list of allowed channels")
 
     @commands.slash_command(name="disallowchannel", description="Disallow the bot from being used in a channel "
                                                                 "(run in the channel you want to remove)",
                             usage="disallowchannel")
-    async def disallow_channel(self, ctx: bridge.BridgeApplicationContext):
+    async def disallow_channel(self, ctx: discord.ApplicationContext):
         guild_actions.remove_allowed_channel(ctx.guild.id, ctx.channel.id)
         await ctx.respond(f"Removed {ctx.channel.mention} from the list of allowed channels")
 
     @commands.slash_command(name="allowedchannels", description="See what channels the bot is allowed to be used in",
                             usage="allowedchannels")
-    async def get_allowed_channels(self, ctx: bridge.BridgeApplicationContext):
+    async def get_allowed_channels(self, ctx: discord.ApplicationContext):
         response = "You can interact with me in the following channels:\n\n"
 
         channel_ids = guild_actions.get_allowed_channels(ctx.guild.id)

@@ -1,5 +1,8 @@
+import random
 from asyncio import sleep
-from discord.ext import bridge, commands
+
+import discord
+from discord.ext import commands
 
 from command.check import checks
 from error.errors import LottoInProgressError, InsufficientFundsError
@@ -7,8 +10,6 @@ from util import emoji
 from util.database import transaction_actions, user_actions
 from util.pawnshop.lottodetails import LottoDetails
 from view.pawnshop.LottoStartView import LottoStartView
-
-import random
 
 BETTING_WINDOW_LENGTH_SECONDS = 60
 
@@ -20,7 +21,7 @@ class Lotto(commands.Cog):
 
     @commands.slash_command(name="lotto", description="Start a Chumlottery", usage="lotto <bet amount>")
     @checks.user_registered()
-    async def start_lotto(self, ctx: bridge.BridgeApplicationContext, bet: int):
+    async def start_lotto(self, ctx: discord.ApplicationContext, bet: int):
         await ctx.defer()
 
         if bet <= 0:
