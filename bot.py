@@ -13,6 +13,7 @@ try:
     print("Starting bot with debug_guilds=" + str(debug_guild_ids))
     bot = discord.Bot(debug_guilds=debug_guild_ids)
 except KeyError:
+    print("No debug_guilds specified, will create global commands")
     bot = discord.Bot()
 
 
