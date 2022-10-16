@@ -11,16 +11,16 @@ class ChannelBind(commands.Cog):
     @commands.slash_command(name="allowchannel", description="Allow the bot to be used in a channel "
                                                              "(run in the channel you want to add)",
                             usage="allowchannel")
-    async def allow_channel(self, ctx: discord.ApplicationContext):
-        guild_actions.add_allowed_channel(ctx.guild.id, ctx.channel.id)
-        await ctx.respond(f"Added {ctx.channel.mention} to the list of allowed channels")
+    async def allow_channel(self, ctx: discord.ApplicationContext, channel: discord.TextChannel):
+        guild_actions.add_allowed_channel(ctx.guild.id, channel.id)
+        await ctx.respond(f"Added {channel.mention} to the list of allowed channels")
 
     @commands.slash_command(name="disallowchannel", description="Disallow the bot from being used in a channel "
                                                                 "(run in the channel you want to remove)",
                             usage="disallowchannel")
-    async def disallow_channel(self, ctx: discord.ApplicationContext):
-        guild_actions.remove_allowed_channel(ctx.guild.id, ctx.channel.id)
-        await ctx.respond(f"Removed {ctx.channel.mention} from the list of allowed channels")
+    async def disallow_channel(self, ctx: discord.ApplicationContext, channel: discord.TextChannel):
+        guild_actions.remove_allowed_channel(ctx.guild.id, channel.id)
+        await ctx.respond(f"Removed {channel.mention} from the list of allowed channels")
 
     @commands.slash_command(name="allowedchannels", description="See what channels the bot is allowed to be used in",
                             usage="allowedchannels")
