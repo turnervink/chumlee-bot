@@ -1,19 +1,13 @@
-from typing import Union
+import os
 
 import discord
-from discord.ext import bridge, commands
+from discord.ext import commands
 
 from error.errors import InvalidChannelError
-from util import log, message_triggers
+from util import log
 from util.database import guild_actions
 
-import os
-import random
-
-ALLOWED_CHANNELS = ["bot-testing", "the-pawnshop"]  # Names of channels where bot commands can be used
-
-intents = discord.Intents(messages=True, reactions=True, message_content=True, guilds=True)
-bot = discord.Bot(intents=intents, debug_guilds=[339533012725268480])
+bot = discord.Bot(debug_guilds=[339533012725268480])
 
 
 @bot.check
@@ -30,7 +24,6 @@ async def is_in_allowed_channel(ctx: discord.ApplicationContext):
 
 @bot.check
 async def is_not_dm(ctx):
-    print(type(ctx))
     if type(ctx) is commands.Context:
         return not isinstance(ctx.message.channel, discord.DMChannel)
     else:
