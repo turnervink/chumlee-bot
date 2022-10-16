@@ -1,17 +1,18 @@
+import io
+import logging
+
 import aiohttp
 import discord
-from discord.ext import commands
 from PIL import Image, UnidentifiedImageError
-from PIL import ImageFont
 from PIL import ImageDraw
-import io
+from PIL import ImageFont
+from discord.ext import commands
 
 from command.check import checks
-import logging
 from util.database import user_actions
 from util.emoji import CHUMCOIN
-from util.pawnshop.medal import Medal
 from util.pawnshop.level import Level
+from util.pawnshop.medal import Medal
 
 logger = logging.getLogger("chumlee-bot")
 
@@ -20,19 +21,19 @@ class Profile(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="profile", description="View your profile", usage="profile")
+    @commands.slash_command(name="profile", description="View your profile", usage="profile")
     @checks.user_registered()
-    async def profile(self, ctx: commands.Context):
-        async with ctx.typing():
-            profile_bytes = await generate_profile(ctx.message.author)
-            await ctx.send(file=discord.File(io.BytesIO(profile_bytes), filename="profile.png"))
+    async def profile(self, ctx: discord.ApplicationContext):
+        await ctx.defer()
+        profile_bytes = await generate_profile(ctx.author)
+        await ctx.respond(file=discord.File(io.BytesIO(profile_bytes), filename="profile.png"))
 
-    @commands.command(name="balance", aliases=["bal"], description="Get your Chumcoin balance", usage="balance")
+    @commands.slash_command(name="balance", description="Get your Chumcoin balance", usage="balance")
     @checks.user_registered()
-    async def balance(self, ctx: commands.Context):
-        async with ctx.typing():
-            balance = user_actions.get_balance(ctx.message.author)
-            await ctx.send(f'{ctx.message.author.mention} your balance is {balance} {CHUMCOIN}')
+    async def balance(self, ctx: discord.ApplicationContext):
+        await ctx.defer()
+        balance = user_actions.get_balance(ctx.author)
+        await ctx.respond(f"Your balance is {balance} {CHUMCOIN}")
 
 
 async def generate_profile(user: discord.User):

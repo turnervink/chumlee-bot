@@ -43,6 +43,8 @@ class Appraisal:
             return random.choice(TIER_ZERO_QUOTES)
 
 
+MAX_NODEAL_BEFORE_COOLDOWN = 2
+
 ITEM_TIER_ONE = 0.05
 ITEM_TIER_TWO = 0.25
 ITEM_TIER_THREE = 0.5

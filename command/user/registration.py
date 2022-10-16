@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 
 from command.check import checks
@@ -8,12 +9,12 @@ class Registration(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="register", description="Register yourself to sell at the pawnshop", usage="register")
+    @commands.slash_command(name="register", description="Register yourself to sell at the pawnshop", usage="register")
     @checks.user_not_registered()
-    async def register(self, ctx):
-        async with ctx.typing():
-            user_actions.register(ctx.message.author)
-            await ctx.send(f'You\'re all set {ctx.message.author.mention}!')
+    async def register(self, ctx: discord.ApplicationContext):
+        await ctx.defer()
+        user_actions.register(ctx.author)
+        await ctx.send(f"You're all set, now let's make a deal!")
 
 
 def setup(bot: commands.Bot):

@@ -7,16 +7,17 @@ from util.pawnshop.lottodetails import LottoDetails
 
 class LottoStartView(discord.ui.View):
     def __init__(self, *items: Item, lotto: LottoDetails, betting_window_sec, run_lotto_callback):
-        super().__init__(*items, timeout=betting_window_sec)
+        super().__init__(*items, timeout=betting_window_sec, disable_on_timeout=True)
         self.lotto = lotto
         self.betting_window_sec = betting_window_sec
         self.run_lotto_callback = run_lotto_callback
 
     async def on_timeout(self):
-        for child in self.children:
-            child.disabled = True
-            child.label = "No more bets!"
-        await self.message.edit(view=self)
+        # for child in self.children:
+        #     child.disabled = True
+        #     child.label = "No more bets!"
+
+        # TODO Can we somehow refresh the View when it was sent with a slash command?
         await self.run_lotto_callback(self.lotto)
 
     @discord.ui.button(label="Join", style=discord.ButtonStyle.blurple)

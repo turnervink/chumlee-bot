@@ -16,7 +16,7 @@ def get_remaining_cooldown_time(user: discord.User):
             return cooldown_end_time - now
         else:
             return None
-    except ValueError:
+    except (TypeError, ValueError):
         return None
 
 

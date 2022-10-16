@@ -1,19 +1,17 @@
-import discord
-from discord.ext import commands
+import random
 from asyncio import TimeoutError
 
+import discord
+from discord.ext import commands
+
 from command.check import checks
-from util.pawnshop import cyberbullying
-from util.database import cooldown_actions, user_actions
-from util.pawnshop.appraisal import Appraisal
-from util import emoji
 from error import errors
-
-import random
-
+from util import emoji
+from util.database import cooldown_actions, user_actions
+from util.pawnshop import cyberbullying
+from util.pawnshop.appraisal import Appraisal
 from view.pawnshop.AppraisalOfferView import AppraisalOfferView
 
-MAX_NODEAL_BEFORE_COOLDOWN = 2
 INSULT_TIME_WINDOW_SECONDS = 30
 BLACKLISTED_ITEMS = [
     "it again",
@@ -27,64 +25,80 @@ class PawnshopTransaction(commands.Cog):
         self.deals_in_progress = {}
         self.offer_rejections = {}
 
-    @commands.command(name="appraise", description="Have Chumlee appraise an item",
-                      usage="appraise <some text or an attachment>")
-    @checks.user_not_in_deal()
+    @commands.slash_command(name="appraise", description="Have Chumlee appraise an item",
+                            usage="appraise <some text or an attachment>")
     @checks.user_not_in_cooldown()
     @checks.user_registered()
-    async def appraise(self, ctx: commands.Context, *, item=None):
-        async with ctx.typing():
-            if item is None and not ctx.message.attachments:
-                raise errors.NoItemToAppraiseError(ctx.message.author)
+    async def appraise(
+            self,
+            ctx: discord.ApplicationContext,
+            text: discord.Option(str, required=False, default=None),
+            image: discord.Option(discord.Attachment, required=False, default=None)
+    ):
+        await ctx.defer()
 
-            if item is not None and any(blacklisted_item in item for blacklisted_item in BLACKLISTED_ITEMS) \
-                    or item == "again":
-                await ctx.send(f"Nice try {ctx.message.author.mention}, but I already took a look at that!")
-                return
+        if ctx.author.id in self.deals_in_progress:
+            raise errors.UserAlreadyInDealError(ctx.author)
 
-            if item == f"<@!{self.bot.user.id}>":
-                await ctx.send(f"I'm all about self love {ctx.message.author.mention}, so I'll give myself a 10/10!")
-                return
+        if text is None and image is None:
+            raise errors.NoItemToAppraiseError(ctx.author)
 
-            appraisal = Appraisal(ctx.message.author, ctx.message.guild)
-            user_actions.set_is_in_deal(ctx.message.author, ctx.message.guild, True)
+        if text is not None and any(blacklisted_item in text for blacklisted_item in BLACKLISTED_ITEMS) \
+                or text == "again":
+            await ctx.respond(f"Nice try {ctx.author.mention}, but I already took a look at that!")
+            return
 
-            if appraisal.offer > 0:
-                response = (f"{appraisal.offer_message}"
-                            "\n\n"
-                            f"{ctx.message.author.mention} How's {appraisal.offer} {emoji.CHUMCOIN} sound?")
-                await ctx.send(response, view=AppraisalOfferView(appraisal=appraisal))
-            else:
-                response = (f"{appraisal.offer_message}"
-                            "\n\n"
-                            f"{ctx.message.author.mention} No deal {emoji.NO_ENTRY}")
-                await ctx.send(response)
+        if text == f"<@!{self.bot.user.id}>":
+            await ctx.respond(f"I'm all about self love {ctx.author.mention}, so I'll give myself a 10/10!")
+            return
 
-            try:
-                await self.bot.wait_for("message",
-                                        check=lambda m: cyberbullying.message_has_insult(m, ctx.message.author),
-                                        timeout=INSULT_TIME_WINDOW_SECONDS)
-                await ctx.send(random.choice(cyberbullying.RESPONSES).format(ctx.message.author.mention))
-            except TimeoutError:
-                pass
+        appraisal = Appraisal(ctx.author, ctx.guild)
+        self.deals_in_progress[ctx.author.id] = appraisal
 
-    @commands.command(name="cooldown", description="See how much longer you have left in your cooldown",
+        if appraisal.offer > 0:
+            response = (f"{appraisal.offer_message}"
+                        "\n\n"
+                        f"{ctx.author.mention} How's {appraisal.offer} {emoji.CHUMCOIN} sound?")
+            await ctx.respond(
+                response,
+                view=AppraisalOfferView(
+                    appraisal=appraisal,
+                    deals_in_progress=self.deals_in_progress,
+                    offer_rejections=self.offer_rejections
+                )
+            )
+        else:
+            response = (f"{appraisal.offer_message}"
+                        "\n\n"
+                        f"{ctx.author.mention} No deal {emoji.NO_ENTRY}")
+            self.deals_in_progress.pop(ctx.author.id)
+            await ctx.respond(response)
+
+        try:
+            await self.bot.wait_for("message",
+                                    check=lambda m: cyberbullying.message_has_insult(m, ctx.author),
+                                    timeout=INSULT_TIME_WINDOW_SECONDS)
+            await ctx.send(random.choice(cyberbullying.RESPONSES).format(ctx.author.mention))
+        except TimeoutError:
+            pass
+
+    @commands.slash_command(name="cooldown", description="See how much longer you have left in your cooldown",
                       usage="cooldown")
     @checks.user_registered()
-    async def cooldown(self, ctx: commands.Context):
-        async with ctx.typing():
-            cooldown = cooldown_actions.get_remaining_cooldown_time(ctx.message.author)
+    async def cooldown(self, ctx: discord.ApplicationContext):
+        await ctx.defer()
+        cooldown = cooldown_actions.get_remaining_cooldown_time(ctx.author)
 
-            if cooldown is not None:
-                if cooldown < 60:
-                    time_remaining = f"{round(cooldown, 0)} seconds"
-                else:
-                    minutes = round(cooldown / 60)
-                    time_remaining = f"{minutes} minutes" if minutes != 1 else f"{minutes} minute"
-
-                await ctx.send(f"You need to wait {time_remaining} until your next appraisal {ctx.message.author.mention}")
+        if cooldown is not None:
+            if cooldown < 60:
+                time_remaining = f"{round(cooldown, 0)} seconds"
             else:
-                await ctx.send(f"You're not in a cooldown {ctx.message.author.mention}!")
+                minutes = round(cooldown / 60)
+                time_remaining = f"{minutes} minutes" if minutes != 1 else f"{minutes} minute"
+
+            await ctx.respond(f"You need to wait {time_remaining} until your next appraisal")
+        else:
+            await ctx.respond(f"You're not in a cooldown!")
 
 
 def setup(bot: commands.Bot):
