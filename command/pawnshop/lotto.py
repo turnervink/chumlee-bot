@@ -52,7 +52,7 @@ class Lotto(commands.Cog):
         )
 
     async def run_lotto(self, lotto: LottoDetails):
-        if not len(lotto.players) > 0:
+        if not len(lotto.players) > 1:
             await lotto.channel.send("No one else joined the Chumlottery, so it cannot run.")
         else:
             await lotto.channel.send("Alright! No more bets!"
