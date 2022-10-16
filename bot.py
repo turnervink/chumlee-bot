@@ -1,7 +1,7 @@
 from typing import Union
 
 import discord
-from discord.ext import commands
+from discord.ext import bridge, commands
 
 from error.errors import InvalidChannelError
 from util import log, message_triggers
@@ -13,7 +13,7 @@ import random
 ALLOWED_CHANNELS = ["bot-testing", "the-pawnshop"]  # Names of channels where bot commands can be used
 
 intents = discord.Intents(messages=True, reactions=True, message_content=True, guilds=True)
-bot = commands.Bot(command_prefix=".", intents=intents)
+bot = bridge.Bot(command_prefix=".", intents=intents, debug_guilds=[339533012725268480])
 
 
 # Until everything is a slash command we need to check the context type to infer
