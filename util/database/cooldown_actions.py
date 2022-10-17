@@ -1,7 +1,8 @@
-from .config import db, db_root
+import time
+
 import discord
 
-import time
+from .config import db, db_root
 
 
 def get_cooldown_end_time(user: discord.User):

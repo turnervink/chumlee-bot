@@ -1,7 +1,5 @@
-from .config import db, db_root
 from error.errors import *
-
-import discord
+from .config import db, db_root
 
 
 def withdraw(user: discord.User, amount: int):

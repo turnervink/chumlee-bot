@@ -3,6 +3,8 @@ import logging
 import discord
 from discord.ext import commands
 
+from error.errors import BotError
+
 logger = logging.getLogger("chumlee-bot")
 
 
@@ -32,13 +34,12 @@ class CommandErrorHandler(commands.Cog):
         else:
             logger.error(f"Command was None in error for user {ctx.author.id}: %s", error)
 
-        if hasattr(ctx.command, "on_error"):
-            return
-
         if isinstance(error, commands.CommandOnCooldown):
-            return await ctx.respond(handle_command_cooldown_error(ctx, error))
+            await ctx.respond(handle_command_cooldown_error(ctx, error))
+        elif isinstance(error, BotError):
+            await ctx.respond(error)
         else:
-            return await ctx.respond(error)
+            await ctx.respond("Whoops! Something went wrong.")
 
 
 def setup(bot: commands.Bot):

@@ -1,6 +1,6 @@
-import discord
-
 import re
+
+import discord
 
 INSULTS = [
     "fuc?k you",

@@ -2,18 +2,19 @@ import json
 import os
 
 import discord
-from discord.ext import commands
 
 from error.errors import InvalidChannelError
 from util import log
 from util.database import guild_actions
 
+logger = log.setup_logger("chumlee-bot")
+
 try:
     debug_guild_ids = json.loads(os.environ['DEBUG_GUILD_IDS'])
-    print("Starting bot with debug_guilds=" + str(debug_guild_ids))
+    logger.info("Starting bot with debug_guilds=" + str(debug_guild_ids))
     bot = discord.Bot(debug_guilds=debug_guild_ids)
 except KeyError:
-    print("No debug_guilds specified, will create global commands")
+    logger.info("No debug_guilds specified, will create global commands")
     bot = discord.Bot()
 
 
@@ -30,16 +31,12 @@ async def is_in_allowed_channel(ctx: discord.ApplicationContext):
 
 
 @bot.check
-async def is_not_dm(ctx):
-    if type(ctx) is commands.Context:
-        return not isinstance(ctx.message.channel, discord.DMChannel)
-    else:
-        return not isinstance(ctx.channel, discord.DMChannel)
+async def is_not_dm(ctx: discord.ApplicationContext):
+    return not isinstance(ctx.channel, discord.DMChannel)
 
 
 @bot.event
 async def on_ready():
-    logger = log.setup_logger("chumlee-bot")
     logger.info(f"Bot ready! Logged in as {bot.user.name} - ID: {bot.user.id}")
 
     guilds = list(guild.name for guild in bot.guilds)
@@ -57,4 +54,5 @@ bot.load_extension("command.pawnshop.pawnshoptransaction")
 bot.load_extension("command.pawnshop.medal")
 bot.load_extension("command.pawnshop.lotto")
 bot.load_extension("command.dice.dice")
+
 bot.run(os.environ['BOT_TOKEN'])
