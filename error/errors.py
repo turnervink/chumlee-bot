@@ -2,90 +2,95 @@ import discord
 from discord.ext import commands
 
 
-class UserNotRegisteredError(commands.CommandError):
-    def __init__(self, user, *args):
-        self.user = user
-        message = f'You need to use **.register** first {user.mention}'
+class BotError(commands.CommandError):
+    def __init__(self, message: str, *args):
         super().__init__(message=message, *args)
 
 
-class UserAlreadyRegisteredError(commands.CommandError):
+class UserNotRegisteredError(BotError):
+    def __init__(self, user, *args):
+        self.user = user
+        message = f'You need to use **/register** first {user.mention}'
+        super().__init__(message=message, *args)
+
+
+class UserAlreadyRegisteredError(BotError):
     def __init__(self, user, *args):
         self.user = user
         message = f'Looks like you\'re already registered {user.mention}!'
         super().__init__(message=message, *args)
 
 
-class UserAlreadyInDealError(commands.CommandError):
+class UserAlreadyInDealError(BotError):
     def __init__(self, user, *args):
         self.user = user
         message = f'Looks like you\'ve already got a deal on the table {user.mention}!'
         super().__init__(message=message, *args)
 
 
-class TransactionUsersAreEqualError(commands.CommandError):
+class TransactionUsersAreEqualError(BotError):
     def __init__(self, user, *args):
         self.user = user
         message = f'You can\'t pay yourself Chumcoins {user.mention}!'
         super().__init__(message=message, *args)
 
 
-class NoItemToAppraiseError(commands.CommandError):
+class NoItemToAppraiseError(BotError):
     def __init__(self, user, *args):
         self.user = user
         message = f'{user.mention} you must include an attachment or some text to appraise'
         super().__init__(message=message, *args)
 
 
-class InvalidChannelError(commands.CommandError):
+class InvalidChannelError(BotError):
     def __init__(self, user, *args):
         self.user = user
         message = f"{user.mention} this channel can't be used for commands!" \
-                  f"\nYou can allow a channel using **.allowchannel**"
+                  f"\nYou can allow a channel using **/allowchannel**"
         super().__init__(message=message, *args)
 
 
-class InvalidMedalNameError(commands.CommandError):
+class InvalidMedalNameError(BotError):
     def __init__(self, invalid_name, *args):
         self.invalid_name = invalid_name
         message = f'{invalid_name} is not a valid medal name'
         super().__init__(message=message, *args)
 
 
-class LevelNotFoundError(commands.CommandError):
+class LevelNotFoundError(BotError):
     def __init__(self, value, *args):
         self.value = value
         message = f"No level found for earnings value {value}"
         super().__init__(message=message, *args)
 
 
-class LottoInProgressError(commands.CommandError):
-    def __init__(self):
+class LottoInProgressError(BotError):
+    def __init__(self, *args):
         message = f"A lottery is already in progress!"
-        super().__init__(message=message)
+        super().__init__(message=message, *args)
 
 
-class NoLottoInProgressError(commands.CommandError):
-    def __init__(self):
+class NoLottoInProgressError(BotError):
+    def __init__(self, *args):
         message = f"There's no lottery in progress!"
-        super().__init__(message=message)
+        super().__init__(message=message, *args)
 
 
-class UserAlreadyInLottoError(commands.CommandError):
+class UserAlreadyInLottoError(BotError):
     def __init__(self, user, *args):
         self.user = user
         message = f"You've already bet in this Chumlottery {user.mention}!"
-        super().__init__(message=message)
+        super().__init__(message=message, *args)
 
 
-class UserNotFoundError(commands.CommandError):
+class UserNotFoundError(BotError):
     def __init__(self, user: discord.User, *args):
         self.user = user
         message = f'User {user.mention} is not registered with the pawnshop'
         super().__init__(message=message, *args)
 
 
-class InsufficientFundsError(commands.CommandError):
+class InsufficientFundsError(BotError):
     def __init__(self, user: discord.User, *args):
         self.user = user
         message = f'{user.mention} has insufficient funds for this transaction'

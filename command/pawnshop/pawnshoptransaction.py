@@ -7,7 +7,7 @@ from discord.ext import commands
 from command.check import checks
 from error import errors
 from util import emoji
-from util.database import cooldown_actions, user_actions
+from util.database import cooldown_actions
 from util.pawnshop import cyberbullying
 from util.pawnshop.appraisal import Appraisal
 from view.pawnshop.AppraisalOfferView import AppraisalOfferView
