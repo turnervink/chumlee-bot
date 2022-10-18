@@ -9,7 +9,18 @@ comes from what your guild's users offer him and how he responds, as well as som
 easter eggs. The goal isn't a real functioning economy, but rather some good comedy.
 
 ## Adding Chumlee Bot to Your Server
-Chumlee Bot isn't currently publicly available. Keep an eye on this repo for updates, or go ahead and deploy your own fork!
+I make no guarantees about service quality or uptime, since this is a self-hosted project.
+
+Invite the bot with this link:  
+https://discord.com/oauth2/authorize?client_id=338421932426919936&scope=bot%20applications.commands&permissions=277025442816
+
+Chumlee requires access to the following permissions:
+- View Channels
+- Send Messages
+- Send Messages in Threads
+- Embed Links
+- Attach Files
+- Use Application Commands
 
 ## Developing
 ### Requirements
