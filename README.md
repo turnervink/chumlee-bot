@@ -40,6 +40,7 @@ GOOGLE_APPLICATION_CREDENTIALS=<path to your Firebase credentials JSON file>
 DB_ROOT=<the root path of your database, useful for having different paths for dev and prod>
 DB_AUTH_UID=<a uid to authorize Firebase requests, set up in your Firebase auth rules>
 LOGLEVEL=<logging level>
+DEBUG_GUILD_IDS=[list of Discord build IDs to create slash commands in for dev purposes]
 ```
 6. Start the bot and invite it to a server for testing
 
