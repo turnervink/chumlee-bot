@@ -1,4 +1,5 @@
 import logging
+import os
 
 
 def setup_logger(name):
@@ -8,6 +9,6 @@ def setup_logger(name):
     handler.setFormatter(formatter)
 
     logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.getLevelName(os.environ["LOGLEVEL"]))
     logger.addHandler(handler)
     return logger
