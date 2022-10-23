@@ -45,6 +45,7 @@ async def on_ready():
 
 bot.load_extension("util.status")
 bot.load_extension("util.channel_bind")
+bot.load_extension("util.stockmarket.stock_market")
 bot.load_extension("error.error_handlers")
 bot.load_extension("command.user.help")
 bot.load_extension("command.user.registration")
