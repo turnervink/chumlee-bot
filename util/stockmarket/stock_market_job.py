@@ -14,7 +14,7 @@ else:
     STOCK_PRICE_UPDATE_TIMES = [time(hour=h, tzinfo=timezone.utc) for h in range(24)]
 
 
-class StockMarket(commands.Cog):
+class StockMarketJob(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.update_stock_price.start()
@@ -29,4 +29,4 @@ class StockMarket(commands.Cog):
 
 
 def setup(bot: commands.Bot):
-    bot.add_cog(StockMarket(bot))
+    bot.add_cog(StockMarketJob(bot))
