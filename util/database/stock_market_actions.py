@@ -18,35 +18,34 @@ def set_current_price(new_price: int):
     db.reference(f"{db_root}/stockMarket/currentPrice").set(new_price)
 
 
-def get_24h_history():
-    history = db.reference(f"{db_root}/stockMarket/historyLast24Hours").get()
+def get_history():
+    history = db.reference(f"{db_root}/stockMarket/history").get()
     if history is not None:
         return history
+    else:
+        return []
+
+
+def get_24h_history():
+    history = db.reference(f"{db_root}/stockMarket/history").get()
+    if history is not None:
+        return history[:25]
     else:
         return []
 
 
 def get_7d_history():
-    history = db.reference(f"{db_root}/stockMarket/historyLast7Days").get()
+    history = db.reference(f"{db_root}/stockMarket/history").get()
     if history is not None:
-        return history
+        return history[:169]
     else:
         return []
 
 
-# TODO Store one history array with a max length, take slices for each window
 def append_to_history(value: int):
-    history_24h = get_24h_history()
-    history_24h.append(value)
-    while len(history_24h) > 24:
-        history_24h.pop(0)
-    db.reference(f"{db_root}/stockMarket/historyLast24Hours").set(history_24h)
-
-    history_7d = get_7d_history()
-    history_7d.append(value)
-    while len(history_7d) > 168:
-        history_7d.pop(0)
-    db.reference(f"{db_root}/stockMarket/historyLast7Days").set(history_7d)
+    history = get_history()
+    history.append(value)
+    db.reference(f"{db_root}/stockMarket/history").set(history)
 
 
 def get_user_portfolio(user: discord.User):

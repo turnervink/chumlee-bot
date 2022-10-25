@@ -24,10 +24,10 @@ def graph_price_history(history: List[int]):
     ax = plt.axes()
     ax.set_facecolor("black")
 
-    x_values = list(reversed([i for i in range(1, len(history) + 1)]))
+    x_values = list(reversed([i for i in range(0, len(history))]))
 
     plt.xticks(np.arange(min(x_values), max(x_values) + 1, step=1.0), labels=x_values)
-    plt.plot(x_values, history, color="green")
+    plt.plot(x_values, list(reversed(history)), color="green")
 
     buf = io.BytesIO()
     plt.savefig(buf, format="png")
