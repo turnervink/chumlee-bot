@@ -1,8 +1,15 @@
+import discord
+
+from error.errors import InsufficientStockError
 from .config import db, db_root
 
 
 def get_current_price():
-    db.reference(f"{db_root}/stockMarket/currentPrice").get()
+    current_price = db.reference(f"{db_root}/stockMarket/currentPrice").get()
+    if current_price is None:
+        return 0
+    else:
+        return int(current_price)
 
 
 def set_current_price(new_price: int):
@@ -25,6 +32,7 @@ def get_7d_history():
         return []
 
 
+# TODO Store one history array with a max length, take slices for each window
 def append_to_history(value: int):
     history_24h = get_24h_history()
     history_24h.append(value)
@@ -37,3 +45,39 @@ def append_to_history(value: int):
     while len(history_7d) > 168:
         history_7d.pop(0)
     db.reference(f"{db_root}/stockMarket/historyLast7Days").set(history_7d)
+
+
+def get_user_portfolio(user: discord.User):
+    # TODO New portfolio features
+    # - Track buy/sell history
+    # - Display return over time
+    portfolio = db.reference(f"{db_root}/stockMarket/portfolios/{user.id}").get()
+
+    if portfolio is None:
+        db.reference(f"{db_root}/stockMarket/portfolios/{user.id}").set(NEW_PORTFOLIO_DATA)
+        return NEW_PORTFOLIO_DATA
+    else:
+        return portfolio
+
+
+def buy_stock(user: discord.User, qty: int):
+    portfolio = get_user_portfolio(user)
+    portfolio["stockQty"] = portfolio["stockQty"] + qty
+    db.reference(f"{db_root}/stockMarket/portfolios/{user.id}").set(portfolio)
+
+
+def sell_stock(user: discord.User, qty: int):
+    portfolio = get_user_portfolio(user)
+
+    if qty > portfolio["stockQty"]:
+        raise InsufficientStockError(user)
+
+    portfolio["stockQty"] = portfolio["stockQty"] - qty
+
+    db.reference(f"{db_root}/stockMarket/portfolios/{user.id}").set(portfolio)
+
+
+NEW_PORTFOLIO_DATA = {
+    "stockQty": 0,
+    "history": []
+}

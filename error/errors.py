@@ -95,3 +95,10 @@ class InsufficientFundsError(BotError):
         self.user = user
         message = f'{user.mention} has insufficient funds for this transaction'
         super().__init__(message=message, *args)
+
+
+class InsufficientStockError(BotError):
+    def __init__(self, user: discord.User, *args):
+        self.user = user
+        message = f'{user.mention} has insufficient stock for this transaction'
+        super().__init__(message=message, *args)

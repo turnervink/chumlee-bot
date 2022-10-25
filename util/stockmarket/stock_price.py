@@ -1,34 +1,59 @@
+from typing import List
+
 import matplotlib.pyplot as plt
 import numpy as np
+import io
+import discord
 
-from util.database import stock_market_actions
-
-MU = 0.0001
-SIGMA = 0.01
-
-
-def get_last_24h():
-    last_24_h = stock_market_actions.get_24h_history()
-    print(last_24_h)
+# TODO Adjust these based on some factors (what?) to simulate changing market conditions
+MU = 0.0001  # Higher value = more bullish market
+SIGMA = 0.01  # Higher value = more volatile market
 
 
-def plot_prices():
+def get_new_price(current_price: int):
+    returns = [0]
+    while returns[0] == 0:  # Prevent multiplying by 0, which would make the price 0 forever
+        returns = np.random.normal(loc=MU, scale=SIGMA, size=1)
+
+    return np.round(current_price*(1+returns).prod(), 0)
+
+
+def graph_price_history(history: List[int]):
+    ax = plt.axes()
+    ax.set_facecolor("black")
+    plt.plot([i for i in range(0, len(history))], history, color="green")
+    plt.xticks([i for i in range(1, len(history) + 1)])
+
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    file = discord.File(buf, "plot.png")
+    buf.close()
+    return file
+
+
+def simulate_prices(num_prices: int):
     current_price = 500
     prices = []
 
-    for i in range(0, 24):
-        returns = np.random.normal(loc=MU, scale=SIGMA, size=1)
-        current_price = current_price*(1+returns).prod()
+    for i in range(0, num_prices):
+        returns = [0]
+        while returns[0] == 0:  # Prevent multiplying by 0, which would make the price 0 forever
+            returns = np.random.normal(loc=MU, scale=SIGMA, size=1)
+
+        current_price = np.round(current_price*(1+returns).prod(), 0)
 
         prices.append(current_price)
-        if len(prices) > 24:
-            prices.pop(0)
 
     ax = plt.axes()
     ax.set_facecolor("black")
-    plt.plot([i for i in range(0, len(prices))], prices, color="green")
-    plt.xticks([i for i in range(1, len(prices) + 1)])
+    plt.plot([i for i in range(0, num_prices)], prices, color="green")
+    plt.xticks([i for i in range(1, num_prices + 1)])
 
-    plt.show()
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png")
+    buf.seek(0)
+    file = discord.File(buf, "plot.png")
+    buf.close()
+    return file
 
-get_last_24h()
