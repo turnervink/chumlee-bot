@@ -37,7 +37,7 @@ def get_24h_history():
 def get_7d_history():
     history = db.reference(f"{db_root}/stockMarket/history").get()
     if history is not None:
-        return history[-169:]
+        return history[-168:]
     else:
         return []
 
