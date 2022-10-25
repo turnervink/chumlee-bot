@@ -19,16 +19,22 @@ def get_new_price(current_price: int):
 
 
 def graph_price_history(history: List[int]):
+    # TODO Scale x axis label step based on number of values to make it more readable
+    # TODO Generate more useful x axis labels, e.g. relative timestamps
     ax = plt.axes()
     ax.set_facecolor("black")
-    plt.plot([i for i in range(0, len(history))], history, color="green")
-    plt.xticks([i for i in range(1, len(history) + 1)])
+
+    x_values = list(reversed([i for i in range(1, len(history) + 1)]))
+
+    plt.xticks(np.arange(min(x_values), max(x_values) + 1, step=1.0), labels=x_values)
+    plt.plot(x_values, history, color="green")
 
     buf = io.BytesIO()
     plt.savefig(buf, format="png")
     buf.seek(0)
     file = discord.File(buf, "plot.png")
     buf.close()
+    plt.clf()
     return file
 
 

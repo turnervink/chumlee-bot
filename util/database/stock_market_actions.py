@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 import discord
 
 from error.errors import InsufficientStockError
@@ -60,19 +62,67 @@ def get_user_portfolio(user: discord.User):
         return portfolio
 
 
-def buy_stock(user: discord.User, qty: int):
+def buy_stock(user: discord.User, qty: int, price: int):
+    current_time = datetime.now(timezone.utc)
     portfolio = get_user_portfolio(user)
+
     portfolio["stockQty"] = portfolio["stockQty"] + qty
+
+    try:
+        history = portfolio["history"]
+    except KeyError:
+        history = None
+
+    if history is None:
+        history = [{
+            "timestamp": str(current_time),
+            "action": BUY_ACTION,
+            "qty": qty,
+            "price": price
+        }]
+    else:
+        history.append({
+            "timestamp": str(current_time),
+            "action": BUY_ACTION,
+            "qty": qty,
+            "price": price
+        })
+
+    portfolio["history"] = history
+
     db.reference(f"{db_root}/stockMarket/portfolios/{user.id}").set(portfolio)
 
 
-def sell_stock(user: discord.User, qty: int):
+def sell_stock(user: discord.User, qty: int, price: int):
+    current_time = datetime.now(timezone.utc)
     portfolio = get_user_portfolio(user)
 
     if qty > portfolio["stockQty"]:
         raise InsufficientStockError(user)
 
     portfolio["stockQty"] = portfolio["stockQty"] - qty
+
+    try:
+        history = portfolio["history"]
+    except KeyError:
+        history = None
+
+    if history is None:
+        history = [{
+            "timestamp": str(current_time),
+            "action": SELL_ACTION,
+            "qty": qty,
+            "price": price
+        }]
+    else:
+        history.append({
+            "timestamp": str(current_time),
+            "action": SELL_ACTION,
+            "qty": qty,
+            "price": price
+        })
+
+    portfolio["history"] = history
 
     db.reference(f"{db_root}/stockMarket/portfolios/{user.id}").set(portfolio)
 
@@ -81,3 +131,6 @@ NEW_PORTFOLIO_DATA = {
     "stockQty": 0,
     "history": []
 }
+
+BUY_ACTION = "buy"
+SELL_ACTION = "sell"
