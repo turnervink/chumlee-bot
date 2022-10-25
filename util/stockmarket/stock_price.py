@@ -18,15 +18,15 @@ def get_new_price(current_price: int):
     return np.round(current_price*(1+returns).prod(), 0)
 
 
-def graph_price_history(history: List[int]):
+def graph_price_history(history: List[int], time_period: str):
     # TODO Scale x axis label step based on number of values to make it more readable
     # TODO Generate more useful x axis labels, e.g. relative timestamps
     ax = plt.axes()
     ax.set_facecolor("black")
 
-    x_values = list(reversed([i for i in range(0, len(history))]))
+    x_values = list(reversed(np.arange(0, len(history), step=1.0)))
 
-    plt.xticks(np.arange(min(x_values), max(x_values) + 1, step=1.0), labels=x_values)
+    plt.xticks([])
     plt.plot(x_values, list(reversed(history)), color="green")
 
     buf = io.BytesIO()

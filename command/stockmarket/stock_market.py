@@ -65,15 +65,19 @@ class StockMarket(commands.Cog):
 
         if period == "24h":
             history = stock_market_actions.get_24h_history()
+            period_name = "Last 24 hours"
         elif period == "7d":
             history = stock_market_actions.get_7d_history()
+            period_name = "Last 7 days"
         else:
             raise commands.BadArgument("You need to pick either '24h' or '7d' as a history period")
 
-        price_graph = stock_price.graph_price_history(history)
+        price_graph = stock_price.graph_price_history(history, period)
+        current_price = stock_market_actions.get_current_price()
 
-        embed = discord.Embed(title="**$CHUM**", description=f"{period} price history")
+        embed = discord.Embed(title="**$CHUM**", description=f"{period_name} price history")
         embed.set_image(url="attachment://plot.png")
+        embed.add_field(name="Current Price", value=f"{current_price} {emoji.CHUMCOIN}/share")
 
         await ctx.followup.send(embed=embed, file=price_graph)
 
