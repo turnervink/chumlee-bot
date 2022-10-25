@@ -9,7 +9,7 @@ from util.stockmarket import stock_price
 
 logger = logging.getLogger("chumlee-bot")
 
-# Update each hour on the hour, except in dev where its every minute for easier testing
+# Update each hour on the hour, except in dev where it is more frequent for easier testing
 if os.environ["DB_ROOT"] == "development":
     logger.info("Running in dev, so updating the stock price every minute")
     STOCK_PRICE_UPDATE_TIMES = {"minutes": 1}
