@@ -50,7 +50,6 @@ def append_to_history(value: int):
 
 def get_user_portfolio(user: discord.User):
     # TODO New portfolio features
-    # - Track buy/sell history
     # - Display return over time
     portfolio = db.reference(f"{db_root}/stockMarket/portfolios/{user.id}").get()
 

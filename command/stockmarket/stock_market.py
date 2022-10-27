@@ -65,9 +65,13 @@ class StockMarket(commands.Cog):
 
         if period == "24h":
             history = stock_market_actions.get_24h_history()
+            change_pct = stock_price.calculate_price_change_pct(history[0], history[-1])
+            print(f"From {history[0]} to {history[-1]}")
             period_name = "Last 24 hours"
         elif period == "7d":
             history = stock_market_actions.get_7d_history()
+            change_pct = stock_price.calculate_price_change_pct(history[0], history[-1])
+            print(f"From {history[0]} to {history[-1]}")
             period_name = "Last 7 days"
         else:
             raise commands.BadArgument("You need to pick either '24h' or '7d' as a history period")
@@ -75,11 +79,20 @@ class StockMarket(commands.Cog):
         price_graph = stock_price.graph_price_history(history, period)
         current_price = stock_market_actions.get_current_price()
 
-        embed = discord.Embed(title="**$CHUM**", description=f"{period_name} price history")
-        embed.set_image(url="attachment://plot.png")
-        embed.add_field(name="Current Price", value=f"{current_price} {emoji.CHUMCOIN}/share")
+        if change_pct > 0:
+            arrow_image = discord.File("resources/up.png", filename="arrow.png")
+        elif change_pct < 0:
+            arrow_image = discord.File("resources/down.png", filename="arrow.png")
+        else:
+            arrow_image = discord.File("resources/flat.png", filename="arrow.png")
 
-        await ctx.followup.send(embed=embed, file=price_graph)
+        embed = discord.Embed(title="**$CHUM**", description=period_name)
+        embed.set_image(url="attachment://plot.png")
+        embed.set_thumbnail(url="attachment://arrow.png")
+        embed.add_field(name="Current Price", value=f"{current_price} {emoji.CHUMCOIN}/share")
+        embed.add_field(name="Change", value=f"{change_pct}%")
+
+        await ctx.followup.send(embed=embed, files=[price_graph, arrow_image])
 
     @stock_commands.command(name="portfolio", description="Check how much $CHUM you own")
     async def get_portfolio(self, ctx: discord.ApplicationContext):

@@ -18,6 +18,14 @@ def get_new_price(current_price: int):
     return np.round(current_price*(1+returns).prod(), 0)
 
 
+def calculate_price_change_pct(old_price: int, new_price: int):
+    return np.round((new_price - old_price)/old_price*100, 2)
+
+
+def calculate_portfolio_return(old_price: int, new_price: int, shares: int):
+    return np.round(((new_price - old_price)*shares)/old_price*100, 2)
+
+
 def graph_price_history(history: List[int], time_period: str):
     # TODO Scale x axis label step based on number of values to make it more readable
     # TODO Generate more useful x axis labels, e.g. relative timestamps
