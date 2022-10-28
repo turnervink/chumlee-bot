@@ -26,16 +26,32 @@ def calculate_portfolio_return(old_price: int, new_price: int, shares: int):
     return np.round(((new_price - old_price)*shares)/old_price*100, 2)
 
 
-def graph_price_history(history: List[int], time_period: str):
-    # TODO Scale x axis label step based on number of values to make it more readable
-    # TODO Generate more useful x axis labels, e.g. relative timestamps
+def graph_price_history(history: List[int]):
+    change_pct = calculate_price_change_pct(history[0], history[-1])
+    graph_colour = "green" if change_pct >= 0 else "red"
+
     ax = plt.axes()
     ax.set_facecolor("black")
 
     x_values = list(reversed(np.arange(0, len(history), step=1.0)))
 
-    plt.xticks([])
-    plt.plot(x_values, list(reversed(history)), color="green")
+    plt.xticks([0, 3, 6, 9, 12, 15, 18, 21, 23])
+    plt.plot(x_values, list(reversed(history)), color=graph_colour)
+    plt.fill_between(x_values, list(reversed(history)), min(list(reversed(history))) - 5, color=graph_colour)
+
+    ax.set_xticklabels([
+        "24h",
+        "21h",
+        "18h",
+        "15h",
+        "12h",
+        "9h",
+        "6h",
+        "3h",
+        "Now"
+    ], rotation=45)
+    ax.set_xlim(0, len(history)-1)
+    ax.set_ylim(min(history) - 5, max(history) + 5)
 
     buf = io.BytesIO()
     plt.savefig(buf, format="png")
