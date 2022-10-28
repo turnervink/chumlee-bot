@@ -5,6 +5,7 @@ import discord
 from dateutil import tz
 from discord.ext import commands
 
+from command.check import checks
 from error.errors import InsufficientFundsError, InsufficientStockError
 from util import emoji
 from util.database import stock_market_actions, user_actions, transaction_actions
@@ -19,6 +20,7 @@ class StockMarket(commands.Cog):
         self.logger = logging.getLogger("chumlee-bot")
 
     @stock_commands.command(name="buy", description="Buy $CHUM")
+    @checks.user_registered()
     async def buy_stock(self, ctx: discord.ApplicationContext, qty: int):
         await ctx.defer()
 
@@ -35,6 +37,7 @@ class StockMarket(commands.Cog):
                                 f"Total purchase price: {purchase_price_total} {emoji.CHUMCOIN}")
 
     @stock_commands.command(name="sell", description="Sell $CHUM")
+    @checks.user_registered()
     async def sell_stock(self, ctx: discord.ApplicationContext, qty: int):
         await ctx.defer()
 
@@ -52,6 +55,7 @@ class StockMarket(commands.Cog):
                                 f"Total sale price: {sale_price_total} {emoji.CHUMCOIN}")
 
     @stock_commands.command(name="price", description="Check the price of $CHUM")
+    @checks.user_registered()
     async def get_price(self, ctx: discord.ApplicationContext):
         await ctx.defer()
         current_price = int(stock_market_actions.get_current_price())
@@ -85,6 +89,7 @@ class StockMarket(commands.Cog):
         await ctx.followup.send(embed=embed, files=[price_graph, arrow_image])
 
     @stock_commands.command(name="portfolio", description="Check how much $CHUM you own")
+    @checks.user_registered()
     async def get_portfolio(self, ctx: discord.ApplicationContext):
         await ctx.defer()
 
