@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 import discord
@@ -15,6 +16,7 @@ class StockMarket(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.logger = logging.getLogger("chumlee-bot")
 
     @stock_commands.command(name="buy", description="Buy $CHUM")
     async def buy_stock(self, ctx: discord.ApplicationContext, qty: int):
@@ -91,25 +93,29 @@ class StockMarket(commands.Cog):
 
         portfolio_value = portfolio['stockQty'] * current_stock_price
 
-        history = stock_market_actions.get_user_portfolio(ctx.author)["history"]
-        history.sort(key=lambda t: t["timestamp"], reverse=True)
-
-        history_response = ""
-        for trade in history[:10]:
-            trade_time = datetime.strptime(trade["timestamp"], "%Y-%m-%d %H:%M:%S.%f%z")
-            trade_time.replace(tzinfo=tz.gettz("utc"))
-            trade_time = trade_time.astimezone(tz.gettz("Canada/Pacific"))
-
-            history_response += f"_{trade_time.strftime('%d %b %Y %H:%M %Z')}_ - " \
-                                f"{trade['action'].upper()} {trade['qty']} **$CHUM** at " \
-                                f"{trade['price']} {emoji.CHUMCOIN}/share\n"
-
         embed = discord.Embed(title="Your Portfolio")
         embed.add_field(name="Current Holdings",
                         value=f"{portfolio['stockQty']} **$CHUM** at {current_stock_price} {emoji.CHUMCOIN}/share",
                         inline=True)
         embed.add_field(name="Total Value", value=f"{str(portfolio_value)} {emoji.CHUMCOIN}", inline=True)
-        embed.add_field(name="Last 10 Trades", value=history_response, inline=False)
+
+        try:
+            history = stock_market_actions.get_user_portfolio(ctx.author)["history"]
+            history.sort(key=lambda t: t["timestamp"], reverse=True)
+
+            history_response = ""
+            for trade in history[:10]:
+                trade_time = datetime.strptime(trade["timestamp"], "%Y-%m-%d %H:%M:%S.%f%z")
+                trade_time.replace(tzinfo=tz.gettz("utc"))
+                trade_time = trade_time.astimezone(tz.gettz("Canada/Pacific"))
+
+                history_response += f"_{trade_time.strftime('%d %b %Y %H:%M %Z')}_ - " \
+                                    f"{trade['action'].upper()} {trade['qty']} **$CHUM** at " \
+                                    f"{trade['price']} {emoji.CHUMCOIN}/share\n"
+
+            embed.add_field(name="Last 10 Trades", value=history_response, inline=False)
+        except KeyError:
+            self.logger.warning("No history found for user %s", ctx.author)
 
         await ctx.followup.send(embed=embed)
 

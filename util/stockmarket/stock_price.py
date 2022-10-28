@@ -6,7 +6,7 @@ import io
 import discord
 
 # TODO Adjust these based on some factors (what?) to simulate changing market conditions
-MU = 0.0001  # Higher value = more bullish market
+MU = 0.0002  # Higher value = more bullish market
 SIGMA = 0.01  # Higher value = more volatile market
 
 
@@ -63,7 +63,7 @@ def graph_price_history(history: List[int]):
 
 
 def simulate_prices(num_prices: int):
-    current_price = 500
+    current_price = 100
     prices = []
 
     for i in range(0, num_prices):
@@ -80,10 +80,8 @@ def simulate_prices(num_prices: int):
     plt.plot([i for i in range(0, num_prices)], prices, color="green")
     plt.xticks([i for i in range(1, num_prices + 1)])
 
-    buf = io.BytesIO()
-    plt.savefig(buf, format="png")
-    buf.seek(0)
-    file = discord.File(buf, "plot.png")
-    buf.close()
-    return file
+    plt.show()
 
+
+if __name__ == "__main__":
+    simulate_prices(8760)

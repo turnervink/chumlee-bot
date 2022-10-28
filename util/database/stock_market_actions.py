@@ -49,8 +49,6 @@ def append_to_history(value: int):
 
 
 def get_user_portfolio(user: discord.User):
-    # TODO New portfolio features
-    # - Display return over time
     portfolio = db.reference(f"{db_root}/stockMarket/portfolios/{user.id}").get()
 
     if portfolio is None:
@@ -65,6 +63,7 @@ def buy_stock(user: discord.User, qty: int, price: int):
     portfolio = get_user_portfolio(user)
 
     portfolio["stockQty"] = portfolio["stockQty"] + qty
+    portfolio["totalDeposits"] = portfolio["totalDeposits"] + (qty * price)
 
     try:
         history = portfolio["history"]
@@ -99,6 +98,7 @@ def sell_stock(user: discord.User, qty: int, price: int):
         raise InsufficientStockError(user)
 
     portfolio["stockQty"] = portfolio["stockQty"] - qty
+    portfolio["totalWithdrawals"] = portfolio["totalWithdrawals"] + (qty * price)
 
     try:
         history = portfolio["history"]
@@ -127,8 +127,11 @@ def sell_stock(user: discord.User, qty: int, price: int):
 
 NEW_PORTFOLIO_DATA = {
     "stockQty": 0,
-    "history": []
+    "history": [],
+    "totalDeposits": 0,
+    "totalWithdrawals": 0
 }
 
 BUY_ACTION = "buy"
 SELL_ACTION = "sell"
+REGISTER_ACTION = "register"
