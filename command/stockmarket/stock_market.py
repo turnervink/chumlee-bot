@@ -1,5 +1,6 @@
 import logging
-from datetime import datetime
+import os
+from datetime import datetime, timedelta
 
 import discord
 from dateutil import tz
@@ -65,9 +66,21 @@ class StockMarket(commands.Cog):
     async def get_history(self, ctx: discord.ApplicationContext):
         await ctx.defer()
 
-        history = stock_market_actions.get_24h_history()
+        now = datetime.now(tz.tzutc())
+
+        # Prices update every minute in dev, so get each minute is treated as an hour
+        if os.environ["DB_ROOT"] == "development":
+            time_range_start = timedelta(minutes=1440)
+        else:
+            time_range_start = timedelta(hours=23)
+
+        since = now - time_range_start
+
+        history = list(stock_market_actions.get_history(since).items())
+        prices = list(map(lambda x: x[1], history))
+
         current_price = stock_market_actions.get_current_price()
-        change_pct = stock_price.calculate_price_change_pct(history[0], history[-1])
+        change_pct = stock_price.calculate_price_change_pct(prices[0], prices[-1])
 
         price_graph = stock_price.graph_price_history(history)
 
@@ -83,8 +96,8 @@ class StockMarket(commands.Cog):
         embed.set_thumbnail(url="attachment://changeicon.png")
         embed.add_field(name="Current Price", value=f"{current_price} {emoji.CHUMCOIN}/share", inline=True)
         embed.add_field(name="Change", value=f"{change_pct}%", inline=True)
-        embed.add_field(name="Low", value=f"{int(min(history))} {emoji.CHUMCOIN}/share", inline=False)
-        embed.add_field(name="High", value=f"{int(max(history))} {emoji.CHUMCOIN}/share", inline=True)
+        embed.add_field(name="Low", value=f"{int(min(prices))} {emoji.CHUMCOIN}/share", inline=False)
+        embed.add_field(name="High", value=f"{int(max(prices))} {emoji.CHUMCOIN}/share", inline=True)
 
         await ctx.followup.send(embed=embed, files=[price_graph, arrow_image])
 

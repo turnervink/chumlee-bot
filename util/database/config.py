@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 from os.path import exists
@@ -5,8 +6,10 @@ from os.path import exists
 import firebase_admin
 from firebase_admin import db, credentials
 
+logger = logging.getLogger("chumlee-bot")
+
 if not exists(os.environ["GOOGLE_APPLICATION_CREDENTIALS"]):
-    print(f"No Firebase credentials file at {os.environ['GOOGLE_APPLICATION_CREDENTIALS']}")
+    logger.critical(f"No Firebase credentials file at {os.environ['GOOGLE_APPLICATION_CREDENTIALS']}")
     sys.exit(1)
 
 default_app = firebase_admin.initialize_app(credentials.ApplicationDefault(), {

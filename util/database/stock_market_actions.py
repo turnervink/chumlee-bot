@@ -6,6 +6,10 @@ from error.errors import InsufficientStockError
 from .config import db, db_root
 
 
+def timestamp_key(timestamp: datetime.timestamp):
+    return str(timestamp.strftime("%Y-%m-%d %H:%M"))
+
+
 def get_current_price():
     current_price = db.reference(f"{db_root}/stockMarket/currentPrice").get()
     if current_price is None:
@@ -18,7 +22,7 @@ def set_current_price(new_price: int):
     db.reference(f"{db_root}/stockMarket/currentPrice").set(new_price)
 
 
-def get_history():
+def get_all_history():
     history = db.reference(f"{db_root}/stockMarket/history").get()
     if history is not None:
         return history
@@ -26,26 +30,16 @@ def get_history():
         return []
 
 
-def get_24h_history():
-    history = db.reference(f"{db_root}/stockMarket/history").get()
+def get_history(since: datetime.timestamp):
+    history = db.reference(f"{db_root}/stockMarket/history").order_by_key().start_at(timestamp_key(since)).get()
     if history is not None:
-        return history[-24:]
+        return history
     else:
         return []
 
 
-def get_7d_history():
-    history = db.reference(f"{db_root}/stockMarket/history").get()
-    if history is not None:
-        return history[-168:]
-    else:
-        return []
-
-
-def append_to_history(value: int):
-    history = get_history()
-    history.append(value)
-    db.reference(f"{db_root}/stockMarket/history").set(history)
+def append_to_history(value: int, timestamp: datetime.timestamp):
+    db.reference(f"{db_root}/stockMarket/history").child(timestamp_key(timestamp)).set(value)
 
 
 def get_user_portfolio(user: discord.User):

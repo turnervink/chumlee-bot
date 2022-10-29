@@ -1,4 +1,5 @@
-from typing import List
+from datetime import datetime
+from typing import List, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,32 +27,24 @@ def calculate_portfolio_return(old_price: int, new_price: int, shares: int):
     return np.round(((new_price - old_price)*shares)/old_price*100, 2)
 
 
-def graph_price_history(history: List[int]):
-    change_pct = calculate_price_change_pct(history[0], history[-1])
+def graph_price_history(history: List[Tuple[str, int]]):
+    timestamps = list(map(lambda x: str(datetime.strptime(x[0], "%Y-%m-%d %H:%M").strftime("%H:%M")), history))
+    prices = list(map(lambda x: x[1], history))
+    step = int(np.ceil(len(history)/12))
+
+    change_pct = calculate_price_change_pct(prices[0], prices[-1])
     graph_colour = "green" if change_pct >= 0 else "red"
 
     ax = plt.axes()
     ax.set_facecolor("black")
 
-    x_values = list(reversed(np.arange(0, len(history), step=1.0)))
+    plt.xticks(np.arange(0, len(timestamps), step))
+    plt.plot(timestamps, list(prices), color=graph_colour)
+    plt.fill_between(timestamps, list(prices), min(list(prices)) - 5, color=graph_colour)
 
-    plt.xticks([0, 3, 6, 9, 12, 15, 18, 21, 23])
-    plt.plot(x_values, list(reversed(history)), color=graph_colour)
-    plt.fill_between(x_values, list(reversed(history)), min(list(reversed(history))) - 5, color=graph_colour)
-
-    ax.set_xticklabels([
-        "24h",
-        "21h",
-        "18h",
-        "15h",
-        "12h",
-        "9h",
-        "6h",
-        "3h",
-        "Now"
-    ], rotation=45)
-    ax.set_xlim(0, len(history)-1)
-    ax.set_ylim(min(history) - 5, max(history) + 5)
+    ax.set_xticklabels(timestamps[::step], rotation=45)
+    ax.set_xlim(0, len(timestamps)-1)
+    ax.set_ylim(min(prices) - 5, max(prices) + 5)
 
     buf = io.BytesIO()
     plt.savefig(buf, format="png")
