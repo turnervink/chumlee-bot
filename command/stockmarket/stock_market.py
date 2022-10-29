@@ -98,6 +98,7 @@ class StockMarket(commands.Cog):
         embed.add_field(name="Change", value=f"{change_pct}%", inline=True)
         embed.add_field(name="Low", value=f"{int(min(prices))} {emoji.CHUMCOIN}/share", inline=False)
         embed.add_field(name="High", value=f"{int(max(prices))} {emoji.CHUMCOIN}/share", inline=True)
+        embed.set_footer(text="Prices update every 15 minutes - All times in Canada Pacific Time")
 
         await ctx.followup.send(embed=embed, files=[price_graph, arrow_image])
 

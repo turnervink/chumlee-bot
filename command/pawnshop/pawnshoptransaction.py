@@ -52,7 +52,6 @@ class PawnshopTransaction(commands.Cog):
             await ctx.followup.send(f"I'm all about self love {ctx.author.mention}, so I'll give myself a 10/10!")
             return
 
-        # TODO Add support for video attachments
         if image is not None and image.content_type.split("/")[0] != "image":
             await ctx.followup.send("That attachment doesn't look like an image file, I can only accept text or images!")
             return

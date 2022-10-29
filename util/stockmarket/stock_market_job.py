@@ -23,14 +23,12 @@ else:
         for h in range(24):
             for m in range(0, 2):
                 times.append(time(hour=h, minute=m * 30, tzinfo=timezone.utc))
-        print(times)
         STOCK_PRICE_UPDATE_TIMES = {"time": times}
     elif STOCK_PRICE_UPDATE_FREQUENCY == "15m":
         times = []
         for h in range(24):
             for m in range(0, 4):
                 times.append(time(hour=h, minute=m * 15, tzinfo=timezone.utc))
-        print(times)
         STOCK_PRICE_UPDATE_TIMES = {"time": times}
     else:
         logger.critical("Invalid STOCK_PRICE_UPDATE_FREQUENCY, must be 1h, 30m, or 15m")
