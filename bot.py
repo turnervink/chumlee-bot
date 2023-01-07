@@ -45,6 +45,7 @@ async def on_ready():
 
 bot.load_extension("util.status")
 bot.load_extension("util.channel_bind")
+bot.load_extension("util.stockmarket.stock_market_job")
 bot.load_extension("error.error_handlers")
 bot.load_extension("command.user.help")
 bot.load_extension("command.user.registration")
@@ -54,5 +55,6 @@ bot.load_extension("command.pawnshop.pawnshoptransaction")
 bot.load_extension("command.pawnshop.medal")
 bot.load_extension("command.pawnshop.lotto")
 bot.load_extension("command.dice.dice")
+bot.load_extension("command.stockmarket.stock_market")
 
 bot.run(os.environ['BOT_TOKEN'])

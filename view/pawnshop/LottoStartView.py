@@ -17,7 +17,6 @@ class LottoStartView(discord.ui.View):
         #     child.disabled = True
         #     child.label = "No more bets!"
 
-        # TODO Can we somehow refresh the View when it was sent with a slash command?
         await self.run_lotto_callback(self.lotto)
 
     @discord.ui.button(label="Join", style=discord.ButtonStyle.blurple)

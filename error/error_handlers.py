@@ -40,6 +40,7 @@ class CommandErrorHandler(commands.Cog):
             await ctx.respond(error)
         else:
             await ctx.respond("Whoops! Something went wrong.")
+            raise error
 
 
 def setup(bot: commands.Bot):
