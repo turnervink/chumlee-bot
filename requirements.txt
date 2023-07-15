@@ -9,7 +9,7 @@ cffi==1.15.1
 chardet==5.1.0
 charset-normalizer==3.1.0
 contourpy==1.0.7
-cryptography==39.0.2
+cryptography==41.0.2
 cycler==0.11.0
 Deprecated==1.2.13
 discord.py==2.2.2
