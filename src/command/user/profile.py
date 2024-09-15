@@ -37,7 +37,7 @@ class Profile(commands.Cog):
 
 
 async def generate_profile(user: discord.User):
-    background = Image.open("resources/profile.png")
+    background = Image.open("src/resources/profile.png")
 
     async with aiohttp.ClientSession() as session:
         async with session.get(str(user.avatar)) as r:
@@ -54,27 +54,27 @@ async def generate_profile(user: discord.User):
             avatar = Image.open(avatar_data)
         except UnidentifiedImageError as e:
             logger.error(f"Could not load avatar data for user {user.id}: %s", e)
-            avatar = Image.open("resources/default-avatar.jpg")
+            avatar = Image.open("src/resources/default-avatar.jpg")
     else:
-        avatar = Image.open("resources/default-avatar.jpg")
+        avatar = Image.open("src/resources/default-avatar.jpg")
 
     avatar = avatar.resize((225, 225))
     background.paste(avatar, box=(55, 55))
 
     # Draw the user's display name
     draw = ImageDraw.Draw(background)
-    font = ImageFont.truetype("resources/Roboto-Regular.ttf", 90)
+    font = ImageFont.truetype("src/resources/Roboto-Regular.ttf", 90)
     draw.text((305, 32), user.display_name, (255, 255, 255), font=font)
 
     # Draw the user's balance
     draw = ImageDraw.Draw(background)
-    font = ImageFont.truetype("resources/Roboto-Regular.ttf", 70)
+    font = ImageFont.truetype("src/resources/Roboto-Regular.ttf", 70)
     draw.text((406, 155), str(user_actions.get_balance(user)), (255, 255, 255), font=font)
 
     # Draw the user's level title
     level = Level(user_actions.get_total_earnings(user))
     draw = ImageDraw.Draw(background)
-    font = ImageFont.truetype("resources/Roboto-Regular.ttf", 60)
+    font = ImageFont.truetype("src/resources/Roboto-Regular.ttf", 60)
     draw.text((325, 245), level.title, (255, 255, 255), font=font)
 
     # Fill in the user's acquired medals

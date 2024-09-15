@@ -85,11 +85,11 @@ class StockMarket(commands.Cog):
         price_graph = stock_price.graph_price_history(history)
 
         if change_pct > 0:
-            arrow_image = discord.File("resources/up.png", filename="changeicon.png")
+            arrow_image = discord.File("src/resources/up.png", filename="changeicon.png")
         elif change_pct < 0:
-            arrow_image = discord.File("resources/down.png", filename="changeicon.png")
+            arrow_image = discord.File("src/resources/down.png", filename="changeicon.png")
         else:
-            arrow_image = discord.File("resources/flat.png", filename="changeicon.png")
+            arrow_image = discord.File("src/resources/flat.png", filename="changeicon.png")
 
         embed = discord.Embed(title="**$CHUM**", description="Last 24 hours")
         embed.set_image(url="attachment://plot.png")
