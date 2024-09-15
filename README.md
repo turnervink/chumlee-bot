@@ -12,22 +12,15 @@ easter eggs. The goal isn't a real functioning economy, but rather some good com
 I make no guarantees about service quality or uptime, since this is a self-hosted project.
 
 Invite the bot with this link:  
-https://discord.com/oauth2/authorize?client_id=338421932426919936&scope=bot%20applications.commands&permissions=277025442816
-
-Chumlee requires access to the following permissions:
-- View Channels
-- Send Messages
-- Send Messages in Threads
-- Embed Links
-- Attach Files
-- Use Application Commands
+https://discord.com/oauth2/authorize?client_id=338421932426919936
 
 ## Development
-Chumlee bot uses Python with Poetry for dependency management, and Google Firebase as a database.
+Chumlee Bot uses Python with Poetry for dependency management, and Google Firebase as a database.
 
-1. Clone the project
-2. Install dependenices with `poetry install`
-4. Obtain your [Firebase service account credentials](https://firebase.google.com/docs/admin/setup#initialize-sdk). Name the file `db-creds.json` and place it in the `config` directory of the project.
+- Clone the project
+- Install dependenices with `poetry install`
+- Obtain your [Firebase service account credentials](https://firebase.google.com/docs/admin/setup#initialize-sdk). Name the file `db-creds.json` and place it in the `config` directory of the project.
+- Set the following environment variables with your development values:
 ```
 BOT_TOKEN=<a Discord app bot token>
 GOOGLE_APPLICATION_CREDENTIALS=/app/config/db-creds.json
@@ -36,12 +29,12 @@ DB_AUTH_UID=<a uid to authorize Firebase requests, set up in your Firebase auth 
 LOGLEVEL=<logging level>
 DEBUG_GUILD_IDS=[list of Discord guild IDs to create slash commands in for dev purposes]
 ```
-6. Start the bot with `poetry run python src/bot.py` and invite it to a server for testing
+- Start the bot with `poetry run python src/bot.py`
 
 ## Deployment
-1. Create a `.env` file with the same variables as above set to your production values
-2. Build and tag the image: `docker build -t chumlee-bot:latest .`
-3. Run the image, passing in your `.env` file and mounting the directory with the Firebase credentials file to the path you specified in `GOOGLE_APPLICATION_CREDENTIALS`:  
+- Create a `.env` file with the same variables as above set to your production values
+- Build and tag the image: `docker build -t chumlee-bot:latest .`
+- Run the image, passing in your `.env` file and mounting the directory with the Firebase credentials file to the path you specified in `GOOGLE_APPLICATION_CREDENTIALS`:  
 `docker run --env-file .env -v /path/to/creds/dir:${GOOGLE_APPLICATION_CREDENTIALS} chumlee-bot:latest` 
 
 ## Contributing
