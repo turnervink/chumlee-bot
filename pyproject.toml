@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "chumlee-bot"
+version = "1.0.0"
+description = "A pawn shop bot for Discord"
+authors = ["Turner Vink <turner.vink@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+firebase-admin = "^6.5.0"
+pillow = "^10.4.0"
+py-cord = "^2.6.0"
+matplotlib = "^3.9.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
