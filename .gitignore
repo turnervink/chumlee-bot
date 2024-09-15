@@ -5,5 +5,5 @@ __pycache__/
 .idea
 *.env
 .envrc
-Makefile
+justfile
 config/db-creds.json
