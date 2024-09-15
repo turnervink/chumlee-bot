@@ -9,6 +9,7 @@ from util.stockmarket import stock_price
 
 logger = logging.getLogger("chumlee-bot")
 
+STOCK_MARKET_ENABLED = os.environ["STOCK_MARKET_ENABLED"]
 STOCK_PRICE_UPDATE_FREQUENCY = os.environ["STOCK_PRICE_UPDATE_FREQUENCY"]
 
 # Update each hour on the hour, except in dev where it is more frequent for easier testing

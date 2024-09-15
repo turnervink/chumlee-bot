@@ -3,7 +3,7 @@
 If you add this bot to your Discord server the following data will be collected and stored:
 - The ID and name of your Discord server
 - The Discord member IDs of any users that interact with the bot in your server
-- The IDs of any channels within your Discord server
+- The IDs of any channels within your Discord server that you allow the bot to interact in
 
 All of this data is stored in a Google Firebase database and used to help the bot operate properly.
 E.g. Discord member IDs are used to store each users' Chumcoin balance and medals information, and server and channel
