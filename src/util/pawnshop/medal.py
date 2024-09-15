@@ -53,6 +53,6 @@ class Medal:
             raise errors.InvalidMedalNameError(name)
         else:
             self.name = name
-            self.image_path = f"resources/{self.name}.png"
+            self.image_path = f"src/resources/{self.name}.png"
             self.price = self.MEDAL_DATA[self.name]["price"]
             self.profile_xy = self.MEDAL_DATA[self.name]["profile_xy"]
